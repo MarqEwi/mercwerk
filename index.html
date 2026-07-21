@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Merc Studios – App-Entwicklung aus Altenbeken</title>
+<meta name="description" content="Merc Studios ist ein unabhängiges Ein-Personen-Studio von Marc Ewers für nützliche, datensparsame Alltags-Apps. Aktuelle Projekte: Sportabzeichen-Rechner und Impfbuch-App.">
+<meta name="theme-color" content="#FBFAF6" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#101319" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="assets/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/style.css">
+<script>(function(){try{var t=localStorage.getItem('theme');if(t){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();</script>
+</head>
+<body>
+<a class="skip" href="#main">Zum Inhalt springen</a>
+
+<header class="site-header">
+  <div class="container">
+    <a class="brand" href="index.html" aria-label="Merc Studios – Startseite">
+      <img src="assets/logo.svg" alt="" width="32" height="32">
+      <span>Merc Studios</span>
+    </a>
+    <nav class="site-nav" aria-label="Hauptnavigation">
+      <a href="index.html" aria-current="page">Start</a>
+      <a href="apps.html">Apps</a>
+      <a href="kontakt.html">Kontakt</a>
+      <a href="impressum.html">Impressum</a>
+      <a href="datenschutz.html">Datenschutz</a>
+    </nav>
+    <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Design umschalten">🌙</button>
+  </div>
+</header>
+
+<main id="main">
+  <section class="hero">
+    <div class="container">
+      <span class="eyebrow">Ein-Personen-Studio · Made in Germany</span>
+      <h1>Nützliche Apps,<br>die deine Daten respektieren.</h1>
+      <p class="lead">Merc Studios ist das unabhängige App-Label von Marc Ewers. Ich entwickle
+      schlanke Alltags-Apps, die eine konkrete Aufgabe gut lösen – ohne Tracking, ohne Konto­zwang,
+      mit Daten, die auf deinem Gerät bleiben.</p>
+      <div class="btn-row">
+        <a class="btn btn-primary" href="apps.html">Apps ansehen</a>
+        <a class="btn btn-ghost" href="kontakt.html">Kontakt</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="tight">
+    <div class="container">
+      <div class="grid cols-3">
+        <div class="card">
+          <h3>🔒 Datensparsam</h3>
+          <p style="color:var(--muted);margin:0">Meine Apps kommen ohne Werbe- oder Analyse-SDKs aus.
+          Eingaben werden lokal gespeichert und verlassen das Gerät nicht.</p>
+        </div>
+        <div class="card">
+          <h3>📴 Offline-fähig</h3>
+          <p style="color:var(--muted);margin:0">Als Progressive Web Apps laufen sie auch ohne
+          Internet­verbindung – installierbar direkt aus dem Browser.</p>
+        </div>
+        <div class="card">
+          <h3>🎯 Fokussiert</h3>
+          <p style="color:var(--muted);margin:0">Kein aufgeblähter Funktions­dschungel, sondern
+          Werkzeuge, die eine Sache erledigen – zuverlässig und übersichtlich.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <h2>Aktuelle Apps</h2>
+      <hr class="gold-rule">
+      <div class="grid cols-2">
+
+        <article class="card">
+          <h3>Sportabzeichen-Rechner <span class="badge gold">Google Play · Test</span></h3>
+          <p style="color:var(--muted);margin:.2em 0 0">Trainingsbegleiter rund um das Deutsche
+          Sportabzeichen: Leistungs­anforderungen nach Altersklasse, Punkte­berechnung (Bronze/Silber/Gold)
+          und Ausfüllen der Prüfkarten. Alle Daten bleiben lokal auf dem Gerät.</p>
+          <div class="applinks">
+            <a href="https://marqewi.github.io/sportabzeichen-rechner/" target="_blank" rel="noopener">Web-App öffnen ↗</a>
+            <a href="apps.html#sportabzeichen">Mehr erfahren</a>
+          </div>
+          <p class="muted" style="color:var(--muted);font-size:.85rem;margin:14px 0 0">
+            Privates, inoffizielles Projekt – keine Verbindung zum DOSB.</p>
+        </article>
+
+        <article class="card">
+          <h3>Impfbuch-App <span class="badge">In Entwicklung</span></h3>
+          <p style="color:var(--muted);margin:.2em 0 0">Digitaler Impfpass als Begleiter: STIKO-Impfschema,
+          Fälligkeits- und Reise­empfehlungen. Ein persönlicher Überblick über den eigenen Impfstatus –
+          alle Daten bleiben lokal auf dem Gerät.</p>
+          <div class="applinks">
+            <a href="https://marqewi.github.io/impfbuch-app/" target="_blank" rel="noopener">Web-App öffnen ↗</a>
+            <a href="apps.html#impfbuch">Mehr erfahren</a>
+          </div>
+          <p class="muted" style="color:var(--muted);font-size:.85rem;margin:14px 0 0">
+            Ersetzt keine ärztliche Beratung und keinen amtlichen Impfausweis.</p>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="tight">
+    <div class="container">
+      <div class="notice">
+        <p><strong>Über Merc Studios:</strong> Merc Studios ist die Geschäfts­bezeichnung des
+        Einzel­unternehmens von Marc Ewers (Kleingewerbe, Altenbeken). Unter diesem Label werden die
+        oben genannten Apps entwickelt und im Google Play Store veröffentlicht.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div>© 2026 Merc Studios · Marc Ewers</div>
+    <nav class="footer-links" aria-label="Rechtliches">
+      <a href="impressum.html">Impressum</a>
+      <a href="datenschutz.html">Datenschutz</a>
+      <a href="kontakt.html">Kontakt</a>
+    </nav>
+  </div>
+</footer>
+
+<script src="assets/theme.js"></script>
+</body>
+</html>

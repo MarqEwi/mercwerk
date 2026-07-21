@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Merc Studios">
+  <defs>
+    <radialGradient id="g" cx="38%" cy="30%" r="80%">
+      <stop offset="0%" stop-color="#F6E39B"/>
+      <stop offset="42%" stop-color="#D9B24A"/>
+      <stop offset="100%" stop-color="#9A7318"/>
+    </radialGradient>
+  </defs>
+  <circle cx="32" cy="32" r="29" fill="url(#g)" stroke="#7A5E14" stroke-width="2"/>
+  <circle cx="32" cy="32" r="23" fill="none" stroke="#7A5E14" stroke-width="1.5" opacity="0.5"/>
+  <path d="M20 44 V21 l12 15 12 -15 V44"
+        fill="none" stroke="#4A3708" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

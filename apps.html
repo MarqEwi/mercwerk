@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Apps – Merc Studios</title>
+<meta name="description" content="Die Apps von Merc Studios: Sportabzeichen-Rechner und Impfbuch-App. Datensparsame Progressive Web Apps, deren Daten lokal auf dem Gerät bleiben.">
+<meta name="theme-color" content="#FBFAF6" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#101319" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="assets/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/style.css">
+<script>(function(){try{var t=localStorage.getItem('theme');if(t){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();</script>
+</head>
+<body>
+<a class="skip" href="#main">Zum Inhalt springen</a>
+
+<header class="site-header">
+  <div class="container">
+    <a class="brand" href="index.html" aria-label="Merc Studios – Startseite">
+      <img src="assets/logo.svg" alt="" width="32" height="32">
+      <span>Merc Studios</span>
+    </a>
+    <nav class="site-nav" aria-label="Hauptnavigation">
+      <a href="index.html">Start</a>
+      <a href="apps.html" aria-current="page">Apps</a>
+      <a href="kontakt.html">Kontakt</a>
+      <a href="impressum.html">Impressum</a>
+      <a href="datenschutz.html">Datenschutz</a>
+    </nav>
+    <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Design umschalten">🌙</button>
+  </div>
+</header>
+
+<main id="main">
+  <section class="hero" style="padding-bottom:24px">
+    <div class="container">
+      <span class="eyebrow">Portfolio</span>
+      <h1>Apps von Merc Studios</h1>
+      <p class="lead">Alle Apps sind Progressive Web Apps (PWA): installierbar aus dem Browser,
+      offline nutzbar und datensparsam. Dieser Bereich wächst mit jedem neuen Projekt.</p>
+    </div>
+  </section>
+
+  <section class="tight" id="sportabzeichen">
+    <div class="container">
+      <article class="card">
+        <h3>Sportabzeichen-Rechner <span class="badge gold">Google Play · Geschlossener Test</span></h3>
+        <hr class="gold-rule" style="margin:16px 0 18px">
+        <p style="color:var(--muted)">Ein inoffizieller Trainings­begleiter rund um das Deutsche
+        Sportabzeichen. Die App zeigt die Leistungs­anforderungen nach Altersklasse, berechnet die
+        erreichte Stufe (Bronze, Silber, Gold) und hilft beim Ausfüllen der offiziellen Prüfkarten.</p>
+        <ul class="features">
+          <li>Leistungs­anforderungen nach Altersklasse und Disziplin</li>
+          <li>Automatische Auswertung Bronze / Silber / Gold</li>
+          <li>Profile &amp; Gruppen für Vereine und Prüfer:innen</li>
+          <li>Ausfüllen der offiziellen DOSB-Prüfkarten als PDF</li>
+          <li>Alle Eingaben bleiben lokal auf dem Gerät – kein Konto, kein Server</li>
+        </ul>
+        <div class="applinks">
+          <a href="https://marqewi.github.io/sportabzeichen-rechner/" target="_blank" rel="noopener">Web-App öffnen ↗</a>
+          <a href="https://github.com/MarqEwi/sportabzeichen-rechner" target="_blank" rel="noopener">Quellcode auf GitHub ↗</a>
+          <a href="https://marqewi.github.io/sportabzeichen-rechner/datenschutz.html" target="_blank" rel="noopener">Datenschutz der App ↗</a>
+        </div>
+        <div class="notice" style="margin-top:20px">
+          <p>Privates, inoffizielles Projekt. Es besteht <strong>keine Verbindung zum Deutschen
+          Olympischen Sportbund (DOSB)</strong>. „Deutsches Sportabzeichen“ ist eine Auszeichnung des
+          DOSB; die Bezeichnung wird hier ausschließlich beschreibend verwendet. Die offiziellen
+          PDF-Formulare sind kostenlos im DOSB-Materialcenter erhältlich und nicht Teil der App.</p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="tight" id="impfbuch">
+    <div class="container">
+      <article class="card">
+        <h3>Impfbuch-App <span class="badge">In Entwicklung</span></h3>
+        <hr class="gold-rule" style="margin:16px 0 18px">
+        <p style="color:var(--muted)">Ein digitaler Impfpass-Begleiter, der den eigenen Impfstatus
+        übersichtlich macht. Die App orientiert sich am STIKO-Impfschema, weist auf fällige und
+        empfohlene Impfungen hin und berücksichtigt Reise­empfehlungen – als persönliche
+        Gedächtnis­stütze, die vollständig auf dem Gerät läuft.</p>
+        <ul class="features">
+          <li>Orientierung am STIKO-Impfschema</li>
+          <li>Fälligkeits- und Auffrischungs­erinnerungen</li>
+          <li>Reise­empfehlungen für Impfungen</li>
+          <li>Persönlicher Überblick über den Impfstatus</li>
+          <li>Alle Daten bleiben lokal auf dem Gerät – kein Konto, kein Server</li>
+        </ul>
+        <div class="applinks">
+          <a href="https://marqewi.github.io/impfbuch-app/" target="_blank" rel="noopener">Web-App öffnen ↗</a>
+          <a href="https://marqewi.github.io/impfbuch-app/datenschutz.html" target="_blank" rel="noopener">Datenschutz der App ↗</a>
+        </div>
+        <div class="notice" style="margin-top:20px">
+          <p>Die Impfbuch-App ist eine private Gedächtnis­stütze. Sie <strong>ersetzt weder eine
+          ärztliche Beratung noch den amtlichen Impfausweis</strong> und trifft keine medizinischen
+          Entscheidungen. Verbindliche Auskünfte gibt ausschließlich ärztliches Fachpersonal.</p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="tight">
+    <div class="container">
+      <p style="color:var(--muted)">Weitere Apps sind in Planung. Fragen oder Feedback?
+      <a href="kontakt.html">Schreib mir gern.</a></p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div>© 2026 Merc Studios · Marc Ewers</div>
+    <nav class="footer-links" aria-label="Rechtliches">
+      <a href="impressum.html">Impressum</a>
+      <a href="datenschutz.html">Datenschutz</a>
+      <a href="kontakt.html">Kontakt</a>
+    </nav>
+  </div>
+</footer>
+
+<script src="assets/theme.js"></script>
+</body>
+</html>
