@@ -1,6 +1,6 @@
-# MERCWerk – Website
+# MERCwerk – Website
 
-Statische Firmen-/Entwickler-Website für **MERCWerk** (Marc Ewers).
+Statische Firmen-/Entwickler-Website für **MERCwerk** (Marc Ewers).
 Dient als offizielle Entwickler-Präsenz, u. a. als Voraussetzung für ein
 Google-Play-Console-Organisationskonto.
 
