@@ -1,6 +1,6 @@
-# Merc App – Website
+# MERC App – Website
 
-Statische Firmen-/Entwickler-Website für **Merc App** (Marc Ewers).
+Statische Firmen-/Entwickler-Website für **MERC App** (Marc Ewers).
 Dient als offizielle Entwickler-Präsenz, u. a. als Voraussetzung für ein
 Google-Play-Console-Organisationskonto.
 
