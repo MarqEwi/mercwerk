@@ -1,4 +1,4 @@
-/* MERC App – minimaler Theme-Umschalter.
+/* MERCWerk – minimaler Theme-Umschalter.
    Speichert die Auswahl nur lokal (localStorage), sendet nichts an einen Server. */
 (function () {
   var root = document.documentElement;
