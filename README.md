@@ -1,7 +1,7 @@
-# Merc Studios – Website
+# Merc App – Website
 
-Statische Firmen-/Entwickler-Website für **Merc Studios** (Marc Ewers).
-Dient als offizielle Studio-Präsenz, u. a. als Voraussetzung für ein
+Statische Firmen-/Entwickler-Website für **Merc App** (Marc Ewers).
+Dient als offizielle Entwickler-Präsenz, u. a. als Voraussetzung für ein
 Google-Play-Console-Organisationskonto.
 
 - Reines HTML/CSS/JS, **kein Build-Schritt**, **keine externen Abhängigkeiten**
