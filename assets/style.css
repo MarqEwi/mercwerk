@@ -336,7 +336,7 @@ h2.display {
 }
 
 @media (max-width: 640px) {
-  :root { --gutter: 16px; }
+  :root { --gutter: 20px; }
 
   /* Header kompakt */
   .site-header .container { min-height: 56px; gap: 10px; padding-top: 8px; padding-bottom: 8px; }
