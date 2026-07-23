@@ -115,9 +115,9 @@ img { max-width: 100%; height: auto; }
 .brand:hover { text-decoration: none; }
 .brand img { display: block; }
 .wordmark {
-  display: inline-flex; align-items: baseline; gap: 2px;
-  font-family: var(--font-stencil); font-weight: 800;
-  font-size: 24px; letter-spacing: 0.04em; text-transform: uppercase; line-height: 1;
+  display: inline-flex; align-items: baseline;
+  font-family: var(--font-sans); font-weight: 800;
+  font-size: 22px; letter-spacing: -0.01em; line-height: 1;
 }
 .wordmark .wm-a { color: var(--text-strong); }
 .wordmark .wm-b { color: var(--mw-blue-bright); }
