@@ -190,6 +190,10 @@ h1.display {
 }
 h1.display .hl-blue { color: var(--mw-blue-bright); }
 h1.display .hl-silver { color: var(--mw-silver); }
+h1.display .brandword {
+  font-family: var(--font-sans); font-weight: 800; text-transform: none;
+  font-size: 0.82em; letter-spacing: -0.02em;
+}
 .lead { font-size: 18px; line-height: 1.6; color: var(--text-body); max-width: 480px; margin: 22px 0 0; }
 
 .hero-mark { display: flex; align-items: center; justify-content: center; }
