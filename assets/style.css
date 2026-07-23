@@ -287,9 +287,9 @@ h2.display {
   display: flex; align-items: center; justify-content: flex-start; gap: 48px; flex-wrap: wrap;
   padding: 52px 0;
 }
-.pp-word { font-style: italic; font-weight: 800; }
-.pp-word .pp-a { color: #003087; }
-.pp-word .pp-b { color: #0079C1; }
+.pp-word { font-style: italic; font-weight: 800; padding-right: 3px; }
+.pp-word .pp-a { color: #0070BA; }
+.pp-word .pp-b { color: #00A8E8; }
 .donate-cta {
   display: flex; flex-direction: column; align-items: center; gap: 10px;
   background: var(--mw-ink-800); border: 1px solid var(--line-silver);
