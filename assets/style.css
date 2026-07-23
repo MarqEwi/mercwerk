@@ -326,9 +326,64 @@ h2.display {
 
 /* ---------- Responsive ---------- */
 @media (max-width: 900px) {
-  .hero-grid { grid-template-columns: 1fr; gap: 36px; padding: 56px 0 48px; }
-  .hero-mark .tile { width: 220px; height: 220px; }
-  .hero-mark img { width: 140px; }
+  .hero-grid { grid-template-columns: 1fr; gap: 28px; padding: 36px 0 44px; }
+  /* Logo-Kachel auf Mobilgeräten ÜBER die Überschrift */
+  .hero-mark { order: -1; }
+  .hero-mark .tile { width: 170px; height: 170px; border-radius: var(--radius-lg); }
+  .hero-mark img { width: 108px; }
   .grid.cols-2, .grid.cols-3 { grid-template-columns: 1fr; }
   .stats { gap: 28px; }
+}
+
+@media (max-width: 640px) {
+  :root { --gutter: 16px; }
+
+  /* Header kompakt */
+  .site-header .container { min-height: 56px; gap: 10px; padding-top: 8px; padding-bottom: 8px; }
+  .brand { gap: 9px; }
+  .brand img { width: 28px; height: 29px; }
+  .wordmark { font-size: 19px; }
+  .site-nav { gap: 0; }
+  .site-nav a { padding: 7px 10px; font-size: 14px; }
+
+  /* Hero */
+  .hero-grid { gap: 22px; padding: 24px 0 40px; }
+  .hero-mark .tile { width: 140px; height: 140px; }
+  .hero-mark img { width: 88px; }
+  .eyebrow { font-size: 11px; letter-spacing: 0.12em; }
+  h1.display { font-size: clamp(42px, 13vw, 56px); margin-top: 12px; }
+  h1.display .brandword { font-size: 0.86em; }
+  .lead { font-size: 16px; margin-top: 16px; }
+  .btn-row { margin-top: 22px; gap: 10px; }
+  .btn-row .btn { flex: 1 1 100%; justify-content: center; }
+  .stats { gap: 22px; margin-top: 30px; }
+  .stat .st-value { font-size: 30px; }
+  .stat .st-label { font-size: 12px; margin-top: 4px; }
+
+  /* Abschnitte & Karten */
+  section { padding: 40px 0; }
+  section.tight { padding: 26px 0; }
+  h2.display { font-size: clamp(30px, 9vw, 40px); }
+  .section-head { margin-bottom: 22px; }
+  .card { padding: 18px; border-radius: var(--radius-md); }
+  .grid { gap: 14px; }
+
+  /* App-Karten */
+  .app-head { gap: 14px; }
+  .app-icon { width: 56px !important; height: 56px !important; border-radius: 15px; }
+  .app-title { font-size: 24px !important; }
+  .app-tagline { font-size: 13px; margin-top: 4px; }
+  .features li { font-size: 14px; }
+  .applinks { gap: 10px; }
+  .applinks .btn { flex: 1 1 100%; justify-content: center; }
+  .notice { font-size: 13px; padding: 13px 15px; }
+
+  /* Spenden */
+  .donate-inner { padding: 40px 0; gap: 20px; }
+  .donate-inner .btn { width: 100%; justify-content: center; }
+
+  /* Rechtsseiten & Footer */
+  .legal h1 { font-size: clamp(32px, 11vw, 44px); }
+  .site-footer { padding: 26px 0; font-size: 12px; }
+  .site-footer .container { gap: 12px; }
 }
