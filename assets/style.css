@@ -287,6 +287,16 @@ h2.display {
   display: flex; align-items: center; justify-content: space-between; gap: 28px; flex-wrap: wrap;
   padding: 52px 0;
 }
+.donate-cta {
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  background: var(--mw-ink-800); border: 1px solid var(--line-silver);
+  border-radius: var(--radius-lg); padding: 22px 30px;
+  box-shadow: var(--glow-silver-soft);
+}
+.donate-cta-label {
+  font-size: 14px; font-weight: 700; letter-spacing: 0.04em;
+  color: var(--text-body);
+}
 
 /* ---------- Legal ---------- */
 .legal { max-width: 760px; }
