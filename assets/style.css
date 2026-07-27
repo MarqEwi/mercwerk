@@ -181,9 +181,12 @@ img { max-width: 100%; height: auto; }
 }
 .hero-grid {
   position: relative; z-index: 1;
-  display: grid; grid-template-columns: auto 1fr; gap: 44px; align-items: center;
   padding: 76px 0 64px;
 }
+/* Logo direkt links neben der Überschrift */
+.hero-head { display: flex; align-items: center; gap: 32px; }
+.hero-head h1.display { margin: 0; }
+.hero-mark-img { width: 190px; height: auto; flex-shrink: 0; }
 .eyebrow {
   font-size: 13px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
   color: var(--mw-silver);
@@ -340,12 +343,9 @@ h2.display {
 
 /* ---------- Responsive ---------- */
 @media (max-width: 900px) {
-  .hero-grid { grid-template-columns: 1fr; gap: 28px; padding: 36px 0 44px; }
-  /* Logo-Kachel auf Mobilgeräten ÜBER die Überschrift */
-  .hero-mark { order: -1; }
-  .hero-grid { grid-template-columns: 1fr; }
-  .hero-mark { justify-content: flex-start; }
-  .hero-mark img { width: 130px; }
+  .hero-grid { padding: 36px 0 44px; }
+  .hero-head { gap: 22px; }
+  .hero-mark-img { width: 130px; }
   .grid.cols-2, .grid.cols-3 { grid-template-columns: 1fr; }
   .stats { gap: 28px; }
 }
@@ -362,10 +362,11 @@ h2.display {
   .site-nav a { padding: 7px 10px; font-size: 14px; }
 
   /* Hero */
-  .hero-grid { gap: 22px; padding: 24px 0 40px; }
-  .hero-mark img { width: 104px; }
+  .hero-grid { padding: 24px 0 40px; }
+  .hero-head { gap: 14px; }
+  .hero-mark-img { width: 84px; }
   .eyebrow { font-size: 11px; letter-spacing: 0.12em; }
-  h1.display { font-size: clamp(42px, 13vw, 56px); margin-top: 12px; }
+  h1.display { font-size: clamp(34px, 9.5vw, 52px); margin-top: 0; }
   h1.display .brandword { font-size: 0.86em; }
   .lead { font-size: 16px; margin-top: 16px; }
   .btn-row { margin-top: 22px; gap: 10px; }
