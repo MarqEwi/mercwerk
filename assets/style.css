@@ -181,7 +181,7 @@ img { max-width: 100%; height: auto; }
 }
 .hero-grid {
   position: relative; z-index: 1;
-  padding: 76px 0 64px;
+  padding-top: 76px; padding-bottom: 64px;
 }
 /* Logo direkt links neben der Überschrift */
 .hero-head { display: flex; align-items: center; gap: 32px; }
@@ -364,7 +364,7 @@ h2.display {
 
 /* ---------- Responsive ---------- */
 @media (max-width: 900px) {
-  .hero-grid { padding: 36px 0 44px; }
+  .hero-grid { padding-top: 36px; padding-bottom: 44px; }
   .hero-head { gap: 22px; }
   .hero-mark-img { width: 130px; }
   .grid.cols-2, .grid.cols-3 { grid-template-columns: 1fr; }
@@ -383,7 +383,7 @@ h2.display {
   .site-nav a { padding: 7px 10px; font-size: 14px; }
 
   /* Hero */
-  .hero-grid { padding: 24px 0 40px; }
+  .hero-grid { padding-top: 28px; padding-bottom: 40px; }
   .hero-head { gap: 14px; }
   .hero-mark-img { width: 84px; }
   .eyebrow { font-size: 11px; letter-spacing: 0.12em; }
