@@ -273,6 +273,27 @@ h2.display {
 
 .applinks { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
 
+/* Offizielles Google-Play-Badge (unverändert, gemäß Google-Markenrichtlinien) */
+.play-badge { display: inline-block; line-height: 0; }
+.play-badge:hover { text-decoration: none; filter: brightness(1.08); }
+.play-badge img { height: 48px; width: auto; display: block; }
+
+/* Ausklappbarer Karten-Bereich */
+.app-more { border-top: 1px solid var(--line); padding-top: 14px; }
+.app-more > summary {
+  cursor: pointer; list-style: none;
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 14px; font-weight: 600; color: var(--text-muted);
+}
+.app-more > summary::-webkit-details-marker { display: none; }
+.app-more > summary::after {
+  content: "›"; font-size: 18px; line-height: 1;
+  transform: rotate(90deg); transition: transform var(--dur, 180ms) ease;
+}
+.app-more[open] > summary::after { transform: rotate(-90deg); }
+.app-more > summary:hover { color: var(--text-strong); }
+.app-more-body { display: flex; flex-direction: column; gap: 16px; padding-top: 16px; }
+
 .notice {
   border-left: 3px solid var(--mw-silver); background: var(--mw-ink-800);
   border-radius: 0 var(--radius-md) var(--radius-md) 0;
