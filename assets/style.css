@@ -276,7 +276,10 @@ h2.display {
 /* Offizielles Google-Play-Badge (unverändert, gemäß Google-Markenrichtlinien) */
 .play-badge { display: inline-block; line-height: 0; }
 .play-badge:hover { text-decoration: none; filter: brightness(1.08); }
-.play-badge img { height: 48px; width: auto; display: block; }
+/* Das Asset hat oben und unten transparenten Rand (sichtbar 192 von 250 px).
+   56 px Bildhöhe ergeben eine sichtbare Badge-Höhe von 43 px – exakt so hoch
+   wie ein .btn (13 px Padding + 15 px Zeile + 13 px Padding + 2 px Rahmen). */
+.play-badge img { height: 56px; width: auto; display: block; margin: -6px 0; }
 
 /* Ausklappbarer Karten-Bereich */
 .app-more { border-top: 1px solid var(--line); padding-top: 14px; }
