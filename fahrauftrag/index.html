@@ -197,6 +197,29 @@
     .nachweis{flex:0 0 74px}
     .gitter span{font-size:1.3rem;height:50px}
   }
+  /* Originaldarstellung: Die Uhrzeit steht als eigene Spalte zwischen den
+     Kästchen und dem Nachweis – so wie auf dem Vordruck. Die Fahrzeit
+     bekommt kein Kästchen, sie steht als Textzeile unter dem Gitter. */
+  .zspalte{flex:0 0 88px;min-width:0;border:1.5px solid var(--linie);display:flex;flex-direction:column}
+  .zspalte span{flex:1;display:flex;align-items:center;justify-content:center;background:var(--bg2);
+    font-size:1.02rem;font-weight:700;font-variant-numeric:tabular-nums;min-height:0;
+    border-bottom:1.5px solid var(--linie)}
+  .zspalte span:last-child{border-bottom:0}
+  .spaltenkopf .sk-z{flex:0 0 88px;text-align:center}
+  .zeitsumme{margin:8px 0 0;font-size:.9rem}
+  .zeitsumme .zs-wert{font-weight:700;font-variant-numeric:tabular-nums}
+  /* Drei Spalten nebeneinander brauchen Platz – die Ziffern treten etwas kürzer */
+  body.zeit-original .gitter span{font-size:1.25rem}
+  .gitterblock.klein .zspalte{flex:0 0 60px}
+  .gitterblock.klein .zspalte span{font-size:.82rem}
+  .zeitsumme.klein{font-size:.78rem;color:var(--text2);margin-top:4px}
+  @media(max-width:379px){
+    .zspalte{flex:0 0 70px}
+    .zspalte span{font-size:.88rem}
+    .spaltenkopf .sk-z{flex:0 0 70px}
+    body.zeit-original .gitter span{font-size:1.02rem}
+    .gitterblock.klein .zspalte{flex:0 0 52px}
+  }
   /* Kleine Fassung für die Liste im Nachtrag */
   .gitterblock.klein{gap:6px;margin-top:6px}
   .gitterblock.klein .gitter span{height:34px;font-size:1.05rem}
@@ -457,6 +480,8 @@
   html[data-stil="klassisch"] .gitter{border-width:1px}
   html[data-stil="klassisch"] .gitter span{border-right-width:1px;border-bottom-width:1px}
   html[data-stil="klassisch"] .nachweis{border-width:1px}
+  html[data-stil="klassisch"] .zspalte{border-width:1px}
+  html[data-stil="klassisch"] .zspalte span{border-bottom-width:1px}
   /* Der Merksatz wird zur Fußnote wie unter dem Vordruck */
   html[data-stil="klassisch"] .merksatz{
     border-left:0;border-top:1px solid var(--linie);background:none;padding:9px 0 0;
@@ -602,6 +627,8 @@
           <span class="skt" id="kopf-links">km-Stand / BetrStd</span>
           <span class="skz">a) Rückkehr <i>oben</i> · b) Abfahrt <i>unten</i></span>
         </div>
+        <!-- Nur in der Originaldarstellung: die Uhrzeit-Spalte des Vordrucks -->
+        <div class="sk-z" id="sk-z" style="display:none"><span class="skt">Uhrzeit</span></div>
         <div class="sk-b"><span class="skt">Nachweis</span></div>
       </div>
 
@@ -614,12 +641,17 @@
             <div class="kmboxen" id="box-ab" aria-label="Kästchen der Zeile b) Abfahrt"></div>
           </div>
         </div>
+        <div class="zspalte" id="z-spalte" style="display:none" aria-label="Uhrzeit: a) Ende oben, b) Beginn unten">
+          <span id="zs-ende"></span>
+          <span id="zs-beginn"></span>
+        </div>
         <div class="nachweis">
           <div class="nkopf" id="nachweis-kopf">km oder<br>BetrStd</div>
           <div class="nwert" id="nachweis-wert">–</div>
           <div class="neinheit" id="nachweis-einheit">km</div>
         </div>
       </div>
+      <p class="zeitsumme" id="zeit-summe" style="display:none"></p>
 
       <!-- Uhrzeiten in derselben Anordnung wie die Kilometer: a) oben,
            b) darunter, rechts die Fahrzeit auf Höhe der Nachweis-Spalte. -->
@@ -826,6 +858,15 @@
         <div class="seg mini" id="s-zeiten">
           <button data-v="aus">Aus</button>
           <button data-v="ein">Ein</button>
+        </div>
+        <div id="zeitoriginal-block" style="display:none">
+          <p class="muted" style="margin:12px 0 4px"><b>Darstellen wie im Originalfahrauftrag</b><br>
+            Die Uhrzeit steht als Spalte direkt neben den Kilometern, dahinter der Nachweis.
+            Die Fahrzeit steht als Textzeile darunter.</p>
+          <div class="seg mini" id="s-zeitoriginal">
+            <button data-v="aus">Aus</button>
+            <button data-v="ein">Ein</button>
+          </div>
         </div>
         <p class="muted" style="font-size:.8rem">Ab mehr als 4:30 Stunden Fahrzeit erscheint ein Hinweis auf die
           Lenk- und Ruhezeiten. Die App prüft keine Vorschrift und kennt deine Pausen nicht – der Hinweis ist
@@ -1486,10 +1527,17 @@ function applyTheme(){
     : (t === "auto" ? "Folgt der Einstellung deines Geräts." : "");
 }
 const ZEIT_KEY = "fa_zeiten";
+const ZORIG_KEY = "fa_zeit_original";
 function zeitenAn(){ return load(ZEIT_KEY, false) === true; }
+/* Originaldarstellung: Uhrzeit als Spalte im Gitter statt als eigener Block.
+   Greift nur, wenn die Uhrzeiten überhaupt eingeschaltet sind. */
+function zeitOriginal(){ return zeitenAn() && load(ZORIG_KEY, false) === true; }
 function applyZeiten(){
   const an = zeitenAn();
   segSet("s-zeiten", an ? "ein" : "aus");
+  segSet("s-zeitoriginal", load(ZORIG_KEY, false) === true ? "ein" : "aus");
+  $("zeitoriginal-block").style.display = an ? "" : "none";
+  document.body.classList.toggle("zeit-original", zeitOriginal());
   $("zeit-felder").style.display = an ? "" : "none";
   $("nt-e-zeiten").style.display = an ? "" : "none";
   homeRender();
@@ -1497,6 +1545,7 @@ function applyZeiten(){
 }
 segInit("s-theme", v => { store(THEME_KEY, v); applyTheme(); });
 segInit("s-zeiten", v => { store(ZEIT_KEY, v === "ein"); applyZeiten(); });
+segInit("s-zeitoriginal", v => { store(ZORIG_KEY, v === "ein"); applyZeiten(); });
 
 /* ---------- Ausfüllhilfe (Startseite) ---------- */
 const MODUS_KEY = "fa_modus";
@@ -1507,9 +1556,15 @@ function modusAktuell(){ return FA.modus(segValue("s-modus")); }
 /* Ein fertiges Kästchengitter als HTML – für die Liste im Nachtrag, wo jede
    Zeile so aussehen soll, wie sie später auf dem Blatt steht. */
 /* Uhrzeiten einer Fahrt in derselben Anordnung wie die Kilometer:
-   a) Ende oben, b) Beginn darunter, rechts die Fahrzeit. */
+   a) Ende oben, b) Beginn darunter, rechts die Fahrzeit. In der
+   Originaldarstellung steckt die Uhrzeit stattdessen als Spalte im
+   Gitter (siehe gitterBlockHTML) – hier bleibt nur die Fahrzeit-Zeile. */
 function zeitBlockHTML(d){
   if (!d) return "";
+  if (zeitOriginal()){
+    return '<div class="zeitsumme klein">Fahrzeit <span class="zs-wert">' + esc(fmtDauer(d.minuten)) + "</span>"
+      + (d.ueberMitternacht ? " · über Mitternacht" : "") + "</div>";
+  }
   return '<div class="gitterblock klein zeitklein">' +
     '<div class="zgitter">' +
       '<div class="zrow"><span class="zm">a) Ende</span><span class="zv">' + esc(fmtUhr(d.ende)) + "</span></div>" +
@@ -1521,11 +1576,16 @@ function zeitBlockHTML(d){
     "</div></div>";
 }
 
-function gitterBlockHTML(rueck, ab, km, einheit){
+/* zeiten: nur in der Originaldarstellung gesetzt – { ende, beginn } als
+   Anzeigetext (leer, wenn nichts eingetragen ist, wie auf dem Blatt). */
+function gitterBlockHTML(rueck, ab, km, einheit, zeiten){
   const zellen = w => FA.kaestchen(w).map(z => "<span>" + esc(z) + "</span>").join("");
   const wert = km == null ? "–" : fmtNum(km);
   return '<div class="gitterblock klein">' +
     '<div class="gitter">' + zellen(rueck) + zellen(ab) + "</div>" +
+    (zeiten
+      ? '<div class="zspalte"><span>' + esc(zeiten.ende) + "</span><span>" + esc(zeiten.beginn) + "</span></div>"
+      : "") +
     '<div class="nachweis">' +
       '<div class="nwert' + (wert.length > 5 ? " lang" : "") + '">' + esc(wert) + "</div>" +
       '<div class="neinheit">' + esc(einheit) + "</div>" +
@@ -1590,15 +1650,35 @@ function homeRender(){
 
   /* --- Uhrzeiten --- */
   const zz = $("zeitzeile"), lz = $("lenkzeit");
+  const orig = zeitOriginal();
   const d = zeitenAn() ? FA.dauer($("in-zeit-ab").value, $("in-zeit-rueck").value) : null;
-  if (d){
-    zz.style.display = "";
-    $("z-ende").textContent = fmtUhr(d.ende);
-    $("z-beginn").textContent = fmtUhr(d.beginn);
-    $("z-dauer").textContent = Math.floor(d.minuten / 60) + ":" + String(d.minuten % 60).padStart(2, "0");
-    $("z-mitternacht").style.display = d.ueberMitternacht ? "" : "none";
-  } else {
+  /* Originaldarstellung: Uhrzeit-Spalte im Gitter, wie auf dem Vordruck.
+     Eingetragen wird, was bekannt ist – auch eine einzelne Uhrzeit. */
+  $("sk-z").style.display = orig ? "" : "none";
+  $("z-spalte").style.display = orig ? "" : "none";
+  if (orig){
     zz.style.display = "none";
+    $("zs-ende").textContent = d ? fmtUhr(d.ende) : ($("in-zeit-rueck").value || "");
+    $("zs-beginn").textContent = d ? fmtUhr(d.beginn) : ($("in-zeit-ab").value || "");
+    const su = $("zeit-summe");
+    if (d){
+      su.style.display = "";
+      su.innerHTML = 'Fahrzeit: <span class="zs-wert">' + esc(fmtDauer(d.minuten)) + "</span>"
+        + (d.ueberMitternacht ? " · Fahrt über Mitternacht – 24 Stunden hinzugerechnet." : "");
+    } else {
+      su.style.display = "none";
+    }
+  } else {
+    $("zeit-summe").style.display = "none";
+    if (d){
+      zz.style.display = "";
+      $("z-ende").textContent = fmtUhr(d.ende);
+      $("z-beginn").textContent = fmtUhr(d.beginn);
+      $("z-dauer").textContent = Math.floor(d.minuten / 60) + ":" + String(d.minuten % 60).padStart(2, "0");
+      $("z-mitternacht").style.display = d.ueberMitternacht ? "" : "none";
+    } else {
+      zz.style.display = "none";
+    }
   }
   if (d && d.lang){
     lz.style.display = "";
@@ -1994,7 +2074,8 @@ function ntRender(){
           (z.art === "stand" ? ' <span class="ntmarke">Stand notiert</span>' : "") + "</div>" +
         (z.fehler
           ? '<div class="ntfehler">' + esc(z.fehler) + "</div>"
-          : gitterBlockHTML(z.rueck, z.ab, z.km, m.einheit)) +
+          : gitterBlockHTML(z.rueck, z.ab, z.km, m.einheit,
+              zeitOriginal() ? { ende: (f && f.zende) || "", beginn: (f && f.zab) || "" } : null)) +
         zeitBlockHTML(dz) +
         (warn ? '<div class="ntwarntext' + (warn.hart ? " hart" : "") + '">' + esc(warn.texte[0])
                 + (warn.texte.length > 1 ? " (+" + (warn.texte.length - 1) + ")" : "") + "</div>" : "") +
