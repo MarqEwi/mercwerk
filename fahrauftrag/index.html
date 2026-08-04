@@ -865,8 +865,10 @@
         <!-- Immer sichtbar; ohne eingeschaltete Uhrzeiten ausgegraut und gesperrt -->
         <div id="zeitoriginal-block">
           <p class="muted" style="margin:12px 0 4px"><b>Darstellen wie im Originalfahrauftrag</b><br>
-            Die Uhrzeit steht als Spalte direkt neben den Kilometern, dahinter der Nachweis.
-            Die Fahrzeit steht als Textzeile darunter.</p>
+            Die Uhrzeit steht als Spalte direkt neben den Kilometern, dahinter der Nachweis;
+            die Fahrzeit als Textzeile darunter. So schaltet sich das mit den Uhrzeiten ein.
+            Zum Übersichtlicher&shy;machen abschaltbar – die Uhrzeiten bekommen dann ihren
+            eigenen Block unter dem Gitter.</p>
           <div class="seg mini" id="s-zeitoriginal">
             <button data-v="aus">Aus</button>
             <button data-v="ein">Ein</button>
@@ -1534,12 +1536,14 @@ const ZEIT_KEY = "fa_zeiten";
 const ZORIG_KEY = "fa_zeit_original";
 function zeitenAn(){ return load(ZEIT_KEY, false) === true; }
 /* Originaldarstellung: Uhrzeit als Spalte im Gitter statt als eigener Block.
-   Greift nur, wenn die Uhrzeiten überhaupt eingeschaltet sind. */
-function zeitOriginal(){ return zeitenAn() && load(ZORIG_KEY, false) === true; }
+   Greift nur, wenn die Uhrzeiten überhaupt eingeschaltet sind – und ist dann
+   der Normalfall: Wer Uhrzeiten einschaltet, sieht das Blatt. Abschalten
+   macht die Ansicht übersichtlicher (eigener Uhrzeiten-Block). */
+function zeitOriginal(){ return zeitenAn() && load(ZORIG_KEY, true) === true; }
 function applyZeiten(){
   const an = zeitenAn();
   segSet("s-zeiten", an ? "ein" : "aus");
-  segSet("s-zeitoriginal", load(ZORIG_KEY, false) === true ? "ein" : "aus");
+  segSet("s-zeitoriginal", load(ZORIG_KEY, true) === true ? "ein" : "aus");
   /* Die Unteroption bleibt immer sichtbar; ohne Uhrzeiten ist sie ausgegraut
      und gesperrt, damit man sieht, dass es sie gibt und was sie freischaltet. */
   const zoBlock = $("zeitoriginal-block");
