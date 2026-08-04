@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Fahrauftrag Ausfüllhilfe – Kilometerfelder richtig eintragen | MERCwerk</title>
-<meta name="description" content="Die Fahrauftrag Ausfüllhilfe rechnet die gefahrenen Kilometer aus und zeigt im Kästchenraster, welche Zahl in welche Zeile des Fahrauftrags gehört – mit Nachtrag-Funktion für vergessene Fahrten. Kostenlos und werbefrei im Browser.">
+<meta name="description" content="Die Fahrauftrag Ausfüllhilfe zeigt, welcher Kilometerstand in welche Zeile gehört: Abfahrt und Rückkehr eingeben, Differenz und Kästchenraster ablesen, Fahrten nachtragen. Offline, ohne Konto.">
 <meta name="theme-color" content="#0A0A0C">
 <link rel="icon" href="assets/favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="assets/favicon.png">
@@ -36,86 +36,114 @@
         <img src="assets/apps/fahrauftrag.png" alt="Fahrauftrag Ausfüllhilfe App-Icon">
         <div><h1>Fahrauftrag Ausfüllhilfe</h1></div>
       </div>
-      <p class="subline">Den km-Stand bei Abfahrt und Rückkehr eingeben, die gefahrenen Kilometer ablesen
-      und im Kästchenraster sehen, welche Zahl in welche Zeile gehört.</p>
+      <p class="subline">Eintraghilfe für die Kilometerfelder im Fahrauftrag: Abfahrt- und Rückkehr-Kilometerstand eingeben, die gefahrene Strecke ablesen und sehen, welche Zahl in welche Zeile gehört.</p>
       <div class="badge-row" style="margin-bottom:26px">
         <span class="badge blue">Bundeswehr</span>
-        <span class="badge">Web · werbefrei</span>
+        <span class="badge">Web-Version kostenlos</span>
       </div>
 
       <h2>Wofür ist die App gedacht?</h2>
-      <p>Wer dienstlich fährt, trägt im Fahrauftrag die Kilometerstände von Hand ein. Klingt einfach,
-      hat aber eine Tücke: Im Kilometerfeld steht die <strong>Rückkehr oben</strong> und die
-      <strong>Abfahrt darunter</strong> – also genau andersherum, als die Fahrt abläuft. Wer die beiden
-      Zeilen vertauscht, trägt eine negative Strecke ein; wer sich beim Kopfrechnen vertut, eine falsche.
-      Genau an diesen beiden Stellen hilft die App.</p>
-      <p>Sie zeigt beide Zahlen an der Stelle, an der sie auf dem Blatt stehen, rechnet die gefahrenen
-      Kilometer aus und schreibt die Rechnung sichtbar hin. Das Kästchenraster hat sechs Felder je Zeile,
-      rechtsbündig wie auf dem Vordruck – führende Kästchen bleiben leer, statt mit Nullen gefüllt zu
-      werden.</p>
+      <p>Im Kilometerfeld des Fahrauftrags steht die <strong>Rückkehr oben und die Abfahrt
+      darunter</strong> – also genau andersherum, als die Fahrt tatsächlich abläuft. Das ist die
+      häufigste Fehlerquelle beim Ausfüllen: Wer die beiden Zeilen vertauscht, trägt rechnerisch eine
+      negative Strecke ein und muss den Eintrag korrigieren lassen.</p>
+      <p>Die Fahrauftrag Ausfüllhilfe löst genau dieses eine Problem. Du gibst die beiden
+      Kilometerstände ein, und die App zeigt sie an der Stelle, an der sie auf dem Blatt stehen –
+      daneben die Differenz. Danach überträgst du die Zahlen von Hand. Die App ist ausdrücklich
+      <strong>kein Formular</strong> und ersetzt den amtlichen Vordruck nicht.</p>
 
-      <h2>So hilft die App beim Eintragen</h2>
+      <h2>Das Kästchenraster</h2>
+      <p>Die Kilometerfelder auf dem Vordruck bestehen aus <strong>sechs Kästchen je Zeile</strong>,
+      und die Zahlen werden rechtsbündig eingetragen. Genau so stellt die App sie dar: Ein Stand von
+      12.480 km belegt die rechten fünf Kästchen, das erste bleibt <em>leer</em> – es wird nicht mit
+      einer Null aufgefüllt. Das klingt nach einer Kleinigkeit, ist aber der zweithäufigste Grund für
+      Rückfragen.</p>
+      <p>Über einen Umschalter lassen sich dieselben Felder für <strong>Betriebsstunden</strong> statt
+      Kilometer nutzen – relevant bei Fahrzeugen und Gerät, die nach Betriebsstunden erfasst werden.</p>
+
+      <h2>Prüfhinweise statt stiller Fehler</h2>
+      <p>Die App meldet sich, wenn etwas nicht zusammenpasst:</p>
       <ul>
-        <li>Abfahrt- und Rückkehr-km eingeben, gefahrene Kilometer sofort ablesen</li>
-        <li>Kästchenraster wie auf dem Blatt: a) Rückkehr oben, b) Abfahrt unten, rechts der Nachweis</li>
-        <li>Klare Fehlermeldung, wenn der Rückkehr-Stand kleiner ist als der Abfahrt-Stand –
-        meist sind dann die Zeilen vertauscht</li>
-        <li>Prüfhinweise bei 0 km und bei ungewöhnlich großen Differenzen</li>
-        <li>Umschalter <strong>Kilometer / Betriebsstunden</strong> für Fahrzeuge mit Betriebsstundenzähler</li>
+        <li>Ist der Rückkehr-Stand <strong>kleiner als der Abfahrt-Stand</strong>, erscheint eine klare
+        Meldung – in aller Regel sind dann die beiden Zeilen vertauscht.</li>
+        <li>Bei <strong>null gefahrenen Kilometern</strong> und bei ungewöhnlich großen Differenzen
+        kommt ein Hinweis zum Gegenprüfen.</li>
       </ul>
+      <p>Ausgegeben wird nur, was sich aus den Eingaben sicher ergibt. Raten tut die App nicht.</p>
 
-      <h2>Vergessene Fahrten nachtragen</h2>
-      <p>Der Klassiker: Ein paar Tage nicht eingetragen, und jetzt sollen mehrere Fahrten auf einmal
-      nachgeholt werden. Du gibst den letzten eingetragenen Stand und den Stand von heute an, dazu je
-      Fahrt die gefahrenen Kilometer – die App baut daraus die <strong>Kette der Kilometerstände</strong>
-      (jede Abfahrt ist die Rückkehr der Fahrt davor) und zeigt jederzeit deutlich, wie viel noch offen
-      ist. Hast du dir für eine Fahrt einen Stand notiert, hängt sich die Kette an diesem festen Punkt
-      auf. Jede Zeile lässt sich groß im Kästchenraster anzeigen und Zeile für Zeile abtragen; mehrere
-      Blätter parallel (eines je Fahrzeug) sind möglich, und die fertige Liste gibt es als PDF, Bild
-      oder Text – auch zum Drucken.</p>
-      <p>Zwei Dinge macht die App bewusst nicht: Sie verteilt einen offenen Rest nicht selbsttätig auf
-      die Fahrten, und sie gibt keine lückenhafte Kette aus – nach einer fehlerhaften Zeile wären alle
-      folgenden Abfahrten geraten.</p>
+      <h2>Uhrzeiten und Fahrzeit</h2>
+      <p>In den Einstellungen lassen sich <strong>Uhrzeiten</strong> zuschalten; standardmäßig sind sie
+      aus. Dann trägst du Beginn und Ende ein und bekommst die Fahrzeit ausgerechnet – Fahrten über
+      Mitternacht eingeschlossen. Ab mehr als 4:30 Stunden erscheint ein Hinweis auf die Lenk- und
+      Ruhezeiten.</p>
+      <p>Wichtig zur Einordnung: Das sind <strong>Gedächtnisstützen, keine Prüfung einer
+      Vorschrift</strong>. Die App sieht ausschließlich die Lücken zwischen den eingetragenen Fahrten.
+      Pausen innerhalb einer Fahrt, sonstige Arbeitszeit und Ausnahmen kennt sie nicht.</p>
 
-      <h2>Uhrzeiten und Lenkzeiten</h2>
-      <p>In den Einstellungen lassen sich <strong>Uhrzeitfelder</strong> zuschalten (ab Werk aus): Beginn
-      und Ende eintragen, Fahrzeit ablesen – Fahrten über Mitternacht inbegriffen. Beim Nachtragen weist
-      die App auf Überschneidungen, fehlende 45-Minuten-Pausen, lange Fahrtage und zu kurze Ruhezeiten
-      zwischen zwei Tagen hin. Das sind <strong>Hinweise, keine Prüfung</strong>: Die App sieht nur die
-      Lücken zwischen den eingetragenen Fahrten und kennt weder Pausen innerhalb einer Fahrt noch
-      Ausnahmen.</p>
+      <h2>Fahrten nachtragen</h2>
+      <p>Für den Fall, dass mehrere Tage auf einmal nachgeholt werden müssen, gibt es einen eigenen
+      Modus. Du gibst den letzten eingetragenen Stand und den Stand von heute an, dazu je Fahrt die
+      gefahrenen Kilometer. Daraus baut die App die <strong>Kette der Kilometerstände</strong> – jede
+      Abfahrt ist die Rückkehr der Fahrt davor – und sagt dir jederzeit, wie viel noch offen ist. Hast
+      du dir für eine einzelne Fahrt einen Stand notiert, kannst du statt der Kilometer diesen Stand
+      angeben; die Kette hängt sich dann an diesem festen Punkt auf.</p>
+      <p>Sind die Uhrzeiten eingeschaltet, lassen sie sich auch je nachgetragener Fahrt eintragen. Die
+      Liste sortiert sich nach Datum, innerhalb eines Tages bestimmst du die Reihenfolge über die
+      Pfeile an der Zeile. Hingewiesen wird auf Überschneidungen, fehlende Pausen, lange Tage und kurze
+      Ruhezeiten zwischen zwei Tagen.</p>
+      <p>Zwei Dinge macht die App dabei bewusst nicht: Sie verteilt einen offenen Rest <strong>nicht
+      selbsttätig</strong> auf die Fahrten – er steht sichtbar da, und ein ausdrücklicher Knopf macht
+      daraus eine eigene Zeile, die du von Hand füllst. Und sie gibt <strong>keine lückenhafte Kette</strong>
+      aus: Nach einer fehlerhaften Zeile steht keine Abfahrt mehr fest, alle folgenden Zeilen wären
+      geraten.</p>
 
-      <h2>Designs</h2>
-      <p>Neben Automatisch, Hell und Dunkel gibt es das Design <strong>Klassisch</strong>: Schwarz auf
-      Papierweiß mit Haarlinien und geraden Kanten, angelehnt an die Optik des Vordrucks.</p>
+      <h2>Schritt für Schritt</h2>
+      <ol>
+        <li>Einheit wählen: Kilometer oder Betriebsstunden.</li>
+        <li>Abfahrt- und Rückkehr-Stand eintragen.</li>
+        <li>Gefahrene Strecke und das Kästchenraster ablesen.</li>
+        <li>Die Zahlen zeilenrichtig in den Vordruck übertragen – Rückkehr oben, Abfahrt darunter.</li>
+        <li>Bei mehreren offenen Tagen in den Nachtrag-Modus wechseln und die Kette aufbauen.</li>
+      </ol>
 
-      <h2>Kostenlos und werbefrei</h2>
-      <p>Die Web-Version enthält <strong>alle Funktionen, kostenlos und ohne Werbung</strong>. Eine
-      Android-App ist vorbereitet, aber derzeit nicht veröffentlicht.</p>
+      <h2>Darstellung</h2>
+      <p>Vier Designs stehen zur Wahl: <strong>Automatisch</strong>, <strong>Hell</strong>,
+      <strong>Dunkel</strong> und <strong>Klassisch</strong>. Letzteres ist Schwarz auf Papierweiß mit
+      Haarlinien und geraden Kanten, angelehnt an die Optik des Vordrucks – hilfreich, wenn man
+      zwischen Bildschirm und Blatt hin- und herschaut.</p>
+
+      <h2>Web-Version und Editionen</h2>
+      <p>Die <strong>Web-Fassung ist die Vollversion</strong>: alle Funktionen, keine Werbung, keine
+      Grenzen. Editionen gibt es nur in der Android-App, deren Veröffentlichung im Play Store derzeit
+      zurückgestellt ist. Dort wäre die freie Fassung werbefinanziert und auf ein Blatt mit bis zu fünf
+      Fahrten begrenzt; Premium für einmalig 2,99 € entfernt die Werbung, erlaubt beliebig lange
+      Nachträge und mehrere Blätter parallel – eines je Fahrzeug beziehungsweise Papierblatt – und
+      schaltet Ausgabe als PDF, Bild oder Text sowie Drucken frei.</p>
 
       <h2>Datenschutz</h2>
-      <p>Alle Eingaben bleiben lokal auf dem Gerät. Kein Konto, kein Server, kein Tracking – die App
-      läuft nach dem ersten Laden vollständig im Browser.</p>
+      <p>Alle Eingaben bleiben auf dem Gerät. Kein Konto, kein Server, kein Tracking, und die App läuft
+      vollständig offline. Sie kennt <strong>keine Dienststellen, Fahrzeuge oder Aufträge</strong> aus
+      irgendeinem System – sie rechnet ausschließlich mit den Zahlen, die du selbst eintippst.</p>
 
       <div class="cta-band">
         <div class="cta-text">
           <h3>Fahrauftrag Ausfüllhilfe direkt ausprobieren</h3>
           <p>Läuft im Browser, ohne Installation und ohne Konto. Alle Eingaben bleiben auf deinem Gerät.</p>
         </div>
-        <a class="btn btn-blue" href="fahrauftrag/" target="_blank" rel="noopener">Jetzt im Browser nutzen</a>
+        <a class="btn btn-blue" href="https://marqewi.github.io/fahrauftrag-app/" target="_blank" rel="noopener">Jetzt im Browser nutzen</a>
       </div>
 
       <h2>Häufige Fragen</h2>
       <details class="faq"><summary>Ist die App von der Bundeswehr?</summary><p>Nein. Privates, inoffizielles Projekt ohne Verbindung zur Bundeswehr. Alle Angaben ohne Gewähr.</p></details>
-      <details class="faq"><summary>Ersetzt die App den Fahrauftrag?</summary><p>Nein. Sie ist eine Eintraghilfe – kein Formular und kein Ersatz für den amtlichen Vordruck. Eingetragen wird weiterhin von Hand auf dem Blatt.</p></details>
-      <details class="faq"><summary>Was kostet die App?</summary><p>Die Web-Version ist kostenlos, werbefrei und enthält alle Funktionen.</p></details>
-      <details class="faq"><summary>Warum steht die Rückkehr über der Abfahrt?</summary><p>So ist der Vordruck aufgebaut: Oben steht das Spätere. Weil das dem Ablauf der Fahrt widerspricht, passieren genau hier die meisten Fehler – die App zeigt beide Zahlen an ihrem Platz.</p></details>
-      <details class="faq"><summary>Prüft die App die Lenk- und Ruhezeiten?</summary><p>Nein. Sie gibt Hinweise auf auffällige Zeiten, prüft aber keine Vorschrift und kennt weder Pausen innerhalb einer Fahrt noch Ausnahmen.</p></details>
+      <details class="faq"><summary>Ersetzt die App den Vordruck?</summary><p>Nein. Sie bildet den Vordruck bewusst nicht nach und ist kein ausfüllbares Formular. Das Kästchenraster ist eine vereinfachte Darstellung als Eintraghilfe; eingetragen wird weiterhin von Hand.</p></details>
+      <details class="faq"><summary>Warum steht die Rückkehr oben?</summary><p>So ist der Vordruck aufgebaut – entgegen dem tatsächlichen Ablauf der Fahrt. Genau deshalb zeigt die App beide Zahlen an der Stelle, an der sie auf dem Blatt stehen.</p></details>
+      <details class="faq"><summary>Was kostet die App?</summary><p>Die Web-Version ist kostenlos und enthält alle Funktionen ohne Werbung. Die Android-App mit ihren Editionen ist noch nicht veröffentlicht.</p></details>
+      <details class="faq"><summary>Sind die Hinweise zu Lenk- und Ruhezeiten verbindlich?</summary><p>Nein. Es sind Gedächtnisstützen auf Basis der eingetragenen Fahrten, keine Prüfung einer Vorschrift. Pausen innerhalb einer Fahrt und Ausnahmen kennt die App nicht.</p></details>
+      <details class="faq"><summary>Funktioniert die App ohne Empfang?</summary><p>Ja, vollständig offline. Es werden keine Daten an einen Server gesendet.</p></details>
 
       <div class="notice" style="margin-top:28px">
-        <p>Inoffizielle App – privates Projekt, <strong>kein Angebot der Bundeswehr</strong>.
-        Kein Formular und kein Ersatz für den amtlichen Vordruck; eingetragen wird weiterhin von Hand.
-        Alle Angaben ohne Gewähr.</p>
+        <p>Inoffizielle App – privates Projekt, <strong>kein Angebot der Bundeswehr</strong>. Kein
+        Formular und kein Ersatz für den amtlichen Vordruck. Alle Angaben ohne Gewähr.</p>
       </div>
 
       <h2>Passend dazu</h2>
