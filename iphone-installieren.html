@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Apps auf dem iPhone installieren – ohne App Store | MERCwerk</title>
-<meta name="description" content="Schritt-für-Schritt-Anleitung mit Video: MERCwerk-Apps in Safari über „Zum Home-Bildschirm“ auf dem iPhone oder iPad installieren – ohne App Store, ohne Konto, offline nutzbar.">
+<meta name="description" content="Anleitung mit Video: MERCwerk-Apps in Safari über „Zum Home-Bildschirm“ auf dem iPhone oder iPad installieren – ohne App Store, ohne Konto, offline nutzbar.">
 <meta name="theme-color" content="#0A0A0C">
 <link rel="icon" href="assets/favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="assets/favicon.png">
@@ -30,12 +30,37 @@
 </header>
 
 <main id="main">
-  <section class="tight" style="padding-top:48px">
+  <section class="tight" style="padding-top:40px">
     <div class="container article">
       <p class="eyebrow">Anleitung</p>
       <h1>Apps auf dem iPhone installieren</h1>
-      <p class="subline">Alle MERCwerk-Apps lassen sich auf dem iPhone und iPad wie eine normale App
-      auf den Home-Bildschirm legen – ohne App Store, ohne Konto, in unter einer Minute.</p>
+
+      <div class="video-wrap">
+        <video controls autoplay muted playsinline preload="auto" width="480" height="854">
+          <source src="assets/iphone-installation.mp4" type="video/mp4">
+          Dein Browser kann dieses Video nicht abspielen. Die Schritte stehen unten als Text.
+        </video>
+        <p class="video-hint">Ton ist zu Beginn stumm – über die Steuerung im Video lässt er sich
+        einschalten.</p>
+      </div>
+
+      <div class="applinks" style="margin-bottom:34px">
+        <a class="btn btn-blue" id="app-link" href="apps.html">Zu den Apps</a>
+      </div>
+
+      <p class="subline">Alle MERCwerk-Apps lassen sich auf dem iPhone und iPad wie eine normale App auf
+      den Home-Bildschirm legen – ohne App Store, ohne Konto, in unter einer Minute.</p>
+
+      <h2>So geht es – Schritt für Schritt</h2>
+      <ol>
+        <li>Die gewünschte App in <strong>Safari</strong> öffnen – über den blauen Knopf oben.</li>
+        <li>Unten in der Leiste auf das <strong>Teilen-Symbol</strong> tippen – das Quadrat mit dem
+        Pfeil nach oben.</li>
+        <li>Im Menü nach unten scrollen bis <strong>„Zum Home-Bildschirm“</strong>.</li>
+        <li>Oben rechts auf <strong>„Hinzufügen“</strong> tippen. Den Namen kannst du vorher noch
+        ändern.</li>
+        <li>Fertig – das Symbol liegt auf dem Home-Bildschirm und startet die App im Vollbild.</li>
+      </ol>
 
       <h2>Warum das ohne App Store funktioniert</h2>
       <p>Die MERCwerk-Apps sind <strong>Progressive Web Apps</strong>. Das heißt: Sie laufen im Browser,
@@ -45,27 +70,6 @@
       <p>Apple unterstützt das seit Jahren direkt in Safari. Es wird also nichts umgangen und nichts
       geladen, was Apple nicht vorgesehen hätte – die Funktion heißt schlicht
       <em>Zum Home-Bildschirm</em>.</p>
-
-      <h2>So geht es – Schritt für Schritt</h2>
-      <ol>
-        <li>Die gewünschte App in <strong>Safari</strong> öffnen. Der Weg führt über die App-Seite hier
-        auf mercwerk.de und den Knopf „Jetzt im Browser nutzen“.</li>
-        <li>Unten in der Leiste auf das <strong>Teilen-Symbol</strong> tippen – das Quadrat mit dem
-        Pfeil nach oben.</li>
-        <li>Im Menü nach unten scrollen bis <strong>„Zum Home-Bildschirm“</strong>.</li>
-        <li>Oben rechts auf <strong>„Hinzufügen“</strong> tippen. Den Namen kannst du vorher noch
-        ändern.</li>
-        <li>Fertig – das Symbol liegt auf dem Home-Bildschirm und startet die App im Vollbild.</li>
-      </ol>
-
-      <h2>Im Video ansehen</h2>
-      <p>Der komplette Ablauf am Beispiel der Fahrauftrag Ausfüllhilfe, gut 30 Sekunden:</p>
-      <div class="video-wrap">
-        <video controls playsinline preload="metadata" width="480" height="854">
-          <source src="assets/iphone-installation.mp4" type="video/mp4">
-          Dein Browser kann dieses Video nicht abspielen. Die Schritte stehen oben als Text.
-        </video>
-      </div>
 
       <h2>Wenn „Zum Home-Bildschirm“ fehlt</h2>
       <p>Der mit Abstand häufigste Grund: Die Seite ist nicht in Safari geöffnet, sondern in einem
@@ -105,6 +109,22 @@
         <a href="ratgeber.html"><b>Ratgeber</b>Hintergrundwissen zu den Themen der Apps.</a>
       </div>    </div>
   </section>
+
+<script>
+/* Kommt der Aufruf von einer App-Karte (?app=…), zeigt der Knopf direkt auf diese App.
+   Ohne Parameter bleibt er auf der App-Übersicht – die Seite funktioniert also auch
+   ohne JavaScript. */
+(function () {
+  var apps = {"sportabzeichen":["Sportabzeichen-Rechner","https://marqewi.github.io/sportabzeichen-rechner/"],"impfbuch":["Impfbuch","https://marqewi.github.io/impfbuch-app/"],"bft":["BFT Tool","https://marqewi.github.io/bft-rechner/"],"pft":["PFT Tool","https://marqewi.github.io/pft-tool/"],"sgt":["SGT Rechner","https://marqewi.github.io/sgt-rechner/"],"never2late":["Never2Late","https://marqewi.github.io/never2late/"],"fahrauftrag":["Fahrauftrag Ausfüllhilfe","fahrauftrag/"]};
+  var key = new URLSearchParams(location.search).get("app");
+  var eintrag = key && apps[key];
+  if (!eintrag) return;
+  var a = document.getElementById("app-link");
+  a.href = eintrag[1];
+  a.textContent = eintrag[0] + " in Safari öffnen";
+  if (eintrag[1].indexOf("http") === 0) { a.rel = "noopener"; }
+})();
+</script>
 
 </main>
 
