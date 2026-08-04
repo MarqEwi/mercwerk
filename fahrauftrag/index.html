@@ -377,6 +377,9 @@
   .acc[open]>summary::after{transform:rotate(-135deg)}
   .acc>summary .ic{width:20px;height:20px;color:var(--accent2)}
   .acc-body{padding:0 15px 15px}
+  /* Gesperrte Unteroption: sichtbar, aber ausgegraut und nicht bedienbar –
+     so ist von Anfang an klar, dass es sie gibt und wovon sie abhängt. */
+  .gesperrt{opacity:.45;pointer-events:none}
   /* Im Browser ist die App die Vollversion – der Premium-Bereich der
      Einstellungen gehört zur Android-App und bleibt dort. */
   body.plattform-web #acc-premium{display:none}
@@ -859,7 +862,8 @@
           <button data-v="aus">Aus</button>
           <button data-v="ein">Ein</button>
         </div>
-        <div id="zeitoriginal-block" style="display:none">
+        <!-- Immer sichtbar; ohne eingeschaltete Uhrzeiten ausgegraut und gesperrt -->
+        <div id="zeitoriginal-block">
           <p class="muted" style="margin:12px 0 4px"><b>Darstellen wie im Originalfahrauftrag</b><br>
             Die Uhrzeit steht als Spalte direkt neben den Kilometern, dahinter der Nachweis.
             Die Fahrzeit steht als Textzeile darunter.</p>
@@ -1536,7 +1540,11 @@ function applyZeiten(){
   const an = zeitenAn();
   segSet("s-zeiten", an ? "ein" : "aus");
   segSet("s-zeitoriginal", load(ZORIG_KEY, false) === true ? "ein" : "aus");
-  $("zeitoriginal-block").style.display = an ? "" : "none";
+  /* Die Unteroption bleibt immer sichtbar; ohne Uhrzeiten ist sie ausgegraut
+     und gesperrt, damit man sieht, dass es sie gibt und was sie freischaltet. */
+  const zoBlock = $("zeitoriginal-block");
+  zoBlock.classList.toggle("gesperrt", !an);
+  zoBlock.querySelectorAll("#s-zeitoriginal button").forEach(b => { b.disabled = !an; });
   document.body.classList.toggle("zeit-original", zeitOriginal());
   $("zeit-felder").style.display = an ? "" : "none";
   $("nt-e-zeiten").style.display = an ? "" : "none";
