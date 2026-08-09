@@ -82,8 +82,8 @@
       <h2>Und auf Android?</h2>
       <p>Dort funktioniert es genauso: In Chrome auf die drei Punkte oben rechts tippen und
       <strong>„Zum Startbildschirm hinzufügen“</strong> beziehungsweise <strong>„App
-      installieren“</strong> wählen. Bei einigen Apps – dem Sportabzeichen-Rechner, dem BFT Tool und
-      dem PFT Tool – gibt es zusätzlich eine richtige Android-App bei Google Play.</p>
+      installieren“</strong> wählen. Für fünf Apps – Sportabzeichen-Rechner, Impfbuch, BFT Tool,
+      PFT Tool und Never2Late – gibt es zusätzlich eine richtige Android-App bei Google Play.</p>
 
       <h2>Was die Installation ändert – und was nicht</h2>
       <p>Nach dem Hinzufügen läuft die App im Vollbild ohne Adressleiste und startet spürbar schneller,
@@ -104,7 +104,7 @@
 
       <h2>Passend dazu</h2>
       <div class="crosslinks">
-        <a href="apps.html"><b>Alle Apps im Überblick</b>Sieben Apps – jede direkt im Browser nutzbar.</a>
+        <a href="apps.html"><b>Alle Apps im Überblick</b>Neun Apps – jede direkt im Browser nutzbar.</a>
         <a href="ratgeber.html"><b>Ratgeber</b>Hintergrundwissen zu den Themen der Apps.</a>
       </div>    </div>
   </section>
@@ -114,7 +114,7 @@
    Ohne Parameter bleibt er auf der App-Übersicht – die Seite funktioniert also auch
    ohne JavaScript. */
 (function () {
-  var apps = {"sportabzeichen":["Sportabzeichen-Rechner","https://marqewi.github.io/sportabzeichen-rechner/"],"impfbuch":["Impfbuch","https://marqewi.github.io/impfbuch-app/"],"bft":["BFT Tool","https://marqewi.github.io/bft-rechner/"],"pft":["PFT Tool","https://marqewi.github.io/pft-tool/"],"sgt":["SGT Rechner","https://marqewi.github.io/sgt-rechner/"],"never2late":["Never2Late","https://marqewi.github.io/never2late/"],"fahrauftrag":["Fahrauftrag Ausfüllhilfe","fahrauftrag/"]};
+  var apps = {"sportabzeichen":["Sportabzeichen-Rechner","https://marqewi.github.io/sportabzeichen-rechner/"],"impfbuch":["Impfbuch","https://marqewi.github.io/impfbuch-app/"],"bft":["BFT Tool","https://marqewi.github.io/bft-rechner/"],"pft":["PFT Tool","https://marqewi.github.io/pft-tool/"],"sgt":["SGT Rechner","https://marqewi.github.io/sgt-rechner/"],"never2late":["Never2Late","https://marqewi.github.io/never2late/"],"fahrauftrag":["Fahrauftrag Ausfüllhilfe","fahrauftrag/"],"cpr":["CPR Assist","https://marqewi.github.io/CPR/"],"skilllog":["SkillLog Med","https://marqewi.github.io/SkillLog-Med/"]};
   var key = new URLSearchParams(location.search).get("app");
   var eintrag = key && apps[key];
   if (!eintrag) return;
