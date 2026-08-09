@@ -387,6 +387,9 @@
   .ob-step{display:none;text-align:center;padding:8px 4px}
   .ob-step.active{display:block}
   .ob-step .emoji .ic{width:44px;height:44px;color:var(--accent2)}
+  /* Bild statt Piktogramm: kleine Skizzen in den Farben des Designs */
+  .ob-skizze{display:block;width:100%;max-width:300px;margin:0 auto 4px}
+  .ob-skizze text{font-family:inherit}
   .ob-dots{text-align:center;margin:10px 0}
   .ob-dots i{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--line);margin:0 3px}
   .ob-dots i.on{background:var(--accent)}
@@ -802,21 +805,80 @@
 <div class="modal-back" id="modal-onboarding">
   <div class="modal" role="dialog" aria-modal="true" aria-label="Einführung">
     <div class="ob-step active" data-step="0">
-      <div class="emoji"><svg class="ic" aria-hidden="true"><use href="#i-grid"/></svg></div>
+      <!-- Das Kernbild der App: Kästchenraster mit Nachweis -->
+      <svg class="ob-skizze" viewBox="0 0 320 80" role="img" aria-label="Kästchenraster mit den Ständen 27768 oben und 27716 unten, rechts der Nachweis 52 km">
+        <g stroke="var(--linie)" stroke-width="1.5" fill="var(--bg2)">
+          <rect x="34" y="6" width="204" height="68"/>
+          <path d="M34 40h204M68 6v68M102 6v68M136 6v68M170 6v68M204 6v68" fill="none"/>
+          <rect x="250" y="6" width="62" height="68"/>
+        </g>
+        <g font-size="16" font-weight="700" fill="var(--text)" text-anchor="middle">
+          <text x="85" y="29">2</text><text x="119" y="29">7</text><text x="153" y="29">7</text><text x="187" y="29">6</text><text x="221" y="29">8</text>
+          <text x="85" y="63">2</text><text x="119" y="63">7</text><text x="153" y="63">7</text><text x="187" y="63">1</text><text x="221" y="63">6</text>
+        </g>
+        <g font-size="11" font-weight="700" fill="var(--text2)" text-anchor="middle">
+          <text x="22" y="27">a)</text><text x="22" y="61">b)</text>
+        </g>
+        <text x="281" y="41" font-size="20" font-weight="800" fill="var(--accent2)" text-anchor="middle">52</text>
+        <text x="281" y="60" font-size="11" fill="var(--text2)" text-anchor="middle">km</text>
+      </svg>
       <h2>Willkommen bei der Fahrauftrag Ausfüllhilfe!</h2>
       <p>Diese App hilft beim Eintragen der Kilometerstände. Du gibst den Stand bei der Abfahrt und bei der Rückkehr ein – die App rechnet die gefahrenen Kilometer aus und zeigt, welche Zahl in welche Zeile gehört.</p>
     </div>
     <div class="ob-step" data-step="1">
-      <div class="emoji"><svg class="ic" aria-hidden="true"><use href="#i-info"/></svg></div>
+      <!-- Die Umkehr: unten beginnt die Fahrt, oben endet sie -->
+      <svg class="ob-skizze" viewBox="0 0 320 88" role="img" aria-label="Zwei Kästchenzeilen: oben a) Rückkehr mit 27768, sie kommt später; unten b) Abfahrt mit 27716, sie kommt zuerst. Ein Pfeil zeigt von unten nach oben.">
+        <g stroke="var(--linie)" stroke-width="1.5" fill="var(--bg2)">
+          <rect x="30" y="8" width="144" height="72"/>
+          <path d="M30 44h144M54 8v72M78 8v72M102 8v72M126 8v72M150 8v72" fill="none"/>
+        </g>
+        <g font-size="12" font-weight="700" fill="var(--text)" text-anchor="middle">
+          <text x="66" y="30">2</text><text x="90" y="30">7</text><text x="114" y="30">7</text><text x="138" y="30">6</text><text x="162" y="30">8</text>
+          <text x="66" y="66">2</text><text x="90" y="66">7</text><text x="114" y="66">7</text><text x="138" y="66">1</text><text x="162" y="66">6</text>
+        </g>
+        <g font-size="10" font-weight="700" fill="var(--text2)" text-anchor="middle">
+          <text x="42" y="29">a)</text><text x="42" y="65">b)</text>
+        </g>
+        <g text-anchor="start">
+          <text x="186" y="26" font-size="13" font-weight="700" fill="var(--text)">Rückkehr</text>
+          <text x="186" y="39" font-size="11" fill="var(--accent2)" font-weight="700">kommt später</text>
+          <text x="186" y="62" font-size="13" font-weight="700" fill="var(--text)">Abfahrt</text>
+          <text x="186" y="75" font-size="11" fill="var(--text2)">kommt zuerst</text>
+        </g>
+        <!-- Die Fahrt läuft von unten nach oben -->
+        <g stroke="var(--accent2)" stroke-width="2" fill="none" stroke-linecap="round">
+          <path d="M14 74V16"/><path d="M14 16l-5 7M14 16l5 7"/>
+        </g>
+      </svg>
       <h2>Oben steht das Spätere</h2>
       <p>Im Kilometerfeld steht <b>a) Rückkehr oben</b> und <b>b) Abfahrt darunter</b> – also andersherum, als die Fahrt abläuft. Genau hier passieren die meisten Fehler.</p>
       <p class="muted">Die App zeigt beide Zahlen an der Stelle, an der sie auf dem Blatt stehen.</p>
     </div>
     <div class="ob-step" data-step="2">
-      <div class="emoji"><svg class="ic" aria-hidden="true"><use href="#i-clock"/></svg></div>
+      <!-- Die Uhrzeit-Spalte, wie sie mit eingeschalteten Uhrzeiten aussieht -->
+      <svg class="ob-skizze" viewBox="0 0 320 100" role="img" aria-label="Kästchenraster mit Uhrzeit-Spalte daneben: oben 16:45, unten 16:00, rechts der Nachweis 52 km. Darunter die Fahrzeit 0:45 Stunden.">
+        <g stroke="var(--linie)" stroke-width="1.5" fill="var(--bg2)">
+          <rect x="8" y="6" width="144" height="64"/>
+          <path d="M8 38h144M32 6v64M56 6v64M80 6v64M104 6v64M128 6v64" fill="none"/>
+          <rect x="162" y="6" width="68" height="64"/>
+          <path d="M162 38h68" fill="none"/>
+          <rect x="240" y="6" width="72" height="64"/>
+        </g>
+        <g font-size="12" font-weight="700" fill="var(--text)" text-anchor="middle">
+          <text x="44" y="26">2</text><text x="68" y="26">7</text><text x="92" y="26">7</text><text x="116" y="26">6</text><text x="140" y="26">8</text>
+          <text x="44" y="58">2</text><text x="68" y="58">7</text><text x="92" y="58">7</text><text x="116" y="58">1</text><text x="140" y="58">6</text>
+        </g>
+        <g font-size="13" font-weight="700" fill="var(--text)" text-anchor="middle">
+          <text x="196" y="27">16:45</text>
+          <text x="196" y="59">16:00</text>
+        </g>
+        <text x="276" y="34" font-size="18" font-weight="800" fill="var(--accent2)" text-anchor="middle">52</text>
+        <text x="276" y="52" font-size="10" fill="var(--text2)" text-anchor="middle">km</text>
+        <text x="160" y="92" font-size="12" fill="var(--text2)" text-anchor="middle">Fahrzeit: <tspan font-weight="700" fill="var(--text)">0:45 h</tspan></text>
+      </svg>
       <h2>Uhrzeiten, wenn du sie brauchst</h2>
-      <p>Im Fahrauftrag stehen neben den Kilometern auch <b>Beginn und Ende</b> der Fahrt. In den <b>Einstellungen</b> lassen sich die Uhrzeitfelder einschalten – ab Werk sind sie aus, damit die Eingabe schlank bleibt.</p>
-      <p class="muted">Eingeschaltet rechnet die App die Fahrzeit aus und erinnert bei langen Fahrten an die Lenk- und Ruhezeiten.</p>
+      <p>Im Fahrauftrag stehen neben den Kilometern auch <b>Beginn und Ende</b> der Fahrt. In den <b>Einstellungen</b> lassen sich die Uhrzeitfelder einschalten – ab Werk sind sie aus, damit die Eingabe schlank bleibt. Eingeschaltet stehen sie wie auf dem Blatt direkt neben den Kästchen.</p>
+      <p class="muted">Die App rechnet die Fahrzeit aus und erinnert bei langen Fahrten an die Lenk- und Ruhezeiten.</p>
     </div>
     <div class="ob-step" data-step="3">
       <div class="emoji"><svg class="ic" aria-hidden="true"><use href="#i-shield"/></svg></div>
