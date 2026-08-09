@@ -1277,7 +1277,7 @@ const ADS_CONF = {
 };
 
 const Ads = {
-  plugin: null, showing: false, statusLog: [], consentOk: false, privacyRequired: false,
+  plugin: null, showing: false, statusLog: [], consentOk: false, privacyRequired: false, kbHidden: false,
   log(msg, isErr){
     (isErr ? console.error : console.log)("[Ads] " + msg);
     this.statusLog.push(msg);
@@ -1298,6 +1298,10 @@ const Ads = {
       await p.initialize({ initializeForTesting: ADS_CONF.TESTING });
       this.log("AdMob initialisiert");
       p.addListener("bannerAdSizeChanged", info => {
+        /* hideBanner() meldet Höhe 0. Ist das Banner wegen der Tastatur
+           absichtlich versteckt, bleibt der reservierte Platz stehen – sonst
+           springt der HTML-Platzhalter ein und das Layout hüpft doppelt. */
+        if (Ads.kbHidden) return;
         Ads.log("Banner-Größe " + JSON.stringify(info));
         const h = info && info.height ? Math.max(0, Math.round(info.height)) : 0;
         document.documentElement.style.setProperty("--native-ad-h", h + "px");
@@ -1357,8 +1361,41 @@ const Ads = {
       this.log("Banner angefordert");
       this.showing = true;
     } catch(e){ this.log("Banner-Anforderung fehlgeschlagen: " + (e && e.message ? e.message : e), true); /* App bleibt ohne Werbung voll nutzbar */ }
+  },
+  /* Bei offener Tastatur schrumpft das App-Fenster; das native Banner würde
+     sonst mitten in den Inhalt rutschen. Solange ein Eingabefeld den Fokus
+     hat, ist das Banner deshalb versteckt – der reservierte Platz bleibt,
+     damit beim Tippen nichts springt. */
+  async hideForKeyboard(){
+    if (!this.showing || this.kbHidden || !this.plugin) return;
+    this.kbHidden = true;
+    try { await this.plugin.hideBanner(); } catch(e){ this.kbHidden = false; }
+  },
+  async showAfterKeyboard(){
+    if (!this.kbHidden || !this.plugin) return;
+    try { await this.plugin.resumeBanner(); } catch(e){}
+    this.kbHidden = false;
   }
 };
+
+/* Tastatur-Auslöser: Fokus in einem Eingabefeld versteckt das Banner.
+   Der Rückweg ist entprellt – beim Wechsel zwischen zwei Feldern bleibt
+   die Tastatur offen, das Banner soll dann nicht kurz aufblitzen. */
+const istEingabefeld = el => !!el && /^(INPUT|SELECT|TEXTAREA)$/.test(el.tagName)
+  && el.type !== "checkbox" && el.type !== "radio";
+let kbTimer = null;
+document.addEventListener("focusin", e => {
+  if (!istEingabefeld(e.target)) return;
+  clearTimeout(kbTimer);
+  Ads.hideForKeyboard();
+});
+document.addEventListener("focusout", e => {
+  if (!istEingabefeld(e.target)) return;
+  clearTimeout(kbTimer);
+  kbTimer = setTimeout(() => {
+    if (!istEingabefeld(document.activeElement)) Ads.showAfterKeyboard();
+  }, 350);
+});
 
 /* ---------- Premium-Kauf (Google Play Billing) ----------
    Läuft nur in der Android-App über das Plugin "cordova-plugin-purchase".
@@ -2789,10 +2826,18 @@ function renderSettings(){
   renderBerechnung();
 }
 $("btn-settings").addEventListener("click", () => { renderSettings(); openModal("modal-settings"); });
-/* Versteckte Diagnose: 5× auf die Versionsnummer tippen blendet die Statuszeilen ein */
-let dbgTaps = 0;
+/* Versteckte Diagnose: 5× auf die Versionsnummer tippen (innerhalb weniger
+   Sekunden) blendet die Statuszeilen ein – bewusstes Tippen, kein Zufall. */
+let dbgTaps = 0, dbgTimer = null;
 $("s-version").addEventListener("click", () => {
-  if (++dbgTaps >= 5){ $("ads-status").style.display = ""; $("buy-status").style.display = ""; $("export-status").style.display = ""; renderSettings(); }
+  dbgTaps++;
+  clearTimeout(dbgTimer);
+  dbgTimer = setTimeout(() => { dbgTaps = 0; }, 2500);
+  if (dbgTaps >= 5){
+    dbgTaps = 0;
+    $("ads-status").style.display = ""; $("buy-status").style.display = ""; $("export-status").style.display = "";
+    renderSettings();
+  }
 });
 
 /* ---------- Onboarding ---------- */
