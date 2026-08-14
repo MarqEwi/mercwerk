@@ -281,6 +281,19 @@ h2.display {
    wie ein .btn (13 px Padding + 15 px Zeile + 13 px Padding + 2 px Rahmen). */
 .play-badge img { height: 56px; width: auto; display: block; margin: -6px 0; }
 
+/* Store-Schaltfläche im Seitenstil. Bewusst ohne das Google-Play-Badge: Das Asset
+   hat ein festes Seitenverhältnis von 3,4 zu 1 und ließe sich nur durch Verzerren
+   auf Button-Höhe bringen – das verbieten die Google-Markenrichtlinien. Ein
+   Textlink auf den Store ist dagegen zulässig, und nur so sind alle drei
+   Schaltflächen wirklich gleich groß. */
+.btn-play { background: #000; color: #fff; border-color: var(--line-silver); }
+.btn-play:hover { background: var(--mw-ink-800); }
+
+/* In den Karten der Startseite stehen die Schaltflächen untereinander,
+   alle in voller Kartenbreite. */
+.grid .app-card .applinks { flex-direction: column; align-items: stretch; }
+.grid .app-card .applinks .btn { flex: 0 0 auto; width: 100%; justify-content: center; }
+
 /* Ausklappbarer Karten-Bereich */
 .app-more { border-top: 1px solid var(--line); padding-top: 14px; }
 .app-more > summary {
