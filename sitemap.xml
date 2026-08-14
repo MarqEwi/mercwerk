@@ -89,7 +89,31 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://mercwerk.de/ratgeber-dokumente-gueltigkeit.html</loc>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mercwerk.de/ratgeber-klimmhang.html</loc>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://mercwerk.de/ratgeber-pft.html</loc>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mercwerk.de/ratgeber-reiseimpfungen.html</loc>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mercwerk.de/ratgeber-schwimmnachweis.html</loc>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mercwerk.de/ratgeber-sportabzeichen-anforderungen.html</loc>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mercwerk.de/ratgeber-sportabzeichen-kinder.html</loc>
     <priority>0.8</priority>
   </url>
   <url>
@@ -98,6 +122,10 @@
   </url>
   <url>
     <loc>https://mercwerk.de/ratgeber-stiko.html</loc>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mercwerk.de/ratgeber-tetanus.html</loc>
     <priority>0.8</priority>
   </url>
   <url>

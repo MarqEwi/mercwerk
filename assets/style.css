@@ -565,3 +565,11 @@ table.data tr:last-child td { border-bottom: 0; }
   font-size: clamp(25px, 4.4vw, 34px); line-height: 1.18;
   letter-spacing: -0.01em; margin: 0 0 20px;
 }
+
+/* Bereichsüberschriften in der Ratgeber-Übersicht */
+.rg-bereich { max-width: 780px; margin: 40px 0 16px; }
+.rg-bereich-titel {
+  font-family: var(--font-display); font-weight: 400; text-transform: uppercase;
+  font-size: 30px; line-height: 1; color: var(--text-strong); margin: 0 0 6px;
+}
+.rg-bereich-text { color: var(--text-muted); font-size: 15px; margin: 0; }
