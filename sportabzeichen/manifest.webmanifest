@@ -1,0 +1,18 @@
+{
+  "name": "Sportabzeichen-Rechner",
+  "short_name": "Sportabzeichen",
+  "description": "Inoffizieller Leistungsrechner rund um das Deutsche Sportabzeichen: Anforderungen nach Altersklasse, Ergebnis-Auswertung, Prüfkarten als PDF. Privates Projekt, kein Angebot des DOSB.",
+  "lang": "de",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FFFFFF",
+  "theme_color": "#F1F5F9",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

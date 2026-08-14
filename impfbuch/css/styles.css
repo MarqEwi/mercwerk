@@ -1,0 +1,2917 @@
+/* Impfpass-App — Design im Stil des gelben deutschen Impfausweises */
+
+:root {
+  --pass-yellow: #e9c94a;
+  --pass-yellow-dark: #d4b02f;
+  --pass-cream: #fdf6df;
+  --paper: #fffdf4;
+  --ink: #2b2b26;
+  --ink-soft: #5c5b52;
+  --line: #d9cfa4;
+  --line-strong: #b9ad7d;
+  --overdue: #c0392b;
+  --soon: #e08a1e;
+  --future: #4a7ba6;
+  --complete: #2e8b57;
+  --unknown: #8a8a80;
+  --stamp-blue: #3a5a8c;
+  --shadow: 0 2px 10px rgba(80, 60, 0, 0.12);
+  --btn-border: rgba(38, 33, 15, 0.55);
+  --btn-shadow: 0 1px 2px rgba(45, 35, 0, 0.22);
+  --btn-shadow-hover: 0 2px 6px rgba(45, 35, 0, 0.28);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  /* ------------------------------------------------------ Gestaltungsraster
+   * Einheitliche Stufen statt gewachsener Einzelwerte. Neue Regeln bitte
+   * immer aus diesen Stufen bedienen — das hält das Bild ruhig.
+   */
+  /* Abstände (4er-Raster) */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+  /* Ecken */
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-pill: 999px;
+  /* Höhenstaffelung: je höher, desto weiter „über" der Fläche */
+  --el-1: 0 1px 2px rgba(60, 45, 5, 0.14);
+  --el-2: 0 2px 6px rgba(60, 45, 5, 0.16), 0 1px 2px rgba(60, 45, 5, 0.1);
+  --el-3: 0 6px 18px rgba(60, 45, 5, 0.18), 0 2px 6px rgba(60, 45, 5, 0.1);
+  --el-4: 0 14px 38px rgba(45, 35, 0, 0.28);
+  /* Bewegung */
+  --ease: cubic-bezier(0.2, 0, 0.2, 1);
+  --dur: 0.18s;
+}
+
+/* Dezente Übergänge — nur in der modernen Ansicht.
+   Wer Animationen abgeschaltet hat, bekommt keine. */
+@media (prefers-reduced-motion: no-preference) {
+  :root[data-theme="modern"] .btn,
+  :root[data-theme="modern"] .btn-small,
+  :root[data-theme="modern"] .theme-btn,
+  :root[data-theme="modern"] .prof-chip,
+  :root[data-theme="modern"] .preset-chip,
+  :root[data-theme="modern"] .tab,
+  :root[data-theme="modern"] .rem-action,
+  :root[data-theme="modern"] .btn-info,
+  :root[data-theme="modern"] .ad-bar-btn {
+    transition: background var(--dur) var(--ease),
+      box-shadow var(--dur) var(--ease), border-color var(--dur) var(--ease),
+      transform 0.08s var(--ease);
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background-color: #d8b840;
+  background-image: url("../images/paper.jpg");
+  background-size: 760px auto;
+  background-repeat: repeat;
+  color: var(--ink);
+  /* dvh statt vh: Bei „viewport-fit=cover" ist 100vh auf Android größer als
+     der wirklich sichtbare Bereich. */
+  min-height: 100dvh;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ---------------------------------------------- Deckblatt (Passport-Cover) */
+
+/* Deckblatt im Stil des gelben WHO-Impfbuchs: schwarzer Druck auf Papier. */
+.app-header {
+  padding: max(env(safe-area-inset-top), 20px) 16px 22px;
+  position: relative;
+  color: #26210f;
+}
+
+.pass-cover {
+  position: relative;
+  max-width: 560px;
+  margin: 0 auto;
+  text-align: center;
+  padding: 18px 20px 16px;
+  border: 2px solid #4a3f1c;
+  box-shadow: 0 0 0 1px #4a3f1c inset;
+  border-radius: 3px;
+  background: rgba(233, 201, 74, 0.28);
+}
+
+.who-title {
+  margin: 2px 0 4px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 700;
+  font-size: 2.1rem;
+  line-height: 1.15;
+  letter-spacing: 0.02em;
+}
+
+/* „ausgestellt für / Geburtsdatum" — Formularfelder wie im Ausweis */
+.holder-box {
+  margin-top: 14px;
+  border-top: 1px solid #4a3f1c;
+  padding-top: 12px;
+  text-align: left;
+}
+.holder-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+.holder-row:last-child {
+  margin-bottom: 0;
+}
+.holder-label {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 0.66rem;
+  letter-spacing: 0.01em;
+  opacity: 0.85;
+}
+.profile-switch {
+  font-size: 1.05rem;
+  font-weight: 700;
+  font-family: Arial, Helvetica, sans-serif;
+  color: #26210f;
+  background: rgba(255, 255, 255, 0.35);
+  border: none;
+  border-bottom: 1.5px solid #4a3f1c;
+  border-radius: 0;
+  padding: 4px 6px;
+  cursor: pointer;
+  max-width: 100%;
+}
+.holder-value {
+  font-size: 0.95rem;
+  font-weight: 700;
+  font-family: Arial, Helvetica, sans-serif;
+  border-bottom: 1.5px solid #4a3f1c;
+  padding: 2px 6px 4px;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+/* ---------------------------------------------------------------- Tabs */
+
+.tabs {
+  display: flex;
+  width: calc(100% - 28px);
+  max-width: 652px;
+  margin: 12px auto 0;
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid var(--btn-border);
+  border-radius: 10px;
+  box-shadow: var(--btn-shadow);
+  overflow: hidden;
+}
+
+.tab {
+  flex: 1;
+  border: none;
+  background: none;
+  padding: 13px 6px;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  white-space: nowrap;
+}
+/* senkrechte Trennlinie zwischen den Reitern */
+.tab + .tab {
+  border-left: 1px solid var(--line-strong);
+}
+.tab.active {
+  color: var(--ink);
+  border-bottom-color: var(--pass-yellow-dark);
+}
+
+.badge {
+  display: inline-block;
+  min-width: 20px;
+  padding: 1px 6px;
+  border-radius: 10px;
+  background: var(--overdue);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  vertical-align: middle;
+}
+/* „Bald fällig": gelbes Abzeichen mit dunkler Schrift — Weiß auf Gelb wäre
+   nicht lesbar. Rot bleibt dem Überfälligen vorbehalten. */
+.badge.badge-soon {
+  background: #e8a81c;
+  color: #2a2005;
+}
+.hidden {
+  display: none !important;
+}
+
+/* --------------------------------------------------------------- Layout */
+
+main {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 16px 14px 60px;
+}
+
+.tab-panel {
+  display: none;
+}
+.tab-panel.active {
+  display: block;
+  animation: fade 0.2s ease;
+}
+@keyframes fade {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.panel-title {
+  font-size: 1rem;
+  margin: 18px 4px 10px;
+  color: var(--ink);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ------------------------------------------------- Impfpass-Seiten (Doku) */
+
+.pass-section {
+  margin-bottom: 16px;
+  border: 1px solid var(--btn-border);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--paper);
+  box-shadow: 0 2px 8px rgba(45, 35, 0, 0.16);
+}
+
+.pass-section-head {
+  font-weight: 700;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: #fff;
+  /* feiner Schatten: hält die weiße Überschrift auch auf den helleren
+     Gruppenfarben gut lesbar */
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
+  background: var(--group-color, #666);
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.pass-section-head::before {
+  content: "●";
+  font-size: 0.7rem;
+  opacity: 0.85;
+}
+
+.vac-row {
+  padding: 12px 14px;
+  border-top: 1px solid var(--line);
+}
+.vac-row:first-of-type {
+  border-top: none;
+}
+
+.vac-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  border-left: 4px solid var(--group-color, #666);
+  padding-left: 10px;
+}
+
+.vac-title {
+  font-weight: 700;
+  font-size: 1rem;
+}
+.btn-info {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  margin-left: 4px;
+  padding: 0;
+  border: 1.5px solid var(--stamp-blue);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  color: var(--stamp-blue);
+  font-family: Georgia, serif;
+  font-style: italic;
+  font-weight: 700;
+  font-size: 0.72rem;
+  line-height: 1;
+  cursor: pointer;
+  vertical-align: middle;
+}
+.btn-info:hover {
+  background: var(--stamp-blue);
+  color: #fff;
+}
+
+/* Eingeklappte (ausgeblendete) Impfung: klein & grau */
+.collapsed-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 14px;
+  flex-wrap: wrap;
+  padding: 8px 14px;
+  background: rgba(120, 115, 100, 0.06);
+}
+.collapsed-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+.collapsed-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--unknown);
+}
+.collapsed-note {
+  font-size: 0.72rem;
+  font-style: italic;
+  color: var(--unknown);
+}
+.collapsed-row .btn-info {
+  border-color: var(--unknown);
+  color: var(--unknown);
+}
+.collapsed-row .btn-info:hover {
+  background: var(--unknown);
+  color: #fff;
+}
+.collapsed-actions {
+  display: flex;
+  gap: 12px;
+  flex-shrink: 0;
+}
+.link-btn {
+  border: none;
+  background: none;
+  color: var(--stamp-blue);
+  font-size: 0.74rem;
+  cursor: pointer;
+  padding: 4px 0;
+  text-decoration: underline;
+}
+.link-btn:hover {
+  color: var(--ink);
+}
+.hard-btn {
+  color: var(--ink-soft);
+}
+.hard-btn:hover {
+  color: var(--overdue);
+}
+.vac-full {
+  font-size: 0.76rem;
+  color: var(--ink-soft);
+  margin-top: 1px;
+}
+
+.status-badge {
+  flex-shrink: 0;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 20px;
+  color: #fff;
+  white-space: nowrap;
+}
+.st-overdue {
+  background: var(--overdue);
+}
+.st-soon {
+  background: var(--soon);
+}
+.st-future {
+  background: var(--future);
+}
+.st-complete {
+  background: var(--complete);
+}
+.st-optional {
+  background: var(--stamp-blue);
+}
+.st-unknown {
+  background: var(--unknown);
+}
+
+.vac-info {
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+  margin: 8px 0 10px 14px;
+  line-height: 1.4;
+}
+.vac-info em {
+  color: var(--overdue);
+  font-style: normal;
+  font-weight: 600;
+}
+
+/* Impf-Einträge als ruled table (wie die Impfpass-Seiten) */
+
+.vac-entries {
+  margin-left: 14px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--paper);
+  overflow: hidden;
+}
+
+.ve-head,
+.ve-row {
+  display: grid;
+  grid-template-columns: 76px 1fr 72px 46px;
+  gap: 8px;
+  align-items: center;
+  padding: 7px 10px;
+}
+.ve-actions {
+  display: flex;
+  gap: 2px;
+  justify-self: end;
+}
+.ve-edit {
+  border: none;
+  background: none;
+  color: var(--stamp-blue);
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 2px 3px;
+}
+.ve-edit:hover {
+  color: var(--ink);
+}
+.ve-head {
+  background: var(--pass-cream);
+  border-bottom: 1px solid var(--line-strong);
+  font-size: 0.66rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ink-soft);
+}
+.ve-row {
+  border-bottom: 1px solid var(--line);
+  font-size: 0.82rem;
+}
+.ve-row:last-child {
+  border-bottom: none;
+}
+
+.ve-date {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+.ve-mid {
+  min-width: 0;
+}
+.ve-product {
+  display: block;
+  font-weight: 600;
+}
+.ve-product.muted {
+  font-weight: 400;
+  color: var(--unknown);
+}
+.ve-meta {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--ink-soft);
+  margin-top: 1px;
+}
+.combo-tag {
+  color: var(--stamp-blue);
+  font-weight: 600;
+}
+.ve-doctor {
+  font-family: Georgia, serif;
+  font-style: italic;
+  font-size: 0.78rem;
+  color: var(--stamp-blue);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ve-doctor.muted {
+  font-family: inherit;
+  color: var(--unknown);
+  font-size: 0.72rem;
+  white-space: normal;
+  line-height: 1.25;
+}
+.ve-del {
+  border: none;
+  background: none;
+  color: var(--unknown);
+  cursor: pointer;
+  font-size: 0.8rem;
+  padding: 2px;
+  justify-self: end;
+}
+.ve-del:hover {
+  color: var(--overdue);
+}
+.ve-empty {
+  padding: 10px;
+  color: var(--unknown);
+  font-style: italic;
+  font-size: 0.82rem;
+}
+
+.vac-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 10px 0 0 14px;
+  flex-wrap: wrap;
+}
+.foot-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.btn-hide {
+  border: none;
+  background: none;
+  color: var(--ink-soft);
+  font-size: 0.76rem;
+  cursor: pointer;
+  padding: 6px 8px;
+  border-radius: 6px;
+}
+/* Kein ⊘ mehr davor: Jede dieser Schaltflächen bringt inzwischen ihr
+   eigenes SVG-Symbol mit (Ausblenden ✕, Wegen Alter 📅, Überwachen 🔔).
+   Das Zeichen stammte aus der Zeit davor und ergab ein zweites Symbol. */
+.btn-hide:hover {
+  color: var(--overdue);
+  background: rgba(192, 57, 43, 0.08);
+}
+.hidden-chip .chip-plus {
+  font-weight: 400;
+  font-size: 0.72rem;
+  color: var(--stamp-blue);
+}
+.next-date {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--future);
+}
+.next-date.muted {
+  color: var(--unknown);
+}
+.next-complete {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--complete);
+}
+.next-optional {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--stamp-blue);
+}
+.next-valid {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--complete);
+}
+.next-overdue {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--overdue);
+}
+
+/* Badges (Reiseempfehlung / Überwachung) */
+.vac-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0 0 8px 14px;
+}
+.tag-travel,
+.tag-monitor {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 20px;
+  border: 1px solid var(--btn-border);
+}
+.tag-travel {
+  background: rgba(233, 201, 74, 0.35);
+  color: #6b5400;
+}
+.tag-monitor {
+  background: rgba(58, 90, 140, 0.12);
+  color: var(--stamp-blue);
+}
+.btn-monitor.active {
+  color: var(--stamp-blue);
+  font-weight: 700;
+}
+
+/* Reise-Panel */
+.travel-card {
+  background: var(--paper);
+  border: 1px solid var(--btn-border);
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(45, 35, 0, 0.16);
+  padding: 16px;
+}
+.travel-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 8px;
+  margin-bottom: 10px;
+}
+.travel-head h3 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+.travel-region {
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+}
+.travel-block {
+  margin-bottom: 12px;
+}
+.travel-block h4 {
+  margin: 0 0 4px;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-soft);
+}
+.travel-block ul {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+.travel-block.req h4 {
+  color: var(--overdue);
+}
+.travel-block.rec h4 {
+  color: var(--complete);
+}
+.travel-note {
+  font-size: 0.82rem;
+  color: var(--ink-soft);
+  line-height: 1.5;
+  background: rgba(224, 138, 30, 0.1);
+  border-left: 3px solid var(--soon);
+  padding: 8px 10px;
+  border-radius: 0 6px 6px 0;
+  margin: 8px 0 12px;
+}
+.travel-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid var(--btn-border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: var(--btn-shadow);
+}
+.travel-toggle.on {
+  background: rgba(46, 139, 87, 0.14);
+  border-color: var(--complete);
+}
+.travel-toggle input {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+/* Meine Reiseziele (aktive Länder) */
+.travel-mine {
+  background: var(--paper);
+  border: 1px solid var(--btn-border);
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(45, 35, 0, 0.16);
+  padding: 12px 14px;
+  margin-bottom: 12px;
+}
+.travel-mine-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-soft);
+  margin-bottom: 8px;
+}
+.travel-mine-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.dest-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(233, 201, 74, 0.35);
+  border: 1px solid var(--btn-border);
+  border-radius: 20px;
+  padding: 5px 8px 5px 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.dest-x {
+  border: none;
+  background: var(--line);
+  color: var(--ink);
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  font-size: 0.66rem;
+  cursor: pointer;
+  line-height: 1;
+}
+.dest-x:hover {
+  background: var(--overdue);
+  color: #fff;
+}
+
+.travel-info {
+  font-size: 0.85rem;
+  line-height: 1.5;
+  margin: 0 0 10px;
+}
+.travel-summary {
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 8px 10px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+.travel-summary.ok {
+  background: rgba(46, 139, 87, 0.14);
+  color: var(--complete);
+}
+.travel-summary.open {
+  background: rgba(224, 138, 30, 0.16);
+  color: #8a5300;
+}
+.travel-list {
+  list-style: none;
+  padding-left: 0;
+}
+.travel-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 5px 0;
+  border-bottom: 1px dashed var(--line);
+  font-size: 0.9rem;
+}
+.travel-list li:last-child {
+  border-bottom: none;
+}
+.tv-status {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+.tv-ok {
+  background: rgba(46, 139, 87, 0.15);
+  color: var(--complete);
+}
+.tv-missing,
+.tv-expired {
+  background: rgba(192, 57, 43, 0.13);
+  color: var(--overdue);
+}
+.tv-partial {
+  background: rgba(224, 138, 30, 0.16);
+  color: #8a5300;
+}
+
+/* Fällig-Tab: Fenster wie die Impfpass-Sektionen */
+.rem-group .reminder {
+  border-top: none;
+  border-right: none;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  box-shadow: none;
+  margin: 0;
+}
+.rem-group .reminder:last-child {
+  border-bottom: none;
+}
+.upcoming-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 14px;
+  border-bottom: 1px solid var(--line);
+}
+.upcoming-row:last-child {
+  border-bottom: none;
+}
+.up-date {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.82rem;
+  min-width: 84px;
+}
+.up-body {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.up-title {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+.up-sub {
+  font-size: 0.75rem;
+  color: var(--ink-soft);
+}
+
+/* -------------------------------------------------------------- Buttons */
+
+.btn {
+  border: 1px solid var(--btn-border);
+  background: rgba(255, 255, 255, 0.55);
+  color: var(--ink);
+  padding: 11px 16px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: var(--btn-shadow);
+  transition: background 0.15s, box-shadow 0.15s, transform 0.05s;
+}
+.btn:hover {
+  background: rgba(255, 251, 235, 0.85);
+  box-shadow: var(--btn-shadow-hover);
+}
+.btn:active {
+  transform: translateY(1px);
+  box-shadow: var(--btn-shadow);
+}
+.btn-primary {
+  background: var(--pass-yellow-dark);
+  border-color: var(--pass-yellow-dark);
+  color: #3a2f00;
+}
+.btn-primary:hover {
+  background: var(--pass-yellow);
+}
+.btn-ghost {
+  background: none;
+  border-color: transparent;
+  color: var(--ink-soft);
+}
+.btn-danger {
+  color: var(--overdue);
+  border-color: var(--overdue);
+  background: rgba(255, 255, 255, 0.5);
+}
+.btn-danger:hover {
+  background: rgba(251, 234, 232, 0.9);
+}
+.btn-small {
+  border: 1px solid var(--btn-border);
+  background: rgba(255, 255, 255, 0.55);
+  color: #5a4600;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: var(--btn-shadow);
+  transition: background 0.15s, box-shadow 0.15s, transform 0.05s;
+}
+.btn-small:hover {
+  background: rgba(253, 246, 223, 0.9);
+  box-shadow: var(--btn-shadow-hover);
+}
+.btn-small:active {
+  transform: translateY(1px);
+  box-shadow: var(--btn-shadow);
+}
+.btn-row {
+  display: flex;
+  gap: 10px;
+  margin: 10px 0;
+}
+.btn-row .btn {
+  flex: 1;
+}
+.btn-world {
+  width: 100%;
+  margin-top: 10px;
+  font-weight: 700;
+}
+.btn-quick {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.55);
+  border-color: var(--btn-border);
+  border-radius: 10px;
+  color: var(--ink);
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+/* ---------------------------------------------------------- Erinnerungen */
+
+.reminder {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--paper);
+  border: 1px solid var(--btn-border);
+  border-left: 5px solid var(--unknown);
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 8px rgba(45, 35, 0, 0.16);
+}
+.reminder.st-overdue {
+  border-left-color: var(--overdue);
+}
+.reminder.st-soon {
+  border-left-color: var(--soon);
+}
+.rem-body {
+  flex: 1;
+  min-width: 0;
+}
+.rem-title {
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+.rem-sub {
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+  margin-top: 2px;
+}
+.rem-note {
+  font-size: 0.72rem;
+  color: var(--soon);
+  margin-top: 2px;
+}
+.rem-action {
+  flex-shrink: 0;
+  border: 1px solid var(--btn-border);
+  background: var(--pass-yellow);
+  color: #3a2f00;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: var(--btn-shadow);
+  transition: box-shadow 0.15s, transform 0.05s;
+}
+.rem-action:hover {
+  box-shadow: var(--btn-shadow-hover);
+}
+.rem-action:active {
+  transform: translateY(1px);
+  box-shadow: var(--btn-shadow);
+}
+
+.hint {
+  font-size: 0.8rem;
+  color: #3d3a2c;
+  line-height: 1.5;
+  margin: 6px 0;
+}
+.hint.ok {
+  color: var(--complete);
+  font-weight: 600;
+}
+
+/* --------------------------------------------------------- Formularkarten */
+
+.form-card {
+  background: var(--paper);
+  border: 1px solid var(--btn-border);
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 6px;
+  box-shadow: 0 2px 8px rgba(45, 35, 0, 0.16);
+}
+.form-card label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+  margin-bottom: 12px;
+}
+.form-card input[type="text"],
+.form-card input[type="date"],
+.form-card select {
+  display: block;
+  width: 100%;
+  margin-top: 5px;
+  padding: 10px 12px;
+  border: 1px solid var(--btn-border);
+  border-radius: 8px;
+  font-size: 0.95rem;
+  background: #fff;
+  color: var(--ink);
+}
+
+/* Profil-Verwaltung */
+.profile-manager {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.prof-chip {
+  border: 1px solid var(--btn-border);
+  background: rgba(255, 255, 255, 0.65);
+  color: var(--ink);
+  border-radius: 20px;
+  padding: 7px 14px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: var(--btn-shadow);
+  transition: background 0.15s, box-shadow 0.15s;
+}
+.prof-chip:hover {
+  box-shadow: var(--btn-shadow-hover);
+}
+.prof-chip.active {
+  background: var(--pass-yellow);
+  border-color: var(--pass-yellow-dark);
+  color: #3a2f00;
+}
+.divider {
+  border: none;
+  border-top: 1px dashed var(--line);
+  margin: 14px 0;
+}
+
+.disclaimer {
+  font-size: 0.72rem;
+  color: var(--ink-soft);
+  line-height: 1.5;
+  margin-top: 24px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 8px;
+  border: 1px dashed var(--line);
+}
+
+/* ---------------------------------------------------------------- Dialog */
+
+/* Alle Dialoge über der Werbeleiste halten und bei Bedarf scrollbar machen,
+   damit die unteren Buttons nie hinter dem Banner verschwinden. */
+dialog {
+  max-height: calc(100dvh - 2 * var(--ad-height) - 32px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+/* Premium- & Backup-Dialog: gleiches Aussehen wie die übrigen Dialoge */
+dialog#premium-dialog,
+dialog#backup-dialog {
+  border: none;
+  border-radius: 14px;
+  padding: 0;
+  max-width: 460px;
+  width: 92%;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+  color: var(--ink);
+}
+dialog#premium-dialog::backdrop,
+dialog#backup-dialog::backdrop {
+  background: rgba(40, 35, 0, 0.45);
+}
+
+dialog#record-dialog {
+  border: none;
+  border-radius: 14px;
+  padding: 0;
+  max-width: 460px;
+  width: 92%;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+  color: var(--ink);
+}
+dialog#record-dialog::backdrop {
+  background: rgba(40, 35, 0, 0.4);
+}
+
+/* Ersteinrichtung, Benachrichtigungs-, Meldungs- & Bestätigungs-Dialog */
+dialog#setup-dialog,
+dialog#notify-dialog,
+dialog#msg-dialog,
+dialog#confirm-dialog {
+  border: none;
+  border-radius: 14px;
+  padding: 0;
+  max-width: 430px;
+  width: 92%;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+  color: var(--ink);
+}
+dialog#setup-dialog::backdrop,
+dialog#notify-dialog::backdrop,
+dialog#msg-dialog::backdrop,
+dialog#confirm-dialog::backdrop {
+  background: rgba(40, 35, 0, 0.5);
+}
+#msg-dialog h3,
+#confirm-dialog h3 {
+  margin: 0 0 10px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.15rem;
+}
+.msg-body .muted {
+  color: var(--ink-soft);
+  font-size: 0.78rem;
+}
+.msg-body p,
+.msg-body li {
+  font-size: 0.88rem;
+  line-height: 1.55;
+  margin: 0 0 8px;
+}
+.msg-body ol {
+  margin: 0 0 8px;
+  padding-left: 20px;
+}
+.setup-content {
+  padding: 24px 22px 16px;
+  text-align: center;
+}
+.setup-emoji {
+  font-size: 2.4rem;
+  margin-bottom: 4px;
+}
+.setup-content h3 {
+  margin: 0 0 10px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.25rem;
+}
+.setup-text {
+  font-size: 0.9rem;
+  line-height: 1.55;
+  margin: 0 0 10px;
+  text-align: left;
+}
+.setup-text.muted {
+  color: var(--ink-soft);
+  font-size: 0.8rem;
+}
+.setup-label {
+  display: block;
+  text-align: left;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+  margin-bottom: 12px;
+}
+.setup-label input {
+  display: block;
+  width: 100%;
+  margin-top: 5px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-size: 0.95rem;
+}
+.setup-actions {
+  justify-content: space-between;
+  margin-top: 14px;
+}
+.setup-dots {
+  margin-top: 14px;
+  font-size: 0.7rem;
+  letter-spacing: 0.3em;
+  color: var(--ink-soft);
+}
+
+/* Bearbeiten-, Löschen-, Export- & Personen-Dialog */
+dialog#edit-dialog,
+dialog#delete-dialog,
+dialog#export-dialog,
+dialog#person-dialog {
+  border: none;
+  border-radius: 14px;
+  padding: 0;
+  max-width: 460px;
+  width: 92%;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+  color: var(--ink);
+}
+dialog#edit-dialog::backdrop,
+dialog#delete-dialog::backdrop,
+dialog#export-dialog::backdrop,
+dialog#person-dialog::backdrop {
+  background: rgba(40, 35, 0, 0.4);
+}
+#edit-form,
+#person-form {
+  padding: 20px;
+}
+#edit-form h3,
+#person-form h3 {
+  margin: 0 0 6px;
+}
+#edit-form label,
+#person-form label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+  margin-bottom: 12px;
+}
+#edit-form input[type="text"],
+#edit-form input[type="date"],
+#person-form input[type="text"],
+#person-form input[type="date"] {
+  display: block;
+  width: 100%;
+  margin-top: 5px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-size: 0.95rem;
+}
+.edit-allday {
+  display: flex !important;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600 !important;
+  color: var(--ink) !important;
+  background: var(--pass-cream);
+  border: 1px solid var(--btn-border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 14px !important;
+  cursor: pointer;
+}
+.edit-allday input {
+  width: 18px;
+  height: 18px;
+  margin: 0 !important;
+  flex-shrink: 0;
+}
+#delete-msg {
+  font-size: 0.9rem;
+  line-height: 1.55;
+  margin: 0 0 16px;
+}
+#record-form {
+  padding: 20px;
+}
+#record-form h3 {
+  margin: 0 0 14px;
+}
+#record-form label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+  margin-bottom: 12px;
+}
+#record-form input[type="text"],
+#record-form input[type="date"] {
+  display: block;
+  width: 100%;
+  margin-top: 5px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-size: 0.95rem;
+}
+.two-col {
+  display: flex;
+  gap: 10px;
+}
+.two-col label {
+  flex: 1;
+}
+.opt {
+  font-weight: 400;
+  color: var(--unknown);
+}
+
+/* Kombi-Auswahl im Dialog */
+.combo-block {
+  margin: 4px 0 16px;
+  padding: 12px;
+  background: var(--pass-cream);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+.combo-label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+.preset-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.preset-hint {
+  width: 100%;
+  font-size: 0.74rem;
+  color: var(--ink-soft);
+  margin-bottom: 2px;
+}
+.preset-chip {
+  border: 1px solid var(--stamp-blue);
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--stamp-blue);
+  border-radius: 20px;
+  padding: 6px 12px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: var(--btn-shadow);
+  transition: background 0.15s, box-shadow 0.15s;
+}
+.preset-chip:hover {
+  background: #eef3fb;
+  box-shadow: var(--btn-shadow-hover);
+}
+.pc-full {
+  font-weight: 400;
+  font-size: 0.72rem;
+  opacity: 0.8;
+}
+
+.target-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+/* Backup: Auswahl des Umfangs */
+.backup-scope {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.radio-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: var(--ink);
+  cursor: pointer;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.35);
+}
+.radio-item input {
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+.radio-item:has(input:checked) {
+  border-color: var(--pass-yellow-dark);
+  background: rgba(233, 201, 74, 0.14);
+}
+:root[data-theme="dark"] .radio-item,
+:root[data-theme="neutral"] .radio-item {
+  background: rgba(255, 255, 255, 0.05);
+}
+:root[data-theme="neutral"] .radio-item:has(input:checked) {
+  border-color: var(--pass-yellow-dark);
+  background: rgba(244, 168, 28, 0.18);
+}
+.tgt-item {
+  display: flex !important;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.88rem;
+  font-weight: 500 !important;
+  color: var(--ink) !important;
+  margin: 0 !important;
+  padding: 5px 6px;
+  border-radius: 6px;
+}
+.tgt-item input {
+  width: auto !important;
+  margin: 0 !important;
+}
+.tgt-primary {
+  background: #fff;
+  border: 1px solid var(--line);
+  font-weight: 700 !important;
+}
+.tgt-primary-tag {
+  margin-left: auto;
+  font-size: 0.66rem;
+  font-weight: 700;
+  color: var(--pass-yellow-dark);
+  text-transform: uppercase;
+}
+.tgt-more {
+  margin-top: 6px;
+}
+.tgt-more summary {
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--stamp-blue);
+  padding: 4px 0;
+}
+.tgt-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px 10px;
+  margin-top: 6px;
+  max-height: 190px;
+  overflow-y: auto;
+  padding: 4px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+
+.dlg-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+/* Info-Fenster */
+dialog#info-dialog {
+  border: none;
+  border-radius: 14px;
+  padding: 0;
+  max-width: 460px;
+  width: 92%;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+  color: var(--ink);
+}
+dialog#info-dialog::backdrop {
+  background: rgba(40, 35, 0, 0.4);
+}
+.info-content {
+  position: relative;
+  padding: 20px;
+}
+.info-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  border: none;
+  background: none;
+  font-size: 1.1rem;
+  color: var(--ink-soft);
+  cursor: pointer;
+  line-height: 1;
+  padding: 4px;
+}
+.info-close:hover {
+  color: var(--overdue);
+}
+.info-head {
+  margin: 0 24px 12px 0;
+}
+.info-name {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+.info-full {
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+  margin-top: 2px;
+}
+.verdict {
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+  border-left: 5px solid var(--unknown);
+  background: rgba(0, 0, 0, 0.03);
+}
+.verdict-title {
+  font-weight: 800;
+  font-size: 0.95rem;
+  margin-bottom: 3px;
+}
+.verdict-text {
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--ink);
+}
+.iv-urgent {
+  border-left-color: var(--overdue);
+  background: rgba(192, 57, 43, 0.09);
+}
+.iv-urgent .verdict-title {
+  color: var(--overdue);
+}
+.iv-soon {
+  border-left-color: var(--soon);
+  background: rgba(224, 138, 30, 0.1);
+}
+.iv-soon .verdict-title {
+  color: var(--soon);
+}
+.iv-ok,
+.iv-optional {
+  border-left-color: var(--stamp-blue);
+  background: rgba(58, 90, 140, 0.08);
+}
+.iv-ok .verdict-title,
+.iv-optional .verdict-title {
+  color: var(--stamp-blue);
+}
+.iv-done {
+  border-left-color: var(--complete);
+  background: rgba(46, 139, 87, 0.1);
+}
+.iv-done .verdict-title {
+  color: var(--complete);
+}
+.iv-na,
+.iv-unknown {
+  border-left-color: var(--unknown);
+}
+.iv-na .verdict-title,
+.iv-unknown .verdict-title {
+  color: var(--ink-soft);
+}
+.info-section {
+  margin-bottom: 12px;
+}
+.info-section h4 {
+  margin: 0 0 4px;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-soft);
+}
+.info-section p {
+  margin: 0;
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+.info-schema {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 0.84rem;
+  line-height: 1.55;
+}
+.info-schema em {
+  color: var(--ink-soft);
+  font-style: normal;
+}
+.info-disclaimer {
+  font-size: 0.7rem;
+  color: var(--ink-soft);
+  line-height: 1.45;
+  margin: 14px 0 0;
+  padding-top: 10px;
+  border-top: 1px dashed var(--line);
+}
+
+/* Schnelleintrag-Dialog */
+dialog#quick-dialog {
+  border: none;
+  border-radius: 14px;
+  padding: 0;
+  max-width: 520px;
+  width: 94%;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+  color: var(--ink);
+}
+dialog#quick-dialog::backdrop {
+  background: rgba(40, 35, 0, 0.4);
+}
+#quick-form {
+  padding: 20px;
+}
+#quick-form h3 {
+  margin: 0 0 14px;
+}
+#quick-form label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+  margin-bottom: 12px;
+}
+#quick-form input[type="text"],
+#quick-form input[type="date"] {
+  display: block;
+  width: 100%;
+  margin-top: 5px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-size: 0.95rem;
+}
+.q-date-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 5px;
+}
+.q-date-row input {
+  flex: 1;
+  margin-top: 0 !important;
+}
+.q-date-row .btn-small {
+  white-space: nowrap;
+}
+.date-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.date-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--pass-cream);
+  border: 1px solid var(--line-strong);
+  border-radius: 20px;
+  padding: 4px 6px 4px 12px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.date-chip-x {
+  border: none;
+  background: var(--line);
+  color: var(--ink);
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  font-size: 0.66rem;
+  cursor: pointer;
+  line-height: 1;
+}
+.date-chip-x:hover {
+  background: var(--overdue);
+  color: #fff;
+}
+
+.q-checklist {
+  max-height: 46vh;
+  overflow-y: auto;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 4px;
+  background: #fff;
+  margin-bottom: 12px;
+}
+.q-group-head {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #fff;
+  background: var(--group-color, #666);
+  padding: 4px 10px;
+  border-radius: 4px;
+  margin: 6px 2px 2px;
+}
+.q-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 10px;
+}
+.q-count {
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  margin-bottom: 10px;
+}
+.q-count strong {
+  color: var(--overdue);
+  font-size: 1rem;
+}
+@media (max-width: 480px) {
+  .q-group {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 460px) {
+  .tgt-grid {
+    grid-template-columns: 1fr;
+  }
+}
+@media (min-width: 560px) {
+  .pass-cover h1 {
+    font-size: 2.4rem;
+  }
+}
+
+/* ---------------------------------------------------- Theme-Umschalter */
+.theme-choice {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.theme-btn {
+  flex: 1 1 calc(50% - 4px);
+  min-width: calc(50% - 4px);
+  border: 1px solid var(--btn-border);
+  background: rgba(255, 255, 255, 0.55);
+  color: var(--ink);
+  border-radius: 8px;
+  padding: 10px 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: var(--btn-shadow);
+}
+.theme-btn.active {
+  background: var(--pass-yellow);
+  border-color: var(--pass-yellow-dark);
+  color: #3a2f00;
+}
+
+/* Einstellungen: Titel & aufklappbare Infoflächen */
+.setting-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 10px;
+}
+.app-details summary {
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--ink);
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.app-details summary::-webkit-details-marker {
+  display: none;
+}
+.app-details summary::after {
+  content: "▸";
+  color: var(--ink-soft);
+  transition: transform 0.15s;
+}
+.app-details[open] summary::after {
+  transform: rotate(90deg);
+}
+.details-body {
+  margin-top: 10px;
+}
+.details-body p {
+  font-size: 0.84rem;
+  line-height: 1.55;
+  color: var(--ink-soft);
+  margin: 0 0 8px;
+}
+.details-body p:last-child {
+  margin-bottom: 0;
+}
+.details-body strong {
+  color: var(--ink);
+}
+/* Starthilfe: Sprechblase unter dem Schnelleintrag, mit Spitze nach oben.
+   Bewusst im Textfluss statt schwebend — so verdeckt sie nichts und
+   verschiebt sich auf keinem Bildschirm an die falsche Stelle. */
+.coach {
+  /* Deckende Füllung mit kräftigem Rand. Bewusst feste Farben statt der
+     Theme-Variablen: heller Sprechblasen-Körper auf dunklem Rand hebt sich
+     in jeder der fünf Ansichten ab — auf gelbem Papier ebenso wie im
+     Dunkelmodus. */
+  --coach-bg: #fffdf4;
+  --coach-line: #2f2617;
+  --coach-ink: #241d10;
+
+  position: relative;
+  margin: 18px 0 4px;
+  padding: 14px 15px;
+  border: 2px solid var(--coach-line);
+  border-radius: 12px;
+  background: var(--coach-bg);
+  color: var(--coach-ink);
+  box-shadow: 0 3px 12px rgba(20, 15, 0, 0.32);
+}
+/* Spitze nach oben: zwei Dreiecke übereinander — das größere bildet den
+   Rand, das kleinere die Füllung und deckt die Randlinie ab. */
+.coach::before,
+.coach::after {
+  content: "";
+  position: absolute;
+  border: 11px solid transparent;
+  border-top: 0;
+}
+.coach::before {
+  bottom: 100%;
+  left: 28px;
+  border-bottom-color: var(--coach-line);
+}
+.coach::after {
+  bottom: calc(100% - 3px);
+  left: 30px;
+  border-width: 9px;
+  border-top: 0;
+  border-bottom-color: var(--coach-bg);
+}
+.coach-text {
+  margin: 0 0 11px;
+  font-size: 0.88rem;
+  line-height: 1.45;
+  color: var(--coach-ink);
+}
+.coach-text strong {
+  color: #8a5a08;
+}
+/* Eigene Farben, damit die Schaltfläche auf dem hellen Blasenkörper in jeder
+   Ansicht lesbar bleibt. Mit `button` qualifiziert: die Farbwelten setzen
+   .btn-small später im Blatt und würden sonst gewinnen — in „Neutral" ergäbe
+   das schwarze Schrift auf dunkelbraunem Grund. */
+:root .coach button.coach-ok,
+:root .coach button.coach-ok:hover,
+:root .coach button.coach-ok:focus {
+  display: inline-block;
+  background: var(--coach-line);
+  border-color: var(--coach-line);
+  color: #fffdf4;
+}
+
+/* Suchfeld über dem Impfpass */
+.vac-search {
+  margin: 10px 0 14px;
+}
+.vac-search input {
+  width: 100%;
+  padding: 11px 12px;
+  font: inherit;
+  font-size: 0.95rem;
+  color: var(--ink);
+  background: var(--input-bg, var(--paper));
+  border: 1px solid var(--btn-border);
+  border-radius: 8px;
+}
+.vac-search input:focus {
+  outline: none;
+  border-color: var(--group-color, #c8901f);
+  box-shadow: 0 0 0 2px rgba(200, 144, 31, 0.25);
+}
+
+/* ------------------------------------------- Zahnrad im Kopfbereich */
+.app-header {
+  position: relative;
+}
+.btn-gear {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1px solid var(--btn-border);
+  background: var(--btn-bg);
+  color: var(--ink);
+  cursor: pointer;
+}
+.btn-gear .ic {
+  width: 20px;
+  height: 20px;
+}
+.btn-gear.active {
+  background: var(--accent, #e8c25c);
+  border-color: var(--ink);
+}
+
+/* ----------------------------------------------------- Impfbuch-Regal */
+.book-shelf {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 14px;
+  margin-top: 12px;
+}
+.book {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 4px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+}
+.book.active {
+  border-color: var(--line-strong);
+  background: rgba(120, 115, 100, 0.08);
+}
+.book-select {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font: inherit;
+  color: var(--ink);
+}
+.book-edit {
+  font-size: 0.7rem;
+  padding: 3px 8px;
+  white-space: nowrap;
+}
+.book-art {
+  position: relative;
+  display: block;
+  width: 68px;
+}
+.book-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+/* Klassisches Benachrichtigungs-Abzeichen: roter Kreis, weiße Zahl, heller
+   Ring, damit es sich auch von einem dunklen Buchdeckel abhebt. */
+.book-badge {
+  position: absolute;
+  top: -4px;
+  right: -6px;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 5px;
+  border-radius: 11px;
+  background: #c0392b;
+  border: 2px solid var(--paper);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 18px;
+  text-align: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+}
+/* Gelb, wenn nichts überfällig ist — gleiche Regel wie am Tab „Fällig". */
+.book-badge.book-badge-soon {
+  background: #e8a81c;
+  color: #2a2005;
+}
+.book-name {
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+/* Dialog: Impfbuch anpassen */
+.book-edit {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+.book-preview {
+  width: 92px;
+  flex: 0 0 auto;
+}
+.book-edit-right {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.book-colors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 6px 0 10px;
+}
+.book-color {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid var(--btn-border);
+  background: var(--farbe);
+  cursor: pointer;
+  padding: 0;
+}
+.book-color.active {
+  border-color: var(--ink);
+  box-shadow: 0 0 0 2px var(--paper), 0 0 0 4px var(--ink);
+}
+.book-free {
+  font-size: 0.8rem;
+}
+
+/* Angaben im Impfbuch: kurze Felder paarweise nebeneinander, mehrzeilige
+   über die volle Breite. Die Beschriftung sitzt klein über dem Feld —
+   das hält die Spalten schmal und die Zeilen ruhig. */
+#book-fields {
+  display: grid;
+  /* 140 px, damit auch auf einem 375-px-Gerät zwei Spalten nebeneinander
+     passen (2 × 140 + 12 Abstand < verfügbare Breite). */
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin-top: 4px;
+}
+.book-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  min-width: 0;
+}
+.book-field.wide {
+  grid-column: 1 / -1;
+}
+.book-field-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  /* Platz für zwei Zeilen reservieren: lange Beschriftungen brechen um,
+     die Eingabefelder bleiben trotzdem auf gleicher Höhe. */
+  line-height: 1.15;
+  min-height: 2.3em;
+  display: flex;
+  align-items: flex-end;
+}
+.book-field input,
+.book-field textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 9px 10px;
+  font: inherit;
+  font-size: 0.9rem;
+  color: var(--ink);
+  background: var(--input-bg, var(--paper));
+  border: 1px solid var(--btn-border);
+  border-radius: 8px;
+  transition: border-color 0.12s, box-shadow 0.12s;
+}
+.book-field textarea {
+  resize: vertical;
+  min-height: 46px;
+}
+.book-field input:focus,
+.book-field textarea:focus {
+  outline: none;
+  border-color: #c8901f;
+  box-shadow: 0 0 0 2px rgba(200, 144, 31, 0.25);
+}
+.book-field input::placeholder,
+.book-field textarea::placeholder {
+  color: var(--ink-soft);
+  opacity: 0.6;
+}
+
+/* Fällig: eingeklappte Liste für Termine, die weit in der Zukunft liegen.
+   Bewusst zurückhaltender als eine Sektionsüberschrift — es ist Beiwerk,
+   keine Handlungsaufforderung. */
+.upcoming-later > summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 10px 14px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--ink-soft);
+  background: rgba(120, 115, 100, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.upcoming-later > summary::-webkit-details-marker {
+  display: none;
+}
+.upcoming-later > summary::after {
+  content: "▸";
+  margin-left: auto;
+  transition: transform 0.15s;
+}
+.upcoming-later[open] > summary::after {
+  transform: rotate(90deg);
+}
+.upcoming-later[open] > summary {
+  border-bottom: 1px solid var(--line);
+}
+.later-count {
+  font-weight: 400;
+  font-size: 0.74rem;
+}
+
+/* Schnelleintrag: ausklappbare Sektion für früher übliche Impfungen */
+.q-historic {
+  margin-top: 10px;
+  border: 1px dashed var(--line-strong);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.q-historic summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 9px 12px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--ink);
+  background: rgba(120, 115, 100, 0.08);
+  border-left: 4px solid var(--group-color, #7a6a55);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px;
+}
+.q-historic summary::-webkit-details-marker {
+  display: none;
+}
+.q-historic summary::after {
+  content: "▸";
+  margin-left: auto;
+  color: var(--ink-soft);
+  transition: transform 0.15s;
+}
+.q-historic[open] summary::after {
+  transform: rotate(90deg);
+}
+.q-historic-hint {
+  font-weight: 400;
+  font-size: 0.74rem;
+  color: var(--ink-soft);
+}
+.q-historic .q-group {
+  padding: 6px 10px 10px;
+}
+
+/* Symbole in den kleinen Zeilen-Schaltflächen */
+.btn-hide .ic-btn {
+  width: 0.95em;
+  height: 0.95em;
+  margin-right: 5px;
+  vertical-align: -0.15em;
+}
+.btn-hide {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Fällig-Einträge: antippbar → springt im Impfpass zur Impfung */
+.rem-clickable {
+  cursor: pointer;
+}
+.rem-clickable:active {
+  transform: scale(0.995);
+}
+/* Kurzes Hervorheben der angesprungenen Impfung im Impfpass */
+@keyframes vacFlash {
+  0%,
+  100% {
+    background: transparent;
+  }
+  15%,
+  60% {
+    background: rgba(233, 201, 74, 0.45);
+  }
+}
+.vac-flash {
+  animation: vacFlash 2.2s ease-in-out;
+  border-radius: 8px;
+}
+:root[data-theme="dark"] .vac-flash,
+:root[data-theme="neutral"] .vac-flash {
+  animation-name: vacFlashAlt;
+}
+@keyframes vacFlashAlt {
+  0%,
+  100% {
+    background: transparent;
+  }
+  15%,
+  60% {
+    background: rgba(255, 255, 255, 0.35);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .vac-flash {
+    animation-duration: 0.01s;
+  }
+}
+
+/* Info-Fenster: Krankheitsbeschreibung, Altersangabe, Begründung, Quelle */
+.info-disease {
+  background: rgba(120, 115, 100, 0.08);
+  border-left: 4px solid var(--line-strong);
+  border-radius: 6px;
+  padding: 10px 12px;
+}
+
+.info-age {
+  background: rgba(58, 90, 140, 0.09);
+  border-left: 4px solid var(--stamp-blue);
+  border-radius: 6px;
+  padding: 10px 12px;
+}
+.info-nobooster {
+  background: rgba(224, 138, 30, 0.1);
+  border-left: 4px solid var(--soon);
+  border-radius: 6px;
+  padding: 10px 12px;
+}
+.info-source {
+  border-top: 1px dashed var(--line);
+  padding-top: 10px;
+}
+.info-source p {
+  font-size: 0.82rem;
+  color: var(--ink-soft);
+}
+.info-source a {
+  word-break: break-word;
+}
+
+/* Behörden-Klarstellung (Play-Richtlinie „irreführende Behauptungen") */
+.notice-gov {
+  background: rgba(58, 90, 140, 0.1);
+  border-left: 4px solid var(--stamp-blue);
+  border-radius: 6px;
+  padding: 10px 12px;
+  margin-bottom: 12px !important;
+}
+/* Liste der amtlichen Originalquellen */
+.source-list {
+  margin: 0 0 10px;
+  padding-left: 18px;
+}
+.source-list li {
+  font-size: 0.84rem;
+  line-height: 1.5;
+  color: var(--ink-soft);
+  margin-bottom: 4px;
+}
+.source-list a {
+  word-break: break-word;
+}
+
+
+/* ===================================================== ANSICHT „MODERN"
+ * Gestalterische Verfeinerung der klassischen Ansicht: einheitliche Ecken,
+ * gestaffelte Tiefe, ruhigere Typografie, größere Anfassflächen und eine
+ * feine, gleichmäßige Papiertextur.
+ *
+ * Bewusst als eigene Ansicht statt als neuer Standard — der klassische
+ * Impfpass-Look bleibt unverändert. Enthält KEINE border-Angaben, damit die
+ * Ränder der jeweiligen Farbwelt gelten.
+ */
+
+/* --- Flächen: gleiche Ecken, gestaffelte Tiefe --- */
+  :root[data-theme="modern"] .form-card,
+  :root[data-theme="modern"] .pass-section,
+  :root[data-theme="modern"] .travel-card,
+  :root[data-theme="modern"] .travel-mine,
+  :root[data-theme="modern"] .reminder {
+  border-radius: var(--r-md);
+  box-shadow: var(--el-2);
+}
+  :root[data-theme="modern"] .pass-section,
+  :root[data-theme="modern"] .travel-card {
+  box-shadow: var(--el-3);
+}
+  :root[data-theme="modern"] dialog {
+  border-radius: var(--r-lg);
+  box-shadow: var(--el-4);
+}
+
+/* --- Bedienelemente: gleiche Höhe, sauberer Druckpunkt --- */
+  :root[data-theme="modern"] .btn {
+  border-radius: var(--r-sm);
+  min-height: 44px; /* bequem treffbar */
+  box-shadow: var(--el-1);
+}
+.btn:hover {
+  box-shadow: var(--el-2);
+}
+.btn:active {
+  transform: translateY(1px) scale(0.995);
+  box-shadow: var(--el-1);
+}
+  :root[data-theme="modern"] .btn-small,
+  :root[data-theme="modern"] .preset-chip,
+  :root[data-theme="modern"] .prof-chip {
+  border-radius: var(--r-pill);
+  box-shadow: var(--el-1);
+}
+  :root[data-theme="modern"] .theme-btn {
+  border-radius: var(--r-sm);
+  min-height: 44px;
+  box-shadow: var(--el-1);
+}
+  :root[data-theme="modern"] .rem-action {
+  border-radius: var(--r-pill);
+  min-height: 38px;
+}
+
+/* --- Typografie: ruhigere Hierarchie --- */
+  :root[data-theme="modern"] .who-title {
+  letter-spacing: 0.01em;
+}
+  :root[data-theme="modern"] .panel-title {
+  font-size: 0.82rem;
+  letter-spacing: 0.09em;
+}
+  :root[data-theme="modern"] .vac-title {
+  font-size: 0.98rem;
+  letter-spacing: -0.005em;
+}
+  :root[data-theme="modern"] .rem-title {
+  font-size: 0.95rem;
+  letter-spacing: -0.005em;
+}
+  :root[data-theme="modern"] .pass-section-head {
+  letter-spacing: 0.08em;
+}
+/* Datumsangaben mit gleich breiten Ziffern — Spalten fluchten dadurch */
+  :root[data-theme="modern"] .up-date,
+  :root[data-theme="modern"] .ve-date,
+  :root[data-theme="modern"] .rem-sub,
+  :root[data-theme="modern"] .next-date,
+  :root[data-theme="modern"] .holder-value {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+/* Fließtext etwas luftiger */
+  :root[data-theme="modern"] .hint,
+  :root[data-theme="modern"] .details-body p,
+  :root[data-theme="modern"] .info-section p {
+  line-height: 1.6;
+}
+
+/* --- Deckblatt: wirkt wie geprägter Druck statt flacher Fläche --- */
+  :root[data-theme="modern"] .pass-cover {
+  border-radius: var(--r-lg);
+  box-shadow: var(--el-3), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+/* --- Tab-Leiste --- */
+  :root[data-theme="modern"] .tabs {
+  border-radius: var(--r-md);
+  box-shadow: var(--el-2);
+}
+  :root[data-theme="modern"] .tab {
+  min-height: 46px;
+}
+
+/* --- Info-Fenster: Abschnitte klarer trennen --- */
+  :root[data-theme="modern"] .info-section h4 {
+  letter-spacing: 0.04em;
+}
+
+
+/* Feine, gleichmäßig kachelnde Papiertextur (rechnerisch erzeugt) */
+:root[data-theme="modern"] body {
+  background-image: url("../images/paper.png");
+  background-size: 256px 256px;
+}
+
+/* ============================================================ DARK MODE */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: #26221b;
+  --pass-cream: #322d22;
+  --ink: #ece4d2;
+  --ink-soft: #b0a690;
+  --line: #433d30;
+  --line-strong: #5a5241;
+  --btn-border: rgba(230, 220, 190, 0.32);
+  --btn-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --btn-shadow-hover: 0 2px 6px rgba(0, 0, 0, 0.6);
+  --shadow: 0 2px 10px rgba(0, 0, 0, 0.55);
+  --stamp-blue: #86aee6;
+  --overdue: #e5675a;
+  --soon: #eda13a;
+  --future: #6ea8e0;
+  --complete: #57c98a;
+  --unknown: #9a9284;
+}
+:root[data-theme="dark"] body {
+  background-color: #1c1913;
+  background-image: linear-gradient(
+      rgba(20, 17, 11, 0.82),
+      rgba(20, 17, 11, 0.82)
+    ),
+    url("../images/paper.jpg");
+}
+/* Deckblatt */
+:root[data-theme="dark"] .app-header {
+  color: var(--ink);
+}
+:root[data-theme="dark"] .pass-cover {
+  background: rgba(233, 201, 74, 0.09);
+  border-color: #6a5c2e;
+  box-shadow: 0 0 0 1px #6a5c2e inset;
+}
+:root[data-theme="dark"] .profile-switch {
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.06);
+  border-bottom-color: #6a5c2e;
+}
+:root[data-theme="dark"] .holder-value {
+  border-bottom-color: #6a5c2e;
+}
+/* Leisten & Flächen */
+:root[data-theme="dark"] .tabs {
+  background: rgba(255, 255, 255, 0.06);
+}
+:root[data-theme="dark"] .btn,
+:root[data-theme="dark"] .btn-small,
+:root[data-theme="dark"] .btn-quick,
+:root[data-theme="dark"] .prof-chip,
+:root[data-theme="dark"] .theme-btn,
+:root[data-theme="dark"] .preset-chip {
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--ink);
+}
+:root[data-theme="dark"] .btn:hover,
+:root[data-theme="dark"] .btn-small:hover,
+:root[data-theme="dark"] .btn-quick:hover,
+:root[data-theme="dark"] .prof-chip:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+:root[data-theme="dark"] .btn-small {
+  color: #e8c86a;
+}
+:root[data-theme="dark"] .btn-danger {
+  background: rgba(255, 255, 255, 0.05);
+}
+:root[data-theme="dark"] .preset-chip {
+  color: var(--stamp-blue);
+}
+:root[data-theme="dark"] .prof-chip.active,
+:root[data-theme="dark"] .theme-btn.active {
+  background: var(--pass-yellow-dark);
+  color: #26210f;
+}
+:root[data-theme="dark"] .btn-info {
+  background: rgba(255, 255, 255, 0.06);
+}
+:root[data-theme="dark"] .collapsed-row {
+  background: rgba(255, 255, 255, 0.03);
+}
+:root[data-theme="dark"] .disclaimer,
+:root[data-theme="dark"] .verdict {
+  background: rgba(255, 255, 255, 0.04);
+}
+/* Formulare & Dialoge */
+:root[data-theme="dark"] dialog {
+  background: var(--paper);
+  color: var(--ink);
+}
+:root[data-theme="dark"] input[type="text"],
+:root[data-theme="dark"] input[type="date"],
+:root[data-theme="dark"] select {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--ink);
+  border-color: var(--line-strong);
+}
+:root[data-theme="dark"] .hint {
+  color: var(--ink-soft);
+}
+:root[data-theme="dark"] .travel-summary.open,
+:root[data-theme="dark"] .tv-partial {
+  color: #f0b45c;
+}
+:root[data-theme="dark"] .travel-note {
+  color: var(--ink-soft);
+}
+
+/* ============================================================ ICON-SYSTEM */
+/* Moderne Linien-Icons (SVG, erben currentColor). */
+.ic {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+}
+.ic-svg {
+  width: 1.2em;
+  height: 1.2em;
+  display: block;
+  flex-shrink: 0;
+}
+.btn .ic-svg,
+.theme-btn .ic-svg,
+.btn-small .ic-svg {
+  width: 1.15em;
+  height: 1.15em;
+}
+/* Inline im Fließtext (z. B. ✓ in Meldungen) */
+.ic-svg.ic-inline {
+  display: inline-block;
+  width: 1.05em;
+  height: 1.05em;
+  vertical-align: -0.15em;
+}
+/* Buttons: Icon + Text sauber zentriert */
+.btn,
+.theme-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* ================================================================ PREMIUM */
+.btn-premium {
+  background: linear-gradient(135deg, #f4dd88 0%, #e3b840 100%);
+  border: 1px solid #c99a1e;
+  color: #4a3a00;
+  font-weight: 700;
+}
+.btn-premium:hover {
+  background: linear-gradient(135deg, #f7e49a 0%, #e9c257 100%);
+}
+.btn-premium .ic-svg {
+  color: #7a5a00;
+}
+.btn-premium.is-premium {
+  background: linear-gradient(135deg, #d8ecd8 0%, #a9d9b8 100%);
+  border-color: var(--complete);
+  color: #1f5c3a;
+}
+.btn-premium.is-premium .ic-svg {
+  color: var(--complete);
+}
+
+.premium-head {
+  text-align: center;
+  margin-bottom: 6px;
+}
+/* Diamant steht frei — kein Kreis, kein Rahmen. */
+.premium-badge-frame {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 0 10px;
+}
+.premium-badge {
+  display: block;
+  width: 92px;
+  height: 84px;
+  filter: drop-shadow(0 3px 5px rgba(30, 40, 70, 0.28));
+}
+/* Dunkle Ansicht: helles Medaillon hebt sich klar vom Dialog ab */
+.premium-head h3 {
+  margin: 0;
+}
+.premium-benefits {
+  list-style: none;
+  padding: 0;
+  margin: 16px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+.premium-benefits li {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  color: var(--ink);
+}
+.premium-benefits .ic-svg {
+  width: 20px;
+  height: 20px;
+  color: var(--complete);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.premium-reason {
+  background: rgba(224, 138, 30, 0.1);
+  border: 1px solid var(--soon);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 0.88rem;
+  line-height: 1.45;
+  margin-bottom: 12px;
+}
+.premium-reason p {
+  margin: 0 0 6px;
+}
+.premium-reason p:last-child {
+  margin-bottom: 0;
+}
+.premium-active {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(46, 139, 87, 0.12);
+  border: 1px solid var(--complete);
+  color: var(--complete);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 12px;
+}
+/* „Premium"-Kennzeichen (z. B. an gesperrter Reise-Option) */
+.premium-tag {
+  display: inline-block;
+  font-style: normal;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: linear-gradient(135deg, #f4dd88, #e3b840);
+  color: #4a3a00;
+  padding: 2px 7px;
+  border-radius: 6px;
+  margin-left: 6px;
+  vertical-align: 1px;
+}
+/* Gesperrte Reise-Option (ohne Premium) */
+.travel-toggle.locked {
+  width: 100%;
+  justify-content: flex-start;
+  text-align: left;
+}
+.travel-toggle.locked .ic-svg {
+  color: var(--soon);
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+/* ================================================= WERBUNG / KAUF-LAYOUT */
+/* Reservierter Platz unten, damit das Banner keine Inhalte verdeckt. */
+:root {
+  --ad-height: 0px;
+}
+/* --ad-height ist die gemessene Höhe der Werbeleiste und enthält deren
+   eigenen Sicherheitsabstand. Ist die Leiste ausgeblendet — bei Premium,
+   nicht geladener Anzeige oder offener Tastatur — steht sie auf 0, und die
+   Navigationsleiste des Geräts würde die letzten Zeilen verdecken. Deshalb
+   mindestens den Geräte-Sicherheitsabstand freihalten. */
+body {
+  padding-bottom: max(var(--ad-height), env(safe-area-inset-bottom, 0px));
+}
+/* Dezente Werbe-/Platzhalterleiste unten */
+.ad-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 14px;
+  padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+  background: var(--paper);
+  border-top: 1px solid var(--line-strong);
+  box-shadow: 0 -2px 10px rgba(45, 35, 0, 0.12);
+  font-size: 0.82rem;
+  color: var(--ink-soft);
+}
+/* Beim Tippen ausblenden: die Leiste würde sonst mit dem schrumpfenden
+   Fenster nach oben springen und das Eingabefeld verdecken. */
+body.keyboard-open .ad-bar {
+  display: none;
+}
+.ad-bar-text {
+  flex: 1;
+  min-width: 0;
+}
+.ad-bar-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid #c99a1e;
+  background: linear-gradient(135deg, #f4dd88, #e3b840);
+  color: #4a3a00;
+  font-weight: 700;
+  font-size: 0.8rem;
+  padding: 6px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.ad-bar-btn .ic-svg {
+  width: 1em;
+  height: 1em;
+  color: #7a5a00;
+}
+/* Premium-Dialog: Aktionen untereinander (Kauf oben, dann Wiederherstellen) */
+.premium-actions {
+  flex-direction: column-reverse;
+  align-items: stretch;
+  gap: 8px;
+}
+.premium-actions .btn {
+  width: 100%;
+}
+/* Kurzhinweis unten (Zurück-Taste: „Erneut drücken zum Beenden") */
+.toast {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(var(--ad-height, 0px) + 24px);
+  z-index: 200;
+  background: rgba(30, 27, 18, 0.92);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 9px 16px;
+  border-radius: 20px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+  white-space: nowrap;
+}
+
+/* Diagnose-Statuszeile (nur bei MONETIZE.DIAG befüllt) */
+.diag-line {
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  font-size: 0.72rem !important;
+  color: var(--ink-soft);
+  word-break: break-word;
+}
+.diag-line:empty {
+  display: none;
+}
+
+/* ======================================================= NEUTRALE ANSICHT */
+/* Nachempfunden den Innenseiten des gelben Impfausweises: kräftiges
+   Goldgelb, schwarze Schrift und schwarze Linien. Die Ränder sind hier
+   bewusst dicker als in den anderen Ansichten — so bleibt die Tabellen-
+   struktur auf dem Handy gut erkennbar. */
+:root[data-theme="neutral"] {
+  color-scheme: light;
+  --pass-yellow: #f2ab17;
+  --pass-yellow-dark: #d8930a;
+  --pass-cream: #f9cd63;
+  --paper: #f7bd33;
+  --ink: #101010;
+  --ink-soft: #3a3527;
+  --line: #101010;
+  --line-strong: #000000;
+  --btn-border: #101010;
+  --btn-shadow: 0 1px 2px rgba(0, 0, 0, 0.22);
+  --btn-shadow-hover: 0 2px 6px rgba(0, 0, 0, 0.28);
+  --shadow: 0 2px 10px rgba(0, 0, 0, 0.22);
+  --stamp-blue: #1c3f7a;
+  /* Statusfarben nachgedunkelt: die hellen Töne der „Hell"-Ansicht sind auf
+     dem kräftigen Gelb kaum lesbar (teils unter 3:1). */
+  --overdue: #9c1f12;
+  --soon: #7d4400;
+  --future: #17436f;
+  --complete: #14603a;
+  --unknown: #46402e;
+}
+:root[data-theme="neutral"] body {
+  background-color: #f0a712;
+  background-image: none;
+}
+:root[data-theme="neutral"] .app-header {
+  color: var(--ink);
+}
+:root[data-theme="neutral"] .who-title,
+:root[data-theme="neutral"] .panel-title,
+:root[data-theme="neutral"] .setting-title,
+:root[data-theme="neutral"] .vac-title,
+:root[data-theme="neutral"] .app-details summary {
+  color: #000;
+}
+:root[data-theme="neutral"] .profile-switch {
+  color: var(--ink);
+  background: #f9cd63;
+}
+:root[data-theme="neutral"] .holder-value,
+:root[data-theme="neutral"] .holder-label {
+  color: #1b1b14;
+}
+:root[data-theme="neutral"] .tabs {
+  background: #f7bd33;
+}
+:root[data-theme="neutral"] .tab {
+  color: #322d1c;
+}
+:root[data-theme="neutral"] .tab.active {
+  color: #000;
+  border-bottom-color: #000;
+}
+
+/* --- kräftigere schwarze Ränder (gute Lesbarkeit auf dem Handy) --- */
+:root[data-theme="neutral"] .pass-cover,
+:root[data-theme="neutral"] .tabs,
+:root[data-theme="neutral"] .form-card,
+:root[data-theme="neutral"] .pass-section,
+:root[data-theme="neutral"] .travel-card,
+:root[data-theme="neutral"] .travel-mine,
+:root[data-theme="neutral"] .reminder,
+:root[data-theme="neutral"] .travel-toggle,
+:root[data-theme="neutral"] .radio-item,
+:root[data-theme="neutral"] .ad-bar {
+  border: 2px solid #000;
+}
+:root[data-theme="neutral"] .btn,
+:root[data-theme="neutral"] .btn-small,
+:root[data-theme="neutral"] .prof-chip,
+:root[data-theme="neutral"] .theme-btn,
+:root[data-theme="neutral"] .preset-chip,
+:root[data-theme="neutral"] .btn-info {
+  border: 2px solid #000;
+  color: #000;
+}
+:root[data-theme="neutral"] input[type="text"],
+:root[data-theme="neutral"] input[type="date"],
+:root[data-theme="neutral"] select,
+:root[data-theme="neutral"] dialog {
+  border: 2px solid #000;
+  color: #000;
+}
+/* Trennlinien der Tabellenzeilen ebenfalls deutlicher */
+:root[data-theme="neutral"] .vac-row {
+  border-top: 2px solid #000;
+}
+:root[data-theme="neutral"] .tab + .tab {
+  border-left: 2px solid #000;
+}
+:root[data-theme="neutral"] .divider {
+  border-top: 2px dashed #000;
+}
+:root[data-theme="neutral"] .profile-switch,
+:root[data-theme="neutral"] .holder-value {
+  border-bottom: 2px solid #000;
+}
+/* Auf dem gelben Grund ist Weiß-Transparent unbrauchbar → volle Flächen */
+:root[data-theme="neutral"] .btn,
+:root[data-theme="neutral"] .btn-small,
+:root[data-theme="neutral"] .theme-btn,
+:root[data-theme="neutral"] .prof-chip,
+:root[data-theme="neutral"] .travel-toggle,
+:root[data-theme="neutral"] .radio-item {
+  background: #f9cd63;
+}
+:root[data-theme="neutral"] .btn:hover,
+:root[data-theme="neutral"] .btn-small:hover,
+:root[data-theme="neutral"] .prof-chip:hover {
+  background: #fbdb8c;
+}
+:root[data-theme="neutral"] .btn-primary,
+:root[data-theme="neutral"] .theme-btn.active,
+:root[data-theme="neutral"] .prof-chip.active {
+  background: #000;
+  color: #f7bd33;
+}
+:root[data-theme="neutral"] .btn-danger {
+  background: #f9cd63;
+  color: #8f1d10;
+  border-color: #8f1d10;
+}
+:root[data-theme="neutral"] .disclaimer,
+:root[data-theme="neutral"] .verdict,
+:root[data-theme="neutral"] .collapsed-row {
+  background: rgba(255, 255, 255, 0.22);
+  border-color: #000;
+}
+:root[data-theme="neutral"] .hint,
+:root[data-theme="neutral"] .details-body p {
+  color: #2b2618;
+}
+/* Premium bleibt golden — Marken-Akzent, auch in neutraler Ansicht. */

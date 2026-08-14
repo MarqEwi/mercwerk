@@ -1,0 +1,16 @@
+{
+  "name": "SkillLog Med – Digitales Logbuch",
+  "short_name": "SkillLog Med",
+  "description": "Persönliches Ausbildungs- und Kompetenzlogbuch für medizinische Maßnahmen: Skills strukturiert erfassen, nach Zeiträumen, Orten und Tags filtern und druckbare Berichte für Praktika, Ausbildung und Portfolio erzeugen.",
+  "lang": "de",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#eff3f7",
+  "theme_color": "#15629f",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

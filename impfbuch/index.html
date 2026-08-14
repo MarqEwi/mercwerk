@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#e9c94a" />
+    <meta name="description" content="Digitaler Impfpass mit STIKO-Fälligkeitserinnerung" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="icon" type="image/png" href="icons/icon-192.png" />
+    <link rel="apple-touch-icon" href="icons/icon-192.png" />
+    <link rel="stylesheet" href="css/styles.css" />
+    <title>Impfbuch-App</title>
+  </head>
+  <body>
+    <header class="app-header">
+      <button class="btn-gear" id="btn-config" title="Einstellungen" aria-label="Einstellungen">
+        <span class="ic" data-icon="settings"></span>
+      </button>
+      <div class="pass-cover">
+        <h1 class="who-title">Impfbuch-App</h1>
+
+        <div class="holder-box">
+          <div class="holder-row">
+            <span class="holder-label">ausgestellt für / issued to / délivré à</span>
+            <label class="sr-only" for="profile-switch">Person auswählen</label>
+            <select id="profile-switch" class="profile-switch"></select>
+          </div>
+          <div class="holder-row">
+            <span class="holder-label">Geburtsdatum / born on / né(e) le</span>
+            <span class="holder-value" id="pass-holder">—</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <nav class="tabs">
+      <button class="tab active" data-tab="pass">Impfpass</button>
+      <button class="tab" data-tab="reminders">
+        Fällig <span id="reminder-count" class="badge hidden">0</span>
+      </button>
+      <button class="tab" data-tab="travel">Reise</button>
+      <button class="tab" data-tab="settings">Profil</button>
+    </nav>
+
+    <main>
+      <!-- Tab: Impfpass -->
+      <section id="panel-pass" class="tab-panel active">
+        <button class="btn btn-quick" id="btn-quick">
+          <span class="ic" data-icon="zap"></span>
+          Schnelleintrag — mehrere Impfungen an einem Tag
+        </button>
+        <div id="coach" class="coach hidden" role="status">
+          <p class="coach-text" id="coach-text"></p>
+          <button type="button" class="btn btn-small coach-ok" id="coach-ok">
+            Verstanden
+          </button>
+        </div>
+        <div class="vac-search">
+          <label class="sr-only" for="vac-search-input">Impfung suchen</label>
+          <input
+            id="vac-search-input"
+            list="vac-search-list"
+            type="search"
+            placeholder="Impfung suchen oder auswählen …"
+            autocomplete="off"
+          />
+          <datalist id="vac-search-list"></datalist>
+        </div>
+        <div id="pass-pages"></div>
+        <p class="disclaimer">
+          Hinweis: Diese App ersetzt nicht den amtlichen Impfausweis und keine
+          ärztliche Beratung. Das hinterlegte Schema orientiert sich am
+          STIKO-Impfkalender; individuelle Empfehlungen können abweichen.
+          <br />
+          <strong>Privates Angebot ohne Verbindung zu RKI, STIKO oder einer
+          Behörde.</strong> Originalquelle:
+          <a href="https://www.rki.de/DE/Themen/Infektionskrankheiten/Impfen/Impfkalender/impfkalender-node.html" target="_blank" rel="noopener">rki.de — Impfkalender</a>
+        </p>
+      </section>
+
+      <!-- Tab: Fällige Impfungen -->
+      <section id="panel-reminders" class="tab-panel">
+        <h2 class="panel-title">Anstehende Impfungen</h2>
+        <div id="reminders"></div>
+      </section>
+
+      <!-- Tab: Reise- & Länderempfehlungen -->
+      <section id="panel-travel" class="tab-panel">
+        <h2 class="panel-title">Reise- &amp; Länderempfehlungen</h2>
+        <div id="travel-selected"></div>
+        <div class="form-card">
+          <label>
+            Reiseland suchen
+            <input
+              type="text"
+              id="travel-search"
+              list="country-datalist"
+              placeholder="Land eingeben, z. B. Thailand…"
+              autocomplete="off"
+            />
+          </label>
+          <datalist id="country-datalist"></datalist>
+          <label>
+            … oder nach Kontinent auswählen
+            <select id="travel-country"></select>
+          </label>
+          <button class="btn btn-world" id="travel-world">
+            <span class="ic" data-icon="globe"></span> Weltweiter Impfschutz
+          </button>
+        </div>
+        <div id="travel-result">
+          <p class="hint">Suche oben ein Land oder wähle „Weltweiter Impfschutz", um die Impfempfehlungen zu sehen.</p>
+        </div>
+      </section>
+
+      <!-- Tab: Profil & Daten -->
+      <section id="panel-settings" class="tab-panel">
+        <h2 class="panel-title">Personen</h2>
+        <div class="form-card">
+          <div id="profile-manager" class="profile-manager"></div>
+          <div class="btn-row">
+            <button class="btn" id="btn-add-profile">
+              <span class="ic" data-icon="plus"></span> Person hinzufügen
+            </button>
+            <button class="btn btn-danger" id="btn-delete-profile">
+              <span class="ic" data-icon="trash"></span> Diese Person löschen
+            </button>
+          </div>
+          <hr class="divider" />
+          <label>
+            Name
+            <input type="text" id="profile-name" placeholder="Vor- und Nachname" />
+          </label>
+          <label>
+            Geburtsdatum
+            <input type="date" id="profile-birthdate" />
+          </label>
+          <p class="hint">
+            Das Geburtsdatum wird für die Berechnung der Impf-Fälligkeiten benötigt.
+          </p>
+        </div>
+
+        <h2 class="panel-title">Impfbücher</h2>
+        <div class="form-card">
+          <p class="hint">
+            Jede Person hat ihr eigenes Impfbuch. Tippe darauf, um Farbe und
+            persönliche Angaben zu ändern. Die rote Zahl zeigt, wie viele
+            Impfungen dort gerade anstehen.
+          </p>
+          <div id="book-shelf" class="book-shelf"></div>
+        </div>
+
+        <h2 class="panel-title">Daten</h2>
+        <div class="form-card">
+          <p class="hint">
+            Alle Daten werden ausschließlich lokal auf diesem Gerät gespeichert.
+          </p>
+          <div class="btn-row">
+            <button class="btn btn-export">
+              <span class="ic" data-icon="upload"></span> Exportieren
+            </button>
+            <button class="btn btn-import">
+              <span class="ic" data-icon="download"></span> Importieren
+            </button>
+          </div>
+          <button class="btn btn-backup">
+            <span class="ic" data-icon="archive"></span> Backup erstellen
+          </button>
+          <p class="hint">
+            Speichert ausgewählte Profile oder alles inkl. Einstellungen als
+            eine Backup-Datei. Wiederherstellen später über „Importieren".
+          </p>
+        </div>
+
+        <h2 class="panel-title">Ausgeblendete Impfungen</h2>
+        <div class="form-card">
+          <div id="hidden-manager"></div>
+        </div>
+
+      </section>
+
+      <!-- Bereich: Einstellungen (über das Zahnrad im Kopf erreichbar) -->
+      <section id="panel-config" class="tab-panel">
+        <h2 class="panel-title">Darstellung</h2>
+        <div class="form-card">
+          <div class="theme-choice">
+            <button type="button" class="theme-btn" data-theme-choice="light">
+              <span class="ic" data-icon="sun"></span> Hell
+            </button>
+            <button type="button" class="theme-btn" data-theme-choice="modern">
+              <span class="ic" data-icon="gem"></span> Modern
+            </button>
+            <button type="button" class="theme-btn" data-theme-choice="neutral">
+              <span class="ic" data-icon="contrast"></span> Neutral
+            </button>
+            <button type="button" class="theme-btn" data-theme-choice="dark">
+              <span class="ic" data-icon="moon"></span> Dunkel
+            </button>
+            <button type="button" class="theme-btn" data-theme-choice="auto">
+              <span class="ic" data-icon="settings"></span> Automatisch
+            </button>
+          </div>
+          <p class="hint">
+            „Hell" zeigt den klassischen Impfpass-Look, „Modern" dieselbe Optik
+            feiner ausgearbeitet, „Neutral" eine ruhige
+            helle Ansicht. „Automatisch" folgt der Einstellung deines Geräts.
+          </p>
+        </div>
+
+        <h2 class="panel-title">Premium</h2>
+        <div class="form-card">
+          <button class="btn btn-premium" id="btn-premium">
+            <span class="ic" data-icon="gem"></span>
+            <span>Premium freischalten</span>
+          </button>
+          <p class="hint" id="premium-hint">
+            Beliebig viele Profile und länderspezifische Reiseempfehlungen
+            freischalten.
+          </p>
+        </div>
+
+        <h2 class="panel-title">Erinnerungen</h2>
+        <div class="form-card">
+          <button class="btn" id="btn-notify">
+            <span class="ic" data-icon="bell"></span> Benachrichtigungen aktivieren
+          </button>
+          <p class="hint" id="notify-status">
+            Erinnert an fällige Impfungen aller Personen — beim Öffnen der App und,
+            wo möglich, per täglicher Hintergrundprüfung.
+          </p>
+        </div>
+
+        <h2 class="panel-title">Daten</h2>
+        <div class="form-card">
+          <p class="hint">
+            Alle Daten werden ausschließlich lokal auf diesem Gerät gespeichert.
+          </p>
+          <div class="btn-row">
+            <button class="btn btn-export">
+              <span class="ic" data-icon="upload"></span> Exportieren
+            </button>
+            <button class="btn btn-import">
+              <span class="ic" data-icon="download"></span> Importieren
+            </button>
+          </div>
+          <input type="file" id="import-file" accept="application/json" hidden />
+          <button class="btn btn-backup">
+            <span class="ic" data-icon="archive"></span> Backup erstellen
+          </button>
+          <p class="hint">
+            Speichert ausgewählte Profile oder alles inkl. Einstellungen als
+            eine Backup-Datei. Wiederherstellen später über „Importieren".
+          </p>
+          <button class="btn btn-danger" id="btn-reset">
+            <span class="ic" data-icon="trash"></span> Alle Daten löschen
+          </button>
+        </div>
+
+        <div class="form-card">
+          <button class="btn" id="btn-rerun-setup">
+            <span class="ic" data-icon="refresh"></span> Ersteinrichtung erneut starten
+          </button>
+          <p class="hint">
+            Führt dich noch einmal durch Profil-Anlage und Impf-Übernahme.
+          </p>
+        </div>
+
+        <div class="form-card hidden" id="ad-privacy-card">
+          <button class="btn" id="btn-ad-privacy">
+            <span class="ic" data-icon="shieldCheck"></span> Werbe-Einstellungen ändern
+          </button>
+          <p class="hint">
+            Deine Einwilligung zu personalisierter Werbung anpassen.
+          </p>
+        </div>
+
+        <div class="form-card">
+          <details class="app-details">
+            <summary>Informationen zur App</summary>
+            <div class="details-body">
+              <p><strong>Impfbuch-App</strong> · Version 2.4.0</p>
+              <p class="diag-line" id="diag-line"></p>
+              <p>
+                Digitaler Impfpass im Stil des deutschen Impfausweises — mit
+                STIKO-Impfschema, Fälligkeits- und Reiseempfehlungen. Ergänzend
+                zum amtlichen Impfpass gedacht.
+              </p>
+              <p>
+                Alle Daten werden ausschließlich lokal auf diesem Gerät
+                gespeichert. Keine Anmeldung, keine Server, keine Weitergabe.
+              </p>
+              <p>
+                Ein Produkt von <strong>MERCwerk</strong> —
+                <a href="https://www.mercwerk.de" target="_blank" rel="noopener">www.mercwerk.de</a>
+              </p>
+            </div>
+          </details>
+        </div>
+
+        <div class="form-card">
+          <details class="app-details">
+            <summary>Impressum</summary>
+            <div class="details-body">
+              <p><em>Angaben gemäß § 5 Digitale-Dienste-Gesetz (DDG)</em></p>
+              <p>
+                <strong>Diensteanbieter</strong><br />
+                Marc Ewers<br />
+                Einzelunternehmen, handelnd unter der Geschäftsbezeichnung
+                „MERCwerk“<br />
+                Kuhlbornstr. 88<br />
+                33184 Altenbeken<br />
+                Deutschland
+              </p>
+              <p>
+                <strong>Kontakt</strong><br />
+                E-Mail: marq.ewi@gmail.com
+              </p>
+              <p>
+                <strong>Umsatzsteuer</strong><br />
+                Als Kleinunternehmer im Sinne des § 19 Abs. 1 UStG wird keine
+                Umsatzsteuer berechnet und daher auch nicht ausgewiesen.
+              </p>
+              <p>
+                <strong>Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV</strong><br />
+                Marc Ewers, Kuhlbornstr. 88, 33184 Altenbeken
+              </p>
+              <p>
+                <strong>Verbraucherstreitbeilegung</strong><br />
+                Ich bin nicht bereit und nicht verpflichtet, an
+                Streitbeilegungsverfahren vor einer
+                Verbraucherschlichtungsstelle teilzunehmen (§ 36 VSBG).
+              </p>
+              <p>
+                Vollständiges Impressum inkl. Haftungs- und
+                Urheberrechtshinweisen:
+                <a href="https://www.mercwerk.de/impressum.html" target="_blank" rel="noopener">mercwerk.de/impressum</a>
+              </p>
+            </div>
+          </details>
+        </div>
+
+        <div class="form-card">
+          <details class="app-details">
+            <summary>Rechtliche Hinweise</summary>
+            <div class="details-body">
+              <p class="notice-gov">
+                <strong>Unabhängiges, privates Angebot.</strong> Diese App ist
+                ein Produkt von MERCwerk und steht in <strong>keiner Verbindung
+                zum Robert Koch-Institut (RKI), zur Ständigen Impfkommission
+                (STIKO), zum Auswärtigen Amt oder zu einer anderen Behörde</strong>.
+                Sie vertritt keine Behörde und bietet keine behördlichen
+                Dienstleistungen an.
+              </p>
+              <p>
+                <strong>Kein Ersatz für den amtlichen Impfausweis.</strong> Diese
+                App dient der persönlichen Übersicht und ersetzt weder den
+                offiziellen Impfpass noch eine ärztliche Beratung.
+              </p>
+              <p>
+                <strong>Quellen der Impfempfehlungen</strong><br />
+                Das hinterlegte Impfschema orientiert sich an den öffentlich
+                zugänglichen Empfehlungen der STIKO. Maßgeblich sind allein die
+                Originalquellen:
+              </p>
+              <ul class="source-list">
+                <li>
+                  RKI — Impfkalender:
+                  <a href="https://www.rki.de/DE/Themen/Infektionskrankheiten/Impfen/Impfkalender/impfkalender-node.html" target="_blank" rel="noopener">rki.de/impfkalender</a>
+                </li>
+                <li>
+                  RKI — Empfehlungen der STIKO:
+                  <a href="https://www.rki.de/DE/Themen/Infektionskrankheiten/Impfen/Staendige-Impfkommission/Empfehlungen-der-STIKO/empfehlungen-der-stiko-node.html" target="_blank" rel="noopener">rki.de/stiko-empfehlungen</a>
+                </li>
+                <li>
+                  Auswärtiges Amt — Reisen und Gesundheit:
+                  <a href="https://www.auswaertiges-amt.de/de/ReiseUndSicherheit/reise-gesundheit" target="_blank" rel="noopener">auswaertiges-amt.de/reise-gesundheit</a>
+                </li>
+              </ul>
+              <p>
+                Die Reise- und Länderempfehlungen sind eine kuratierte Auswahl
+                ohne Anspruch auf Vollständigkeit oder Richtigkeit. Für
+                verbindliche Empfehlungen wende dich an deine Ärztin/deinen Arzt
+                bzw. eine reisemedizinische Beratungsstelle.
+              </p>
+              <p>
+                <strong>Haftung</strong><br />
+                Die Inhalte dieser App werden mit Sorgfalt erstellt, jedoch ohne
+                Gewähr für Richtigkeit, Vollständigkeit und Aktualität.
+                Impfschemata und Reiseempfehlungen können sich ändern;
+                maßgeblich sind stets die oben verlinkten Originalquellen sowie
+                die Beurteilung deiner Ärztin bzw. deines Arztes. Die App trifft
+                keine medizinische Diagnose und gibt keine individuelle
+                Behandlungsempfehlung — die angezeigten Fälligkeiten sind eine
+                rechnerische Orientierung anhand des hinterlegten Schemas.
+              </p>
+              <p>
+                Eine Haftung für Entscheidungen, die allein auf Grundlage dieser
+                App getroffen werden, ist ausgeschlossen. Unberührt bleibt die
+                gesetzliche Haftung für Vorsatz und grobe Fahrlässigkeit sowie
+                bei Verletzung von Leben, Körper oder Gesundheit; diese kann
+                nicht ausgeschlossen werden.
+              </p>
+              <p>
+                <strong>Datenschutz:</strong> Deine Impfdaten verbleiben
+                ausschließlich im lokalen Speicher deines Geräts und können
+                jederzeit exportiert oder gelöscht werden. Die kostenlose
+                Version zeigt Werbung; dafür verarbeitet Google Daten — nur mit
+                deiner Einwilligung und ohne Bezug zu deinen Impfdaten.
+                <a href="datenschutz.html">Vollständige Datenschutzerklärung</a>
+              </p>
+            </div>
+          </details>
+        </div>
+      </section>
+    </main>
+
+    <!-- Dialog: Impfbuch anpassen -->
+    <dialog id="book-dialog">
+      <form method="dialog">
+        <h3 id="book-dlg-title">Impfbuch</h3>
+        <div class="book-edit">
+          <div id="book-preview" class="book-preview"></div>
+          <div class="book-edit-right">
+            <div class="setting-title">Farbe</div>
+            <div id="book-colors" class="book-colors"></div>
+            <label class="book-free">
+              Eigene Farbe
+              <input type="color" id="book-color-free" value="#d9a520" />
+            </label>
+          </div>
+        </div>
+        <hr class="divider" />
+        <p class="hint">
+          Alle folgenden Angaben sind freiwillig. Sie bleiben auf diesem Gerät
+          und fließen in keine Berechnung ein.
+        </p>
+        <div id="book-fields"></div>
+        <div class="dlg-actions">
+          <button type="button" class="btn" id="book-cancel">Abbrechen</button>
+          <button type="button" class="btn btn-primary" id="book-save">Speichern</button>
+        </div>
+      </form>
+    </dialog>
+
+    <!-- Dialog: Impfung eintragen -->
+    <dialog id="record-dialog">
+      <form id="record-form" method="dialog">
+        <h3 id="dlg-title">Impfung eintragen</h3>
+        <label>
+          Impfdatum(e) <span class="opt">— mehrere möglich</span>
+          <div class="q-date-row">
+            <input type="date" id="dlg-date" />
+            <button type="button" class="btn-small" id="dlg-add-date">＋ Datum</button>
+          </div>
+        </label>
+        <div id="dlg-datelist" class="date-chips"></div>
+        <label>
+          Impfstoff / Handelsname <span class="opt">(optional)</span>
+          <input type="text" id="dlg-product" placeholder="z. B. Priorix-Tetra" />
+        </label>
+        <div class="two-col">
+          <label>
+            Chargen-Nr. <span class="opt">(optional)</span>
+            <input type="text" id="dlg-batch" placeholder="z. B. AB1234" />
+          </label>
+          <label>
+            Arzt / Praxis <span class="opt">(optional)</span>
+            <input type="text" id="dlg-doctor" placeholder="z. B. Dr. Müller" />
+          </label>
+        </div>
+
+        <div class="combo-block">
+          <div class="combo-label">Abgedeckte Impfungen</div>
+          <div id="dlg-presets" class="preset-chips hidden"></div>
+          <div id="dlg-targets" class="target-list"></div>
+        </div>
+
+        <div class="dlg-actions">
+          <button type="button" class="btn btn-ghost" id="dlg-cancel">Abbrechen</button>
+          <button type="submit" class="btn btn-primary">Speichern</button>
+        </div>
+      </form>
+    </dialog>
+
+    <!-- Dialog: Schnelleintrag -->
+    <dialog id="quick-dialog">
+      <form id="quick-form" method="dialog">
+        <h3 id="q-title">Schnelleintrag</h3>
+        <label>
+          Impfdatum(e) <span class="opt">— mehrere möglich</span>
+          <div class="q-date-row">
+            <input type="date" id="q-date" />
+            <button type="button" class="btn-small" id="q-add-date">＋ Datum</button>
+          </div>
+        </label>
+        <div id="q-datelist" class="date-chips"></div>
+
+        <div class="two-col">
+          <label>
+            Arzt / Praxis <span class="opt">(optional)</span>
+            <input type="text" id="q-doctor" placeholder="z. B. Dr. Müller" />
+          </label>
+          <label>
+            Impfstoff / Handelsname <span class="opt">(optional)</span>
+            <input type="text" id="q-product" placeholder="z. B. Hexyon" />
+          </label>
+        </div>
+
+        <div class="preset-chips" id="q-presets"></div>
+        <div class="combo-label">Erhaltene Impfungen anhaken:</div>
+        <div id="q-checklist" class="q-checklist"></div>
+
+        <div class="q-count" id="q-count">Nichts ausgewählt</div>
+        <div class="dlg-actions">
+          <button type="button" class="btn btn-ghost" id="q-cancel">Abbrechen</button>
+          <button type="submit" class="btn btn-primary" id="q-save" disabled>Speichern</button>
+        </div>
+      </form>
+    </dialog>
+
+    <!-- Dialog: Eintrag bearbeiten -->
+    <dialog id="edit-dialog">
+      <form id="edit-form" method="dialog">
+        <h3>Impfeintrag bearbeiten</h3>
+        <p class="dlg-vac">Gilt für: <strong id="edit-covers"></strong></p>
+        <input type="hidden" id="edit-id" />
+        <label>
+          Datum der Impfung
+          <input type="date" id="edit-date" required />
+        </label>
+        <label>
+          Impfstoff / Handelsname <span class="opt">(optional)</span>
+          <input type="text" id="edit-product" placeholder="z. B. Priorix-Tetra" />
+        </label>
+        <div class="two-col">
+          <label>
+            Chargen-Nr. <span class="opt">(optional)</span>
+            <input type="text" id="edit-batch" />
+          </label>
+          <label>
+            Arzt / Praxis <span class="opt">(optional)</span>
+            <input type="text" id="edit-doctor" />
+          </label>
+        </div>
+        <label class="edit-allday hidden" id="edit-allday-wrap">
+          <input type="checkbox" id="edit-allday" />
+          <span id="edit-allday-label">Änderung auf alle Impfungen dieses Tages anwenden</span>
+        </label>
+        <div class="dlg-actions">
+          <button type="button" class="btn btn-ghost" id="edit-cancel">Abbrechen</button>
+          <button type="submit" class="btn btn-primary">Speichern</button>
+        </div>
+      </form>
+    </dialog>
+
+    <!-- Dialog: Ersteinrichtung -->
+    <dialog id="setup-dialog">
+      <div class="info-content setup-content">
+        <div id="setup-step1">
+          <div class="setup-emoji">👋</div>
+          <h3>Willkommen in deiner Impfbuch-App!</h3>
+          <p class="setup-text">
+            Dein digitaler Impfpass: behalte Impfungen, Auffrischungen und
+            Reiseempfehlungen im Blick. In zwei kurzen Schritten richten wir
+            alles ein.
+          </p>
+          <p class="setup-text muted">
+            🔒 Alle Daten bleiben ausschließlich auf deinem Gerät.
+          </p>
+          <div class="dlg-actions setup-actions">
+            <button type="button" class="btn btn-ghost" id="setup-skip1">Überspringen</button>
+            <button type="button" class="btn btn-primary" id="setup-start">Los geht's</button>
+          </div>
+        </div>
+
+        <div id="setup-step2" class="hidden">
+          <h3>Wer nutzt die App?</h3>
+          <label class="setup-label">
+            Name
+            <input type="text" id="setup-name" placeholder="Vor- und Nachname" />
+          </label>
+          <label class="setup-label">
+            Geburtsdatum
+            <input type="date" id="setup-birthdate" />
+          </label>
+          <p class="setup-text muted">
+            Aus dem Geburtsdatum berechnet die App, welche Impfungen wann fällig
+            sind. Weitere Personen (z. B. Kinder) kannst du später hinzufügen.
+          </p>
+          <div class="dlg-actions setup-actions">
+            <button type="button" class="btn btn-ghost" id="setup-skip2">Überspringen</button>
+            <button type="button" class="btn btn-primary" id="setup-next">Weiter</button>
+          </div>
+        </div>
+
+        <div id="setup-step3" class="hidden">
+          <h3>Impfungen übernehmen</h3>
+          <p class="setup-text">
+            Hol am besten deinen gelben Impfpass hervor und übertrage die
+            Einträge. Mit dem <strong>⚡ Schnelleintrag</strong> geht das zügig:
+            mehrere Impfungen und mehrere Daten auf einmal anhaken — z. B. die
+            komplette 6-fach-Impfung mit einem Klick.
+          </p>
+          <p class="setup-text muted">
+            Du kannst jederzeit später weitermachen — der Schnelleintrag ist
+            oben im Impfpass immer erreichbar.
+          </p>
+          <div class="dlg-actions setup-actions">
+            <button type="button" class="btn btn-ghost" id="setup-done">Später — zur App</button>
+            <button type="button" class="btn btn-primary" id="setup-quick">⚡ Jetzt eintragen</button>
+          </div>
+        </div>
+
+        <div class="setup-dots" id="setup-dots">● ○ ○</div>
+      </div>
+    </dialog>
+
+    <!-- Dialog: Benachrichtigungen aktivieren (Vorab-Erklärung) -->
+    <dialog id="notify-dialog">
+      <div class="info-content setup-content">
+        <div class="setup-emoji">🔔</div>
+        <h3>Impf-Erinnerungen aktivieren</h3>
+        <p class="setup-text">
+          Die App erinnert dich an fällige Impfungen aller Personen — beim
+          Öffnen der App und, wo möglich, per täglicher Hintergrundprüfung.
+        </p>
+        <p class="setup-text muted">
+          Dein Gerät fragt gleich einmalig nach der offiziellen Erlaubnis —
+          dieser Systemdialog gehört dazu. 🔒 Es werden dabei keine Daten
+          übertragen; alles bleibt auf deinem Gerät.
+        </p>
+        <div class="dlg-actions setup-actions">
+          <button type="button" class="btn btn-ghost" id="notify-cancel">Später</button>
+          <button type="button" class="btn btn-primary" id="notify-go">Aktivieren</button>
+        </div>
+      </div>
+    </dialog>
+
+    <!-- Dialog: Bestätigung im App-Stil (Ersatz für Browser-Confirms) -->
+    <dialog id="confirm-dialog">
+      <div class="info-content">
+        <h3 id="confirm-title"></h3>
+        <div id="confirm-body" class="msg-body"></div>
+        <div class="dlg-actions">
+          <button type="button" class="btn btn-ghost" id="confirm-cancel">Abbrechen</button>
+          <button type="button" class="btn btn-danger" id="confirm-go"></button>
+        </div>
+      </div>
+    </dialog>
+
+    <!-- Dialog: Meldung im App-Stil (Ersatz für Browser-Alerts) -->
+    <dialog id="msg-dialog">
+      <div class="info-content">
+        <h3 id="msg-title"></h3>
+        <div id="msg-body" class="msg-body"></div>
+        <div class="dlg-actions">
+          <button type="button" class="btn btn-primary" id="msg-ok">Verstanden</button>
+        </div>
+      </div>
+    </dialog>
+
+    <!-- Dialog: Neue Person anlegen -->
+    <dialog id="person-dialog">
+      <form id="person-form" method="dialog">
+        <h3>Neue Person hinzufügen</h3>
+        <label>
+          Name
+          <input type="text" id="person-name" placeholder="Vor- und Nachname" required />
+        </label>
+        <label>
+          Geburtsdatum
+          <input type="date" id="person-birthdate" />
+        </label>
+        <p class="hint" style="margin-top: 0">
+          Aus dem Geburtsdatum berechnet die App die Impf-Fälligkeiten. Du
+          kannst es auch später im Profil ergänzen.
+        </p>
+        <div class="dlg-actions">
+          <button type="button" class="btn btn-ghost" id="person-cancel">Abbrechen</button>
+          <button type="submit" class="btn btn-primary">Anlegen</button>
+        </div>
+      </form>
+    </dialog>
+
+    <!-- Dialog: Daten exportieren (Personen wählen) -->
+    <dialog id="export-dialog">
+      <div class="info-content">
+        <h3>Daten exportieren</h3>
+        <p class="hint" style="margin-top: 0">
+          Wähle die Personen, deren Daten exportiert werden sollen:
+        </p>
+        <div id="export-list" class="target-list"></div>
+        <div class="dlg-actions">
+          <button type="button" class="btn btn-ghost" id="export-cancel">Abbrechen</button>
+          <button type="button" class="btn btn-primary" id="export-go">Exportieren</button>
+        </div>
+      </div>
+    </dialog>
+
+    <!-- Dialog: Backup erstellen -->
+    <dialog id="backup-dialog">
+      <div class="info-content">
+        <h3>Backup erstellen</h3>
+        <p class="hint" style="margin-top: 0">
+          Wähle, was in der Backup-Datei gespeichert werden soll:
+        </p>
+        <div class="backup-scope">
+          <label class="radio-item">
+            <input type="radio" name="backup-scope" value="all" checked />
+            <span><strong>Alles</strong> — alle Profile und Einstellungen</span>
+          </label>
+          <label class="radio-item">
+            <input type="radio" name="backup-scope" value="profiles" />
+            <span><strong>Alle Profile</strong> — ohne Einstellungen</span>
+          </label>
+          <label class="radio-item">
+            <input type="radio" name="backup-scope" value="some" />
+            <span><strong>Bestimmte Profile</strong> auswählen</span>
+          </label>
+        </div>
+        <div id="backup-list" class="target-list hidden"></div>
+        <div class="dlg-actions">
+          <button type="button" class="btn btn-ghost" id="backup-cancel">Abbrechen</button>
+          <button type="button" class="btn btn-primary" id="backup-go">Backup speichern</button>
+        </div>
+      </div>
+    </dialog>
+
+    <!-- Dialog: Löschen (mit „ganzer Tag"-Option) -->
+    <dialog id="delete-dialog">
+      <div class="info-content">
+        <h3>Impfeintrag löschen</h3>
+        <p id="delete-msg"></p>
+        <div class="dlg-actions">
+          <button type="button" class="btn btn-ghost" id="del-cancel">Abbrechen</button>
+          <button type="button" class="btn" id="del-one">Nur diese</button>
+          <button type="button" class="btn btn-danger" id="del-all">Alle dieses Tages</button>
+        </div>
+      </div>
+    </dialog>
+
+    <!-- Dialog: Impf-Information -->
+    <dialog id="info-dialog">
+      <div class="info-content">
+        <button class="info-close" id="info-close" aria-label="Schließen">
+          <span class="ic" data-icon="x"></span>
+        </button>
+        <div id="info-body"></div>
+      </div>
+    </dialog>
+
+    <!-- Dialog: Premium -->
+    <dialog id="premium-dialog">
+      <div class="info-content">
+        <button class="info-close" id="premium-close" aria-label="Schließen">
+          <span class="ic" data-icon="x"></span>
+        </button>
+        <div class="premium-head">
+          <span class="premium-badge-frame">
+            <svg class="premium-badge" viewBox="0 0 100 92" role="img" aria-label="Diamant">
+              <g stroke="#1b2333" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+                <!-- Unterteil (Pavillon) -->
+                <path d="M8 34 L26 34 L50 88 Z" fill="#6f9fe0" />
+                <path d="M26 34 L50 34 L50 88 Z" fill="#9bc4f2" />
+                <path d="M50 34 L74 34 L50 88 Z" fill="#86b5ec" />
+                <path d="M74 34 L92 34 L50 88 Z" fill="#5f92db" />
+                <!-- Oberteil (Krone) -->
+                <path d="M8 34 L26 12 L26 34 Z" fill="#86b5ec" />
+                <path d="M26 12 L50 34 L26 34 Z" fill="#a2caf5" />
+                <path d="M26 12 L74 12 L50 34 Z" fill="#bcdcff" />
+                <path d="M74 12 L74 34 L50 34 Z" fill="#a2caf5" />
+                <path d="M92 34 L74 12 L74 34 Z" fill="#86b5ec" />
+              </g>
+              <!-- kräftige Außenlinie + Gürtellinie -->
+              <path d="M26 12 L74 12 L92 34 L50 88 L8 34 Z" fill="none"
+                    stroke="#1b2333" stroke-width="4.5" stroke-linejoin="round" />
+              <path d="M8 34 L92 34" fill="none"
+                    stroke="#1b2333" stroke-width="3" stroke-linecap="round" />
+            </svg>
+          </span>
+          <h3>Impfbuch Premium</h3>
+        </div>
+        <div id="premium-status"></div>
+        <div id="premium-reason"></div>
+        <ul class="premium-benefits">
+          <li>
+            <span class="ic" data-icon="check"></span>
+            <span><strong>Keine Werbung</strong> — Banner unten verschwindet</span>
+          </li>
+          <li>
+            <span class="ic" data-icon="check"></span>
+            <span><strong>Unbegrenzt Profile</strong> — für die ganze Familie</span>
+          </li>
+          <li>
+            <span class="ic" data-icon="check"></span>
+            <span><strong>Länderspezifische Reiseempfehlungen</strong> direkt in
+              deinen Impfpass übernehmen</span>
+          </li>
+          <li>
+            <span class="ic" data-icon="check"></span>
+            <span>Unterstützt die Weiterentwicklung der App</span>
+          </li>
+        </ul>
+        <p class="hint">
+          Einmaliger Kauf, danach dauerhaft freigeschaltet. Alle Daten bleiben
+          wie gewohnt ausschließlich lokal auf deinem Gerät.
+        </p>
+        <div class="dlg-actions premium-actions">
+          <button type="button" class="btn btn-ghost hidden" id="premium-off">
+            Premium deaktivieren
+          </button>
+          <button type="button" class="btn btn-ghost" id="premium-restore">
+            Käufe wiederherstellen
+          </button>
+          <button type="button" class="btn btn-primary btn-premium" id="premium-go">
+            <span class="ic" data-icon="gem"></span>
+            Premium freischalten · <span id="premium-price">2,99 €</span>
+          </button>
+        </div>
+      </div>
+    </dialog>
+
+    <!-- Werbe-/Platzhalterleiste unten (Learning C11) -->
+    <div id="ad-bar" class="ad-bar hidden" aria-hidden="true">
+      <span class="ad-bar-text">Werbefrei &amp; unbegrenzt mit Premium</span>
+      <button type="button" class="ad-bar-btn" id="ad-bar-cta">
+        <span class="ic" data-icon="gem"></span> Premium
+      </button>
+    </div>
+
+    <!-- Kurzhinweis (z. B. „Erneut drücken zum Beenden") -->
+    <div id="toast" class="toast hidden" role="status"></div>
+
+    <script src="js/edition.js"></script>
+    <script src="js/monetize-config.js"></script>
+    <script src="js/icons.js"></script>
+    <script src="js/native-bridge.js"></script>
+    <script src="js/notify.js"></script>
+    <script src="js/ads.js"></script>
+    <script src="js/purchase.js"></script>
+    <script src="js/reminders-db.js"></script>
+    <script src="js/stiko-data.js"></script>
+    <script src="js/travel-data.js"></script>
+    <script src="js/app.js"></script>
+  </body>
+</html>

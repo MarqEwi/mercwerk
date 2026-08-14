@@ -1,0 +1,16 @@
+{
+  "name": "BFT Tool – Basis Fitness Test",
+  "short_name": "BFT Tool",
+  "description": "Punkterechner für den Basis-Fitness-Test: Sprinttest, Klimmhang und 1000-m-Lauf eingeben, Punkte und Note berechnen.",
+  "lang": "de",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f5f6f2",
+  "theme_color": "#3d4a33",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

@@ -1,0 +1,2580 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="auto">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Never2Late – Ablaufdaten im Blick</title>
+<meta name="description" content="Ablaufdaten, Gültigkeiten und wiederkehrende Fristen zentral erfassen: Ausweise, Karten, berufliche Nachweise, Fahrzeugtermine, Gesundheitsdokumente, Reisedokumente und Verträge. Mit Erinnerungen, Archiv und Kalender-Export. Alle Daten bleiben lokal.">
+<meta name="theme-color" content="#f4f7f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#12191a" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='112' fill='%230f766e'/%3E%3Cg fill='none' stroke='%23fff' stroke-width='26' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='94' y='140' width='286' height='256' rx='40'/%3E%3Cpath d='M170 108v56M304 108v56'/%3E%3Cpath d='M94 214h286'/%3E%3C/g%3E%3Ccircle cx='366' cy='368' r='94' fill='%230f766e'/%3E%3Ccircle cx='366' cy='368' r='80' fill='%23fff'/%3E%3Cg stroke='%230f766e' stroke-width='20' stroke-linecap='round'%3E%3Cpath d='M366 368V314'/%3E%3Cpath d='M366 368l40 26'/%3E%3C/g%3E%3C/svg%3E">
+<style>
+  /* ===================================================================
+     Gestaltung
+     Eine ruhige, tiefe Petrol-Welt. Wenige Grundwerte, konsequent
+     durchgezogen: eine Akzentfarbe, vier Statusfarben, ein Abstands- und
+     ein Schriftraster. Farbe wird sparsam eingesetzt – sie soll den Status
+     tragen, nicht die Fläche.
+     =================================================================== */
+  :root{
+    /* Flächen und Schrift */
+    --bg:#eef4f3; --bg2:#ffffff; --bg3:#e6eeed;
+    --text:#0b1f21; --text2:#5d7274;
+    --line:#dbe7e5; --line-stark:#c6d7d4;
+    /* Akzent */
+    --accent:#0d6e66; --accent2:#12a294; --accent-text:#ffffff;
+    --accent-soft:#dcefec; --accent-rand:#b6ddd7;
+    /* Dunkle Fläche für die Kopfkarte – trägt die Marke, ohne zu schreien */
+    --tief-1:#0d4a46; --tief-2:#0a2b2a; --tief-text:#eaf5f3; --tief-text2:#a8ccc7;
+    /* Status */
+    --ok:#0f7d4a; --ok-soft:#dcf0e5; --ok-rand:#b3ddc6;
+    --warn:#a1670a; --warn-soft:#f9ecd6; --warn-rand:#e8cf9e;
+    --bad:#b8332a; --bad-soft:#fae2df; --bad-rand:#eebab4;
+    --arch:#61757c; --arch-soft:#e6ecee; --arch-rand:#cad6da;
+    /* Tiefe: gestaffelt statt ein einzelner harter Schatten */
+    --schatten-s:0 1px 2px rgba(8,32,33,.05);
+    --schatten:0 1px 2px rgba(8,32,33,.04), 0 6px 20px rgba(8,32,33,.06);
+    --schatten-l:0 6px 16px rgba(8,32,33,.09), 0 20px 44px rgba(8,32,33,.11);
+    /* Maße */
+    --radius:20px; --radius-s:14px; --radius-xs:11px;
+    --adbar-h:0px; --native-ad-h:0px;
+  }
+  html[data-theme="dark"]{
+    --bg:#0a1315; --bg2:#111f21; --bg3:#1a2b2e;
+    --text:#e4efee; --text2:#8ba5a6;
+    --line:#22373a; --line-stark:#2d474b;
+    --accent:#2ac4b2; --accent2:#4fdccb; --accent-text:#04211e;
+    --accent-soft:#123330; --accent-rand:#1d4d48;
+    --tief-1:#10403d; --tief-2:#0a1e20; --tief-text:#e8f6f3; --tief-text2:#9dc4bf;
+    --ok:#48cf88; --ok-soft:#0f2c1d; --ok-rand:#1c4b32;
+    --warn:#e8ae43; --warn-soft:#2f2410; --warn-rand:#54401b;
+    --bad:#f8776a; --bad-soft:#331a18; --bad-rand:#59302c;
+    --arch:#8fa3aa; --arch-soft:#1d2a2e; --arch-rand:#2c3d43;
+    --schatten-s:0 1px 2px rgba(0,0,0,.4);
+    --schatten:0 1px 2px rgba(0,0,0,.35), 0 6px 20px rgba(0,0,0,.4);
+    --schatten-l:0 6px 16px rgba(0,0,0,.45), 0 20px 44px rgba(0,0,0,.5);
+  }
+  @media (prefers-color-scheme: dark){
+    html[data-theme="auto"]{
+      --bg:#0a1315; --bg2:#111f21; --bg3:#1a2b2e;
+      --text:#e4efee; --text2:#8ba5a6;
+      --line:#22373a; --line-stark:#2d474b;
+      --accent:#2ac4b2; --accent2:#4fdccb; --accent-text:#04211e;
+      --accent-soft:#123330; --accent-rand:#1d4d48;
+      --tief-1:#10403d; --tief-2:#0a1e20; --tief-text:#e8f6f3; --tief-text2:#9dc4bf;
+      --ok:#48cf88; --ok-soft:#0f2c1d; --ok-rand:#1c4b32;
+      --warn:#e8ae43; --warn-soft:#2f2410; --warn-rand:#54401b;
+      --bad:#f8776a; --bad-soft:#331a18; --bad-rand:#59302c;
+      --arch:#8fa3aa; --arch-soft:#1d2a2e; --arch-rand:#2c3d43;
+      --schatten-s:0 1px 2px rgba(0,0,0,.4);
+      --schatten:0 1px 2px rgba(0,0,0,.35), 0 6px 20px rgba(0,0,0,.4);
+      --schatten-l:0 6px 16px rgba(0,0,0,.45), 0 20px 44px rgba(0,0,0,.5);
+    }
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--text);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    font-size:16px; line-height:1.5; min-height:100dvh;
+    display:flex; flex-direction:column;
+    -webkit-tap-highlight-color:transparent;
+    -webkit-font-smoothing:antialiased;
+    font-feature-settings:"cv05" 1;
+  }
+  ::selection{background:var(--accent-soft);color:var(--text)}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important; animation:none !important}
+  }
+  /* ---------- Kopfleiste ---------- */
+  header.app{
+    position:sticky; top:0; z-index:30;
+    background:color-mix(in srgb, var(--bg) 92%, transparent);
+    backdrop-filter:saturate(160%) blur(14px);
+    -webkit-backdrop-filter:saturate(160%) blur(14px);
+    border-bottom:1px solid transparent;
+    padding:10px 14px; padding-top:calc(10px + env(safe-area-inset-top));
+    display:flex; align-items:center; gap:11px;
+    transition:border-color .2s, background .2s;
+  }
+  header.app.gescrollt{border-bottom-color:var(--line)}
+  header.app .logo{width:34px;height:34px;flex:none;border-radius:10px;display:block;
+    box-shadow:var(--schatten-s)}
+  header.app h1{font-size:1.06rem;margin:0;line-height:1.25;font-weight:680;letter-spacing:-.021em}
+  header.app .sub{font-size:.735rem;color:var(--text2);display:block;font-weight:450;letter-spacing:0}
+  .spacer{flex:1}
+  .iconbtn{background:var(--bg2);border:1px solid var(--line);border-radius:var(--radius-xs);
+    color:var(--text);width:38px;height:38px;cursor:pointer;display:grid;place-items:center;
+    padding:0;box-shadow:var(--schatten-s);transition:background .14s, border-color .14s}
+  .iconbtn:hover{background:var(--bg3);border-color:var(--line-stark)}
+  .iconbtn:active{transform:scale(.95)}
+  .iconbtn.plain{border-color:transparent;background:transparent;box-shadow:none}
+  .iconbtn.plain:hover{background:var(--bg3)}
+  main{flex:1;width:100%;max-width:720px;margin:0 auto;padding:16px 16px 116px}
+  .ic{width:1.15em;height:1.15em;fill:none;stroke:currentColor;stroke-width:1.8;
+    stroke-linecap:round;stroke-linejoin:round;vertical-align:-.2em;flex:none}
+  h2{font-size:1.44rem;margin:.1rem 0 .1rem;letter-spacing:-.028em;font-weight:700;line-height:1.2}
+  h3{font-size:.72rem;margin:1.6rem 0 .6rem;text-transform:uppercase;letter-spacing:.09em;
+     color:var(--text2);font-weight:680}
+  h3:first-child{margin-top:.3rem}
+  p{margin:.4rem 0}
+  .muted{color:var(--text2);font-size:.875rem}
+  .view{display:none}
+  .view.active{display:block;animation:auf .22s ease}
+  @keyframes auf{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+  /* ---------- Karten ---------- */
+  .card{background:var(--bg2);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--schatten);padding:16px 18px;margin:12px 0}
+  .card.flush{padding:0;overflow:hidden}
+  /* ---------- Knöpfe ---------- */
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;
+    background:var(--accent);color:var(--accent-text);font:inherit;font-weight:640;
+    font-size:.95rem;letter-spacing:-.006em;
+    border:1px solid transparent;padding:12px 20px;border-radius:var(--radius-s);
+    text-decoration:none;box-shadow:var(--schatten-s);
+    transition:filter .14s, transform .09s, background .14s}
+  .btn:hover{filter:brightness(1.07)}
+  .btn:active{transform:translateY(1px) scale(.99)}
+  .btn.secondary{background:var(--bg2);color:var(--text);border-color:var(--line-stark);
+    box-shadow:var(--schatten-s)}
+  .btn.secondary:hover{background:var(--bg3);filter:none}
+  .btn.ghost{background:transparent;border-color:transparent;color:var(--accent);
+    padding:9px 11px;box-shadow:none}
+  .btn.ghost:hover{background:var(--accent-soft);filter:none}
+  .btn.small{padding:8px 14px;font-size:.86rem;border-radius:var(--radius-xs)}
+  .btn.danger{background:var(--bg2);color:var(--bad);border-color:var(--bad-rand)}
+  .btn.danger:hover{background:var(--bad-soft);filter:none}
+  .btn.block{width:100%}
+  .btn:disabled{opacity:.45;cursor:not-allowed}
+  .btn-row{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0 2px}
+  /* ---------- Status ---------- */
+  .pill{display:inline-flex;align-items:center;gap:6px;font-size:.755rem;font-weight:660;
+    padding:4px 10px;border-radius:999px;white-space:nowrap;line-height:1.4;
+    border:1px solid transparent;letter-spacing:-.004em}
+  .pill.s-aktiv{background:var(--ok-soft);color:var(--ok);border-color:var(--ok-rand)}
+  .pill.s-bald{background:var(--warn-soft);color:var(--warn);border-color:var(--warn-rand)}
+  .pill.s-abgelaufen{background:var(--bad-soft);color:var(--bad);border-color:var(--bad-rand)}
+  .pill.s-archiviert{background:var(--arch-soft);color:var(--arch);border-color:var(--arch-rand)}
+  .dot{width:7px;height:7px;border-radius:50%;background:currentColor;flex:none}
+  /* ---------- Kopfkarte des Dashboards ----------
+     Tiefe, dunkle Fläche statt greller Akzentfarbe – das trägt die Marke,
+     ohne der Statusfarbe die Aufmerksamkeit zu nehmen. */
+  .hero{position:relative;overflow:hidden;
+    background:linear-gradient(142deg,var(--tief-1) 0%,var(--tief-2) 100%);
+    color:var(--tief-text);border-radius:var(--radius);padding:20px 20px 18px;
+    margin:8px 0 14px;box-shadow:var(--schatten-l)}
+  .hero::after{content:"";position:absolute;right:-56px;top:-70px;width:190px;height:190px;
+    border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.09),transparent 68%)}
+  .hero .lead{font-size:.735rem;color:var(--tief-text2);margin:0;font-weight:640;
+    text-transform:uppercase;letter-spacing:.09em}
+  .hero .big{font-size:1.32rem;font-weight:700;margin:7px 0 0;letter-spacing:-.026em;line-height:1.25}
+  .hero .meta{font-size:.865rem;color:var(--tief-text2);margin:5px 0 0}
+  /* ---------- Kennzahlen ---------- */
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0 2px}
+  .stat{background:var(--bg2);border:1px solid var(--line);border-radius:var(--radius-s);
+    padding:13px 12px 11px;text-align:left;cursor:pointer;font:inherit;color:var(--text);
+    box-shadow:var(--schatten-s);transition:border-color .14s, transform .09s, box-shadow .14s}
+  .stat:hover{border-color:var(--line-stark);box-shadow:var(--schatten)}
+  .stat:active{transform:translateY(1px)}
+  .stat b{display:block;font-size:1.62rem;line-height:1.1;font-variant-numeric:tabular-nums;
+    font-weight:700;letter-spacing:-.035em}
+  .stat span{font-size:.735rem;color:var(--text2);display:flex;align-items:center;gap:5px;
+    margin-top:3px;font-weight:520}
+  .stat span::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;
+    flex:none;opacity:.85}
+  .stat.s-bald b,.stat.s-bald span{color:var(--warn)}
+  .stat.s-abgelaufen b,.stat.s-abgelaufen span{color:var(--bad)}
+  .stat.s-aktiv b,.stat.s-aktiv span{color:var(--ok)}
+  .sec-head{display:flex;align-items:baseline;gap:10px}
+  .sec-head h3{flex:1;margin-bottom:.55rem}
+  .sec-head a{font-size:.8rem;color:var(--accent);text-decoration:none;cursor:pointer;
+    font-weight:620;letter-spacing:-.004em}
+  .sec-head a:hover{text-decoration:underline}
+  /* ---------- Eintragszeilen ---------- */
+  .liste{list-style:none;margin:0;padding:0}
+  .liste li{border-bottom:1px solid var(--line)}
+  .liste li:last-child{border-bottom:none}
+  .row{position:relative;display:flex;align-items:center;gap:11px;width:100%;text-align:left;
+    cursor:pointer;font:inherit;color:var(--text);background:transparent;border:none;
+    padding:13px 15px 13px 17px;transition:background .13s}
+  .row:hover{background:var(--bg3)}
+  /* Schmale Statusleiste am linken Rand: macht die Liste ohne zusätzliche
+     Farbfläche auf einen Blick lesbar. */
+  .row::before{content:"";position:absolute;left:0;top:9px;bottom:9px;width:3px;
+    border-radius:0 3px 3px 0;background:transparent}
+  .row.st-aktiv::before{background:var(--ok);opacity:.55}
+  .row.st-bald::before{background:var(--warn)}
+  .row.st-abgelaufen::before{background:var(--bad)}
+  .row.st-archiviert::before{background:var(--arch);opacity:.5}
+  .row .kat{width:38px;height:38px;border-radius:var(--radius-xs);display:grid;place-items:center;
+    font-size:1.13rem;background:var(--bg3);flex:none;position:relative;
+    border:1px solid var(--line)}
+  .row .kat .mehr{position:absolute;right:-4px;bottom:-4px;background:var(--accent);
+    color:var(--accent-text);font-style:normal;font-size:.585rem;font-weight:700;
+    border-radius:999px;padding:1px 4px;line-height:1.35;
+    border:1.5px solid var(--bg2)}
+  .row .mid{flex:1;min-width:0}
+  /* display:block ist hier wesentlich: als Inline-Spans stünden Titel und
+     Untertitel nebeneinander und würden aus der Zeile herauslaufen. */
+  .row .tit{display:block;font-weight:620;font-size:.955rem;letter-spacing:-.011em;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .row .sub{display:block;font-size:.775rem;color:var(--text2);margin-top:1px;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .row .right{text-align:right;flex:none;display:flex;flex-direction:column;
+    align-items:flex-end;gap:4px}
+  .row .rest{font-size:.755rem;color:var(--text2);font-variant-numeric:tabular-nums}
+  /* In der Zeile bleibt für den Untertitel nur wenig Platz – die Statusmarke
+     deshalb hier kompakter als in der Detailansicht. */
+  .row .pill{font-size:.71rem;padding:2px 8px}
+  .row .pill .dot{width:6px;height:6px}
+  .row.is-archiviert .tit{color:var(--text2)}
+  .row.is-archiviert .kat{opacity:.65}
+  /* ---------- Leerer Zustand ---------- */
+  .empty{text-align:center;padding:34px 20px}
+  .empty .ic{width:44px;height:44px;color:var(--accent);opacity:.9;stroke-width:1.5}
+  .empty b{display:block;margin:14px 0 5px;font-size:1.08rem;font-weight:680;letter-spacing:-.019em}
+  .empty p{color:var(--text2);font-size:.895rem;max-width:34ch;margin:0 auto 16px;line-height:1.55}
+  /* ---------- Suche & Filter ---------- */
+  .searchbox{position:relative;margin:8px 0 12px}
+  .searchbox .ic{position:absolute;left:14px;top:50%;transform:translateY(-50%);
+    color:var(--text2);width:18px;height:18px}
+  /* Die Auswahl ist bewusst spezifischer als die allgemeine Feldregel weiter
+     unten – sonst überschreibt diese das Polster und die Lupe läge im Text. */
+  .searchbox input[type=search]{width:100%;padding:12px 40px;border-radius:999px;
+    background:var(--bg2);box-shadow:var(--schatten-s)}
+  .searchbox .clear{position:absolute;right:8px;top:50%;transform:translateY(-50%);
+    background:none;border:none;color:var(--text2);cursor:pointer;padding:6px;line-height:0}
+  .chips{display:flex;gap:7px;overflow-x:auto;padding:2px 0 9px;scrollbar-width:none;
+    -webkit-overflow-scrolling:touch}
+  .chips::-webkit-scrollbar{display:none}
+  .chip{background:var(--bg2);border:1px solid var(--line);color:var(--text2);border-radius:999px;
+    padding:7px 14px;font:inherit;font-size:.83rem;font-weight:600;cursor:pointer;
+    white-space:nowrap;transition:background .13s, color .13s, border-color .13s}
+  .chip:hover{border-color:var(--line-stark);color:var(--text)}
+  .chip.active{background:var(--accent);border-color:var(--accent);color:var(--accent-text)}
+  /* ---------- Formulare ---------- */
+  label.field{display:block;margin:16px 0 6px;font-size:.815rem;color:var(--text2);
+    font-weight:640;letter-spacing:.004em}
+  label.field .req{color:var(--bad)}
+  input[type=text],input[type=number],input[type=date],input[type=search],select,textarea{
+    width:100%;background:var(--bg2);color:var(--text);border:1px solid var(--line-stark);
+    border-radius:var(--radius-s);padding:12px 14px;font:inherit;font-size:1rem;
+    transition:border-color .14s, box-shadow .14s}
+  input:hover,select:hover,textarea:hover{border-color:var(--accent-rand)}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);
+    box-shadow:0 0 0 3px var(--accent-soft)}
+  textarea{min-height:84px;resize:vertical;line-height:1.55}
+  .hint{font-size:.795rem;color:var(--text2);margin:7px 0 0;line-height:1.5}
+  .err{color:var(--bad);font-size:.815rem;margin:7px 0 0;display:none;font-weight:550}
+  .err.show{display:block}
+  .seg{display:flex;gap:3px;border:1px solid var(--line);border-radius:var(--radius-s);
+    overflow:hidden;background:var(--bg3);padding:3px}
+  .seg button{flex:1;background:transparent;border:none;border-radius:calc(var(--radius-s) - 5px);
+    padding:10px 6px;font:inherit;font-size:.855rem;font-weight:620;color:var(--text2);
+    cursor:pointer;transition:background .15s, color .15s, box-shadow .15s}
+  .seg button:hover{color:var(--text)}
+  .seg button.active{background:var(--bg2);color:var(--accent);box-shadow:var(--schatten-s)}
+  .katgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+  @media(max-width:400px){.katgrid{grid-template-columns:repeat(3,1fr)}}
+  .katgrid button{position:relative;background:var(--bg2);border:1px solid var(--line);
+    border-radius:var(--radius-s);padding:11px 3px 9px;font:inherit;font-size:.705rem;
+    color:var(--text2);cursor:pointer;display:flex;flex-direction:column;align-items:center;
+    gap:5px;line-height:1.2;transition:border-color .14s, background .14s, transform .09s}
+  .katgrid button:hover{border-color:var(--accent-rand)}
+  .katgrid button:active{transform:scale(.97)}
+  .katgrid button .e{font-size:1.28rem}
+  .katgrid button.active{border-color:var(--accent);background:var(--accent-soft);
+    color:var(--text);font-weight:640;box-shadow:0 0 0 1px var(--accent) inset}
+  .katgrid button.active::after{content:"✓";position:absolute;top:4px;right:6px;font-size:.63rem;
+    color:var(--accent);font-weight:800}
+  .katgrid button.neu{border-style:dashed;color:var(--accent);border-color:var(--accent-rand)}
+  .katgrid button.neu:hover{background:var(--accent-soft)}
+  .quickdates{display:flex;gap:8px;flex-wrap:wrap;margin-top:9px}
+  /* ---------- Erinnerungs-Editor ---------- */
+  .remlist{list-style:none;margin:9px 0 0;padding:0;border:1px solid var(--line);
+    border-radius:var(--radius-s);overflow:hidden}
+  .remlist li{display:flex;align-items:center;gap:11px;padding:10px 13px;
+    border-bottom:1px solid var(--line);background:var(--bg2)}
+  .remlist li:last-child{border-bottom:none}
+  .remlist .lbl{flex:1;font-size:.9rem}
+  .remlist input[type=checkbox]{width:19px;height:19px;accent-color:var(--accent);flex:none;margin:0}
+  .remlist li.off .lbl{color:var(--text2);text-decoration:line-through}
+  .remlist .del{background:none;border:none;color:var(--text2);cursor:pointer;padding:6px;
+    line-height:0;border-radius:7px;transition:color .13s, background .13s}
+  .remlist .del:hover{color:var(--bad);background:var(--bad-soft)}
+  .remadd{display:flex;gap:8px;margin-top:10px;align-items:center}
+  .remadd input{width:80px}
+  .remadd select{flex:1}
+  .switchrow{display:flex;align-items:center;gap:12px;padding:12px 0}
+  .switchrow .txt{flex:1}
+  .switchrow .txt b{display:block;font-size:.955rem;font-weight:660;letter-spacing:-.011em}
+  .switchrow .txt span{font-size:.805rem;color:var(--text2)}
+  .switch{position:relative;width:48px;height:28px;flex:none}
+  .switch input{opacity:0;width:0;height:0;position:absolute}
+  .switch .track{position:absolute;inset:0;background:var(--bg3);border:1px solid var(--line-stark);
+    border-radius:999px;cursor:pointer;transition:background .18s, border-color .18s}
+  .switch .track::after{content:"";position:absolute;top:2px;left:2px;width:22px;height:22px;
+    border-radius:50%;background:var(--bg2);box-shadow:0 1px 3px rgba(0,0,0,.28);
+    transition:transform .18s cubic-bezier(.3,1.4,.6,1)}
+  .switch input:checked + .track{background:var(--accent);border-color:var(--accent)}
+  .switch input:checked + .track::after{transform:translateX(20px)}
+  /* ---------- Detailansicht ---------- */
+  .detail-head{display:flex;gap:14px;align-items:flex-start;margin:6px 0 4px}
+  .detail-head .kat{width:52px;height:52px;border-radius:var(--radius-s);display:grid;
+    place-items:center;font-size:1.5rem;background:var(--bg2);flex:none;
+    border:1px solid var(--line);box-shadow:var(--schatten-s)}
+  .detail-head h2{margin:0;word-break:break-word}
+  .katchips{display:flex;flex-wrap:wrap;gap:6px}
+  .katchip{display:inline-flex;align-items:center;gap:5px;background:var(--bg2);
+    border:1px solid var(--line);border-radius:999px;padding:4px 11px;font-size:.815rem;
+    color:var(--text2)}
+  .dl{display:grid;grid-template-columns:auto 1fr;gap:11px 18px;margin:2px 0}
+  .dl dt{color:var(--text2);font-size:.845rem;font-weight:560}
+  .dl dd{margin:0;font-size:.93rem;word-break:break-word;line-height:1.5}
+  .bigdate{font-size:1.72rem;font-weight:720;letter-spacing:-.04em;font-variant-numeric:tabular-nums;
+    line-height:1.1;margin-top:2px}
+  .bigdate .rest{display:block;font-size:.87rem;font-weight:500;letter-spacing:-.006em;
+    color:var(--text2);margin-top:3px}
+  .actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+  @media(max-width:360px){.actions{grid-template-columns:1fr}}
+  /* ---------- Untere Leiste ----------
+     Die "+"-Schaltfläche sitzt mittig in der Leiste statt als schwebender
+     Knopf darüber – so verdeckt sie die letzte Listenzeile nicht mehr. */
+  nav.tabs{position:fixed;left:0;right:0;bottom:var(--adbar-h);z-index:25;
+    /* Fast deckend: Die Unschärfe ist nur Beiwerk – wo sie fehlt (ältere
+       WebView), soll der Inhalt trotzdem nicht durchscheinen. */
+    background:color-mix(in srgb, var(--bg2) 97%, transparent);
+    backdrop-filter:saturate(170%) blur(18px);
+    -webkit-backdrop-filter:saturate(170%) blur(18px);
+    border-top:1px solid var(--line);display:flex;align-items:center;
+    box-shadow:0 -2px 14px rgba(8,32,33,.05);
+    padding:6px 8px calc(6px + env(safe-area-inset-bottom))}
+  nav.tabs button[data-tab]{flex:1;background:none;border:none;padding:8px 4px 6px;font:inherit;
+    font-size:.688rem;color:var(--text2);cursor:pointer;display:flex;flex-direction:column;
+    align-items:center;gap:4px;border-radius:var(--radius-xs);font-weight:560;
+    transition:color .14s}
+  nav.tabs button[data-tab] .ic{width:22px;height:22px;stroke-width:1.7;transition:stroke-width .14s}
+  nav.tabs button[data-tab].active{color:var(--accent);font-weight:660}
+  nav.tabs button[data-tab].active .ic{stroke-width:2.2}
+  nav.tabs button.neu{flex:none;width:54px;height:44px;margin:0 4px;border:none;cursor:pointer;
+    border-radius:var(--radius-s);background:var(--accent);color:var(--accent-text);
+    display:grid;place-items:center;box-shadow:var(--schatten);
+    transition:filter .14s, transform .09s}
+  nav.tabs button.neu:hover{filter:brightness(1.08)}
+  nav.tabs button.neu:active{transform:scale(.94)}
+  nav.tabs button.neu .ic{width:24px;height:24px;stroke-width:2.4}
+  body.no-tabs nav.tabs{display:none}
+  /* ---------- Werbeplatz (in V1 unsichtbar, Infrastruktur für später) ---------- */
+  #adbar{display:none}
+  /* ---------- Dialoge ---------- */
+  .modal-back{position:fixed;inset:0;background:rgba(6,22,23,.55);z-index:60;display:none;
+    align-items:flex-end;justify-content:center;padding:0;
+    backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
+  .modal-back.open{display:flex;animation:einblenden .18s ease}
+  @keyframes einblenden{from{opacity:0}to{opacity:1}}
+  @media(min-width:620px){.modal-back{align-items:center;padding:20px}}
+  .modal{background:var(--bg2);border-radius:24px 24px 0 0;width:100%;max-width:560px;
+    max-height:90dvh;overflow:auto;padding:20px 20px calc(22px + env(safe-area-inset-bottom));
+    box-shadow:var(--schatten-l);animation:hoch .24s cubic-bezier(.2,.9,.3,1)}
+  @keyframes hoch{from{transform:translateY(22px)}to{transform:none}}
+  @media(min-width:620px){.modal{border-radius:24px}@keyframes hoch{from{transform:scale(.97)}to{transform:none}}}
+  .modal-x{position:sticky;top:0;float:right;background:var(--bg3);border:none;border-radius:10px;
+    width:34px;height:34px;color:var(--text);cursor:pointer;display:grid;place-items:center;
+    margin-left:8px;transition:background .13s}
+  .modal-x:hover{background:var(--line)}
+  .modal h3.mt{font-size:1.16rem;text-transform:none;letter-spacing:-.022em;color:var(--text);
+    margin:0 0 10px;display:flex;align-items:center;gap:10px;font-weight:700}
+  .modal h3.mt .ic{color:var(--accent)}
+  .settings-row{display:flex;align-items:center;gap:13px;width:100%;text-align:left;background:none;
+    border:none;border-top:1px solid var(--line);padding:14px 2px;font:inherit;color:var(--text);
+    cursor:pointer;transition:background .13s}
+  .settings-row:hover{background:var(--bg3)}
+  .settings-row .ic{color:var(--accent);width:20px;height:20px}
+  .settings-row .t{flex:1}
+  .settings-row .t b{display:block;font-size:.935rem;font-weight:620;letter-spacing:-.011em}
+  .settings-row .t span{font-size:.79rem;color:var(--text2)}
+  .diag{font-size:.685rem;color:var(--text2);word-break:break-word;margin:7px 0 0;display:none;
+    font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--bg3);
+    padding:7px 9px;border-radius:9px;line-height:1.5}
+  .ver{text-align:center;color:var(--text2);font-size:.775rem;margin-top:18px;cursor:default;
+    user-select:none;letter-spacing:.02em}
+  /* ---------- Emoji-Auswahl ---------- */
+  .emojiwahl{display:flex;align-items:center;gap:11px;margin-top:6px}
+  .emojiwahl .gross{width:54px;height:54px;border-radius:var(--radius-s);background:var(--bg3);
+    display:grid;place-items:center;font-size:1.72rem;flex:none;border:1px solid var(--line)}
+  .emojiwahl input{flex:1;text-align:center;font-size:1.15rem}
+  .emojigrid{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;margin-top:10px;
+    max-height:190px;overflow-y:auto;padding:5px;border:1px solid var(--line);
+    border-radius:var(--radius-s);background:var(--bg3)}
+  @media(max-width:400px){.emojigrid{grid-template-columns:repeat(7,1fr)}}
+  .emojigrid button{background:transparent;border:1px solid transparent;border-radius:9px;
+    font-size:1.26rem;padding:5px 0;cursor:pointer;line-height:1.2;transition:background .12s}
+  .emojigrid button:hover{background:var(--bg2)}
+  .emojigrid button.active{border-color:var(--accent);background:var(--accent-soft)}
+  /* ---------- Kategorienverwaltung ---------- */
+  .katverwaltung{list-style:none;margin:6px 0 0;padding:0}
+  .katverwaltung li{display:flex;align-items:center;gap:12px;padding:11px 2px;
+    border-top:1px solid var(--line)}
+  .katverwaltung .e{font-size:1.2rem}
+  .katverwaltung .n{flex:1;font-size:.935rem}
+  .katverwaltung .anz{font-size:.775rem;color:var(--text2)}
+  .katverwaltung button{background:none;border:none;color:var(--text2);cursor:pointer;padding:7px;
+    line-height:0;border-radius:8px;transition:color .13s, background .13s}
+  .katverwaltung button:hover{color:var(--accent);background:var(--accent-soft)}
+  .katverwaltung .loesch:hover{color:var(--bad);background:var(--bad-soft)}
+  /* ---------- Onboarding ---------- */
+  .ob-step{display:none;text-align:center;padding:10px 4px}
+  .ob-step.active{display:block}
+  .ob-step .ic{width:52px;height:52px;color:var(--accent);margin-bottom:10px;stroke-width:1.5}
+  .ob-step b{display:block;font-size:1.2rem;margin-bottom:8px;font-weight:700;letter-spacing:-.024em}
+  .ob-step p{color:var(--text2);font-size:.915rem;max-width:36ch;margin:0 auto;line-height:1.6}
+  #ob-dots{display:flex;gap:7px;justify-content:center;margin:20px 0 14px}
+  #ob-dots i{width:7px;height:7px;border-radius:50%;background:var(--line-stark);display:block;
+    transition:width .25s, background .25s}
+  #ob-dots i.on{background:var(--accent);width:22px;border-radius:999px}
+  /* ---------- Hinweisleiste ---------- */
+  #toast{position:fixed;left:16px;right:16px;margin:0 auto;width:fit-content;
+    max-width:calc(100% - 32px);bottom:calc(var(--adbar-h) + 84px);z-index:80;
+    background:var(--text);color:var(--bg2);padding:12px 18px;border-radius:var(--radius-s);
+    font-size:.885rem;font-weight:530;text-align:center;opacity:0;pointer-events:none;
+    transition:opacity .22s, transform .22s;transform:translateY(6px);
+    box-shadow:var(--schatten-l)}
+  #toast.show{opacity:.97;transform:none}
+</style>
+</head>
+<body>
+
+<header class="app">
+  <!-- Logo wie icons/logo.svg – Kalenderblatt mit Uhr -->
+  <svg class="logo" viewBox="0 0 512 512" aria-hidden="true">
+    <defs><linearGradient id="n2l-logo" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0f766e"/><stop offset="1" stop-color="#14b8a6"/>
+    </linearGradient></defs>
+    <rect width="512" height="512" rx="112" fill="url(#n2l-logo)"/>
+    <g fill="none" stroke="#fff" stroke-width="26" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="94" y="140" width="286" height="256" rx="40"/>
+      <path d="M170 108v56M304 108v56"/><path d="M94 214h286"/>
+    </g>
+    <circle cx="366" cy="368" r="94" fill="url(#n2l-logo)"/>
+    <circle cx="366" cy="368" r="80" fill="#fff"/>
+    <g stroke="#0f766e" stroke-width="20" stroke-linecap="round">
+      <path d="M366 368V314"/><path d="M366 368l40 26"/>
+    </g>
+  </svg>
+  <button class="iconbtn plain" id="btn-back" style="display:none" aria-label="Zurück">
+    <svg class="ic" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+  </button>
+  <div>
+    <h1 id="head-title">Never2Late</h1>
+    <span class="sub" id="head-sub">Ablaufdaten im Blick</span>
+  </div>
+  <div class="spacer"></div>
+  <button class="iconbtn" id="btn-settings" aria-label="Einstellungen">
+    <svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09A1.65 1.65 0 008 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H2a2 2 0 110-4h.09A1.65 1.65 0 004.6 8a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 3.68 1.65 1.65 0 0010 2.17V2a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06A1.65 1.65 0 0019.4 8v0a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+  </button>
+</header>
+
+<main>
+
+  <!-- ======================= Dashboard ======================= -->
+  <section class="view active" id="view-home">
+    <div id="home-inhalt"></div>
+  </section>
+
+  <!-- ======================= Liste ======================= -->
+  <section class="view" id="view-liste">
+    <div class="searchbox">
+      <svg class="ic" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+      <input type="search" id="such-feld" placeholder="Suchen (Titel oder Nummer)" autocomplete="off" enterkeyhint="search">
+      <button class="clear" id="such-clear" style="display:none" aria-label="Suche leeren">
+        <svg class="ic" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="chips" id="filter-status"></div>
+    <div class="chips" id="filter-kategorie"></div>
+    <div id="liste-inhalt"></div>
+  </section>
+
+  <!-- ======================= Detail ======================= -->
+  <section class="view" id="view-detail">
+    <div id="detail-inhalt"></div>
+  </section>
+
+  <!-- ======================= Formular ======================= -->
+  <section class="view" id="view-form">
+    <h2 id="form-titel">Neuer Eintrag</h2>
+
+    <div class="card">
+      <label class="field" for="f-titel">Titel <span class="req">*</span></label>
+      <input type="text" id="f-titel" maxlength="80" placeholder="z. B. Personalausweis" autocomplete="off">
+      <p class="err" id="f-titel-err">Bitte gib einen Titel ein.</p>
+
+      <label class="field">Kategorien <span class="req">*</span></label>
+      <div class="katgrid" id="f-kategorie"></div>
+      <p class="hint">Mehrfachauswahl möglich – tippe alles an, was passt.</p>
+
+      <label class="field">Art des Datums</label>
+      <div class="seg" id="f-datumstyp">
+        <button type="button" data-v="ablauf" class="active">Gültig bis</button>
+        <button type="button" data-v="faellig">Fällig am</button>
+        <button type="button" data-v="wiederkehrend">Wiederkehrend</button>
+      </div>
+
+      <label class="field" for="f-datum"><span id="f-datum-label">Gültig bis</span> <span class="req">*</span></label>
+      <input type="date" id="f-datum">
+      <div class="quickdates" id="f-quickdates"></div>
+      <p class="err" id="f-datum-err">Bitte gib ein gültiges Datum ein.</p>
+
+      <div id="f-wdh-block" style="display:none">
+        <label class="field" for="f-wiederholung">Wiederholt sich</label>
+        <select id="f-wiederholung">
+          <option value="jaehrlich">jährlich</option>
+          <option value="halbjaehrlich">halbjährlich</option>
+          <option value="monatlich">monatlich</option>
+        </select>
+        <p class="hint" id="f-wdh-hint"></p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="switchrow" style="padding-top:2px">
+        <div class="txt"><b>Erinnerungen</b><span id="f-rem-sub">Rechtzeitig benachrichtigt werden</span></div>
+        <label class="switch"><input type="checkbox" id="f-rem-an" checked><span class="track"></span></label>
+      </div>
+      <div id="f-rem-block">
+        <ul class="remlist" id="f-remlist"></ul>
+        <div class="remadd">
+          <input type="number" id="f-rem-zahl" min="1" max="999" value="2" inputmode="numeric" aria-label="Anzahl">
+          <select id="f-rem-einheit" aria-label="Einheit">
+            <option value="1">Tage vorher</option>
+            <option value="7">Wochen vorher</option>
+            <option value="30">Monate vorher</option>
+          </select>
+          <button type="button" class="btn secondary small" id="f-rem-add">Hinzufügen</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <label class="field" for="f-referenz">Nummer / Referenz</label>
+      <input type="text" id="f-referenz" maxlength="60" placeholder="z. B. Ausweis- oder Vertragsnummer" autocomplete="off">
+      <label class="field" for="f-notiz">Notiz</label>
+      <textarea id="f-notiz" maxlength="600" placeholder="Optional: Fundort, Ansprechpartner, Details"></textarea>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn" id="f-speichern" style="flex:1">Speichern</button>
+      <button class="btn secondary" id="f-abbrechen">Abbrechen</button>
+    </div>
+    <div class="btn-row" id="f-loeschen-row" style="display:none">
+      <button class="btn danger block" id="f-loeschen">Eintrag löschen</button>
+    </div>
+  </section>
+
+</main>
+
+<!-- Werbeplatz: in V1 ausgeblendet, bleibt als Infrastruktur erhalten -->
+<div id="adbar"></div>
+
+<nav class="tabs">
+  <button data-tab="home" class="active">
+    <svg class="ic" viewBox="0 0 24 24"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>
+    Start
+  </button>
+  <!-- "Neuer Eintrag" sitzt mittig in der Leiste statt als schwebender Knopf
+       darüber – so verdeckt er die letzte Listenzeile nicht mehr. -->
+  <button class="neu" id="btn-neu" aria-label="Neuer Eintrag">
+    <svg class="ic" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+  </button>
+  <button data-tab="liste">
+    <svg class="ic" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13"/><path d="M3.5 6h.01M3.5 12h.01M3.5 18h.01"/></svg>
+    Einträge
+  </button>
+</nav>
+
+<div id="toast"></div>
+
+<!-- ======================= Dialog: Einstellungen ======================= -->
+<div class="modal-back" id="modal-settings">
+  <div class="modal">
+    <button class="modal-x" data-close="modal-settings" aria-label="Schließen">
+      <svg class="ic" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
+    <h3 class="mt"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg> Einstellungen</h3>
+
+    <label class="field">Darstellung</label>
+    <div class="seg" id="s-theme">
+      <button type="button" data-v="auto">Automatisch</button>
+      <button type="button" data-v="light">Hell</button>
+      <button type="button" data-v="dark">Dunkel</button>
+    </div>
+
+    <label class="field" for="s-vorwarn">„Bald fällig“ ab</label>
+    <select id="s-vorwarn">
+      <option value="7">7 Tagen</option>
+      <option value="14">14 Tagen</option>
+      <option value="30">30 Tagen</option>
+      <option value="60">60 Tagen</option>
+      <option value="90">90 Tagen</option>
+    </select>
+    <p class="hint">Gilt für Einträge ohne aktive Erinnerung. Sonst zählt die früheste aktive Erinnerung.</p>
+
+    <div class="switchrow">
+      <div class="txt"><b>Erinnerungen</b><span id="s-notif-sub">Benachrichtigungen auf diesem Gerät</span></div>
+      <label class="switch"><input type="checkbox" id="s-notif"><span class="track"></span></label>
+    </div>
+    <p class="hint" id="s-notif-stand"></p>
+    <button class="settings-row" id="s-notif-test">
+      <svg class="ic" viewBox="0 0 24 24"><path d="M18 8a6 6 0 10-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10.5 21a2 2 0 003 0"/></svg>
+      <span class="t"><b>Testbenachrichtigung senden</b><span>Kommt nach etwa 10 Sekunden</span></span>
+    </button>
+    <p class="diag" id="notif-status"></p>
+
+    <h3>Eigene Kategorien</h3>
+    <ul class="katverwaltung" id="s-kategorien"></ul>
+    <button class="settings-row" id="s-kat-neu">
+      <svg class="ic" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M12 9v6M9 12h6"/></svg>
+      <span class="t"><b>Kategorie hinzufügen</b><span>Eigener Name und Symbol</span></span>
+    </button>
+
+    <h3>Daten</h3>
+    <button class="settings-row" id="s-export">
+      <svg class="ic" viewBox="0 0 24 24"><path d="M12 3v12"/><path d="M8 11l4 4 4-4"/><path d="M4 21h16"/></svg>
+      <span class="t"><b>Daten sichern</b><span>Alle Einträge als Datei speichern</span></span>
+    </button>
+    <button class="settings-row" id="s-import">
+      <svg class="ic" viewBox="0 0 24 24"><path d="M12 15V3"/><path d="M8 7l4-4 4 4"/><path d="M4 21h16"/></svg>
+      <span class="t"><b>Daten wiederherstellen</b><span>Gesicherte Datei einlesen</span></span>
+    </button>
+    <input type="file" id="s-import-file" accept="application/json,.json" style="display:none">
+    <button class="settings-row" id="s-beispiele">
+      <svg class="ic" viewBox="0 0 24 24"><path d="M12 3l2.4 5.5 6 .5-4.5 4 1.4 5.8L12 15.9 6.7 18.8 8.1 13 3.6 9l6-.5z"/></svg>
+      <span class="t"><b>Beispieldaten laden</b><span>Zum Ausprobieren – ergänzt vorhandene Einträge</span></span>
+    </button>
+    <button class="settings-row" id="s-reset">
+      <svg class="ic" viewBox="0 0 24 24"><path d="M4 7h16"/><path d="M9 7V5h6v2"/><path d="M6 7l1 13h10l1-13"/></svg>
+      <span class="t"><b>Alle Daten löschen</b><span>Setzt die App vollständig zurück</span></span>
+    </button>
+
+    <h3>Über die App</h3>
+    <button class="settings-row" id="s-onboarding">
+      <svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 015 .3c0 1.7-2.5 2-2.5 3.7"/><path d="M12 17h.01"/></svg>
+      <span class="t"><b>Kurzeinführung</b><span>Die drei Schritte noch einmal ansehen</span></span>
+    </button>
+    <a class="settings-row" href="datenschutz.html" style="text-decoration:none">
+      <svg class="ic" viewBox="0 0 24 24"><path d="M12 3l7 3v6c0 4.5-3 7.6-7 9-4-1.4-7-4.5-7-9V6z"/></svg>
+      <span class="t"><b>Datenschutz &amp; Impressum</b><span>Alle Daten bleiben auf diesem Gerät</span></span>
+    </a>
+    <p class="diag" id="export-status"></p>
+    <p class="diag" id="ads-status"></p>
+    <p class="diag" id="buy-status"></p>
+    <p class="ver" id="s-version">v1.0.0</p>
+  </div>
+</div>
+
+<!-- ======================= Dialog: Kategorie ======================= -->
+<div class="modal-back" id="modal-kategorie">
+  <div class="modal">
+    <button class="modal-x" data-close="modal-kategorie" aria-label="Schließen">
+      <svg class="ic" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
+    <h3 class="mt"><svg class="ic" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M12 9v6M9 12h6"/></svg> <span id="kat-dlg-titel">Neue Kategorie</span></h3>
+
+    <label class="field" for="kat-name">Name</label>
+    <input type="text" id="kat-name" maxlength="24" placeholder="z. B. Haustier, Wohnung, Studium" autocomplete="off">
+
+    <label class="field">Symbol</label>
+    <div class="emojiwahl">
+      <span class="gross" id="kat-emoji-gross" aria-hidden="true">📌</span>
+      <!-- maxlength großzügig: Familien- und Flaggen-Emoji bestehen aus bis zu
+           16 Zeichen; auf ein Symbol gekürzt wird erst beim Übernehmen. -->
+      <input type="text" id="kat-emoji" maxlength="32" aria-label="Eigenes Symbol">
+    </div>
+    <p class="hint">Eins aus der Auswahl antippen – oder ein beliebiges Emoji ins Feld einfügen.</p>
+    <p class="hint" id="kat-emoji-warn" style="display:none;color:var(--warn)">
+      Dieses Symbol kennt dein Gerät noch nicht – es würde als leeres Kästchen erscheinen.
+      Nimm lieber ein anderes.
+    </p>
+    <div class="emojigrid" id="kat-emojis"></div>
+    <p class="err" id="kat-err"></p>
+
+    <div class="btn-row">
+      <button class="btn" id="kat-ok" style="flex:1">Speichern</button>
+      <button class="btn secondary" data-close="modal-kategorie">Abbrechen</button>
+    </div>
+  </div>
+</div>
+
+<!-- ======================= Dialog: Erneuern ======================= -->
+<div class="modal-back" id="modal-erneuern">
+  <div class="modal">
+    <button class="modal-x" data-close="modal-erneuern" aria-label="Schließen">
+      <svg class="ic" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
+    <h3 class="mt"><svg class="ic" viewBox="0 0 24 24"><path d="M20 12a8 8 0 11-2.3-5.7"/><path d="M20 4v5h-5"/></svg> Erneuert</h3>
+    <p class="muted" id="ern-text">Wann läuft der Eintrag jetzt ab?</p>
+    <label class="field" for="ern-datum">Neues Datum</label>
+    <input type="date" id="ern-datum">
+    <div class="quickdates" id="ern-quick"></div>
+    <div class="btn-row">
+      <button class="btn" id="ern-ok" style="flex:1">Übernehmen</button>
+      <button class="btn secondary" data-close="modal-erneuern">Abbrechen</button>
+    </div>
+  </div>
+</div>
+
+<!-- ======================= Dialog: Onboarding ======================= -->
+<div class="modal-back" id="modal-onboarding">
+  <div class="modal">
+    <div class="ob-step active" data-step="0">
+      <svg class="ic" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18"/></svg>
+      <b>Alles mit Ablaufdatum an einem Ort</b>
+      <p>Ausweis, Bankkarte, TÜV, Zertifikat oder Vertrag – erfasse einmal Titel, Kategorie und Datum.</p>
+    </div>
+    <div class="ob-step" data-step="1">
+      <svg class="ic" viewBox="0 0 24 24"><path d="M18 8a6 6 0 10-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10.5 21a2 2 0 003 0"/></svg>
+      <b>Rechtzeitig erinnert werden</b>
+      <p>Standardmäßig meldet sich Never2Late 3 Monate, 1 Woche und 1 Tag vorher. Du kannst das je Eintrag anpassen.</p>
+    </div>
+    <div class="ob-step" data-step="2">
+      <svg class="ic" viewBox="0 0 24 24"><path d="M12 3l7 3v6c0 4.5-3 7.6-7 9-4-1.4-7-4.5-7-9V6z"/><path d="M9 12l2 2 4-4"/></svg>
+      <b>Deine Daten bleiben bei dir</b>
+      <p>Kein Konto, kein Server, keine Cloud. Alles wird nur auf diesem Gerät gespeichert.</p>
+    </div>
+    <div id="ob-dots"><i class="on"></i><i></i><i></i></div>
+    <div class="btn-row">
+      <button class="btn" id="ob-next" style="flex:1">Weiter</button>
+      <button class="btn secondary" id="ob-skip">Überspringen</button>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+/* =========================================================================
+   Never2Late – Ablaufdaten, Gültigkeiten und wiederkehrende Fristen.
+
+   Aufbau in klar getrennten Ebenen (von unten nach oben):
+     1. Core        – reine Fachlogik: Datum, Status, Wiederholung, Erinnerungen.
+                      Kennt kein DOM und keinen Speicher, deshalb voll testbar.
+     2. Daten       – Datenhaltung im localStorage (versioniertes Schema).
+     3. Einst       – Einstellungen (ebenfalls localStorage).
+     4. Bridge      – native Brücke (Datei speichern/teilen) über Capacitor.
+     5. Erinnerungen– lokale Benachrichtigungen (Capacitor LocalNotifications).
+     6. Kalender    – .ics-Erzeugung für den optionalen Kalender-Export.
+     7. Edition/Ads/Billing – ruhende Module. In V1 vollständig abgeschaltet
+                      und nirgends sichtbar; für spätere Versionen vorbereitet.
+     8. Oberfläche  – Screens, Rendering, Navigation.
+
+   Alle Daten bleiben lokal auf dem Gerät. Kein Server, kein Konto, kein Tracking.
+   ========================================================================= */
+
+const APP_VERSION = "1.0.0";
+const $ = id => document.getElementById(id);
+
+/* =========================================================================
+   1. CORE – Fachlogik
+   ========================================================================= */
+const Core = {
+
+  /* ---- Kategorien -------------------------------------------------------
+     Acht mitgelieferte Kategorien plus beliebig viele eigene. Ein Eintrag
+     kann mehreren Kategorien angehören, mindestens einer.
+
+     `eigene` wird vom Kategorien-Modul (Datenebene) gefüllt – der Core
+     bleibt dadurch frei von Speicherzugriffen, ist aber trotzdem die
+     einzige Stelle, an der Kategorien nachgeschlagen werden. Wichtig für
+     die Startreihenfolge: Kategorien.laden() muss vor Daten.laden()
+     laufen, sonst kennt die Normalisierung die eigenen IDs noch nicht und
+     würde sie verwerfen. ---- */
+  eigene: [],
+  KATEGORIEN_FEST: [
+    { id: "ausweise",   label: "Ausweise",   emoji: "🪪", beispiele: "Personalausweis, Reisepass, Aufenthaltstitel" },
+    { id: "karten",     label: "Karten",     emoji: "💳", beispiele: "EC-Karte, Kreditkarte, Gesundheitskarte, Mitgliedskarte" },
+    { id: "beruflich",  label: "Beruflich",  emoji: "💼", beispiele: "Kompetenzerhalt, Zertifikate, Lizenzen, Fortbildungen" },
+    { id: "fahrzeug",   label: "Fahrzeug",   emoji: "🚗", beispiele: "Führerschein, TÜV, Zulassung" },
+    { id: "gesundheit", label: "Gesundheit", emoji: "🩺", beispiele: "Impfungen, medizinische Nachweise" },
+    { id: "reisen",     label: "Reisen",     emoji: "✈️", beispiele: "Visa, Reisedokumente" },
+    { id: "vertraege",  label: "Verträge",   emoji: "📄", beispiele: "Versicherungen, Garantien, Gutscheine, Abos" },
+    { id: "sonstiges",  label: "Sonstiges",  emoji: "📌", beispiele: "alles Weitere mit Frist" }
+  ],
+  kategorien(){ return this.KATEGORIEN_FEST.concat(this.eigene); },
+  /* Liefert null bei unbekannter ID – die Behandlung übernimmt kategorienVon. */
+  kategorie(id){ return this.kategorien().find(k => k.id === id) || null; },
+  /* Die Kategorien eines Eintrags als Objekte, in der Reihenfolge der
+     Gesamtliste (feste zuerst), damit die Anzeige nicht springt. */
+  kategorienVon(e){
+    const ids = (e && e.kategorien) || [];
+    const arr = this.kategorien().filter(k => ids.indexOf(k.id) >= 0);
+    return arr.length ? arr : [this.kategorien().find(k => k.id === "sonstiges")];
+  },
+  katLabels(e){ return this.kategorienVon(e).map(k => k.label).join(", "); },
+
+  /* ---- Datumstypen. Bestimmen nur die Beschriftung und den Meldungstext,
+         nicht die Berechnung – die ist für alle Typen dieselbe. ---- */
+  /* "vor"/"nach" umklammern die Zeitangabe, damit die Meldung natürlich
+     klingt: "Personalausweis läuft in 7 Tagen ab". */
+  DATUMSTYPEN: {
+    ablauf:        { label: "Gültig bis", kurz: "Gültig bis", vor: "läuft", nach: "ab" },
+    faellig:       { label: "Fällig am",  kurz: "Fällig am",  vor: "ist",   nach: "fällig" },
+    wiederkehrend: { label: "Fällig am",  kurz: "Fällig am",  vor: "ist",   nach: "fällig" }
+  },
+  datumstyp(id){ return this.DATUMSTYPEN[id] || this.DATUMSTYPEN.ablauf; },
+
+  /* ---- Wiederholung. Werte in Monaten, damit ein Zyklus immer auf dem
+         gleichen Kalendertag landet (Monatsende wird gekappt). ---- */
+  WIEDERHOLUNGEN: {
+    keine:         { label: "einmalig",      monate: 0 },
+    monatlich:     { label: "monatlich",     monate: 1 },
+    halbjaehrlich: { label: "halbjährlich",  monate: 6 },
+    jaehrlich:     { label: "jährlich",      monate: 12 }
+  },
+
+  STATUS: {
+    aktiv:       { label: "Aktiv",       rang: 3 },
+    bald:        { label: "Bald fällig", rang: 2 },
+    abgelaufen:  { label: "Abgelaufen",  rang: 1 },
+    archiviert:  { label: "Archiviert",  rang: 4 }
+  },
+
+  /* ---- Standard-Erinnerungen für neue Einträge: 3 Monate, 1 Woche, 1 Tag.
+         Gespeichert in Tagen; 3 Monate werden als 90 Tage gerechnet. ---- */
+  STANDARD_ERINNERUNGEN: [90, 7, 1],
+  ERINNERUNG_STUNDE: 9,          /* Uhrzeit der Benachrichtigung */
+  VORWARN_FALLBACK: 30,          /* "bald fällig" ohne aktive Erinnerung */
+
+  /* ---------------- Datumshilfen (ISO-Strings "JJJJ-MM-TT") --------------
+     Gerechnet wird durchgängig in UTC-Tagen. Dadurch kann keine Zeitzone
+     und keine Sommerzeitumstellung eine Tagesdifferenz verschieben.       */
+  istIso(iso){ return typeof iso === "string" && /^\d{4}-\d{2}-\d{2}$/.test(iso) && !isNaN(this._ms(iso)); },
+  _ms(iso){
+    const t = String(iso).split("-").map(Number);
+    const d = new Date(Date.UTC(t[0], t[1] - 1, t[2]));
+    /* Fängt Unsinn wie 2026-02-31 ab (JS würde still auf den 3. März rollen). */
+    return (d.getUTCFullYear() === t[0] && d.getUTCMonth() === t[1] - 1 && d.getUTCDate() === t[2])
+      ? d.getTime() : NaN;
+  },
+  iso(y, m, d){ return y + "-" + String(m).padStart(2, "0") + "-" + String(d).padStart(2, "0"); },
+  heute(){ const n = new Date(); return this.iso(n.getFullYear(), n.getMonth() + 1, n.getDate()); },
+  tageBis(iso, abIso){ return Math.round((this._ms(iso) - this._ms(abIso || this.heute())) / 86400000); },
+  addTage(iso, n){
+    const d = new Date(this._ms(iso) + n * 86400000);
+    return this.iso(d.getUTCFullYear(), d.getUTCMonth() + 1, d.getUTCDate());
+  },
+  /* Monate addieren mit Kappung aufs Monatsende: 31.01. + 1 Monat = 28.02. */
+  addMonate(iso, n){
+    const t = String(iso).split("-").map(Number);
+    const ziel = new Date(Date.UTC(t[0], t[1] - 1 + n, 1));
+    const letzter = new Date(Date.UTC(ziel.getUTCFullYear(), ziel.getUTCMonth() + 1, 0)).getUTCDate();
+    return this.iso(ziel.getUTCFullYear(), ziel.getUTCMonth() + 1, Math.min(t[2], letzter));
+  },
+
+  /* ---------------- Status ----------------------------------------------
+     Eine einzige Stelle bestimmt den Status. Alles andere (Dashboard,
+     Liste, Filter, Detail, Sortierung) liest nur noch hier.               */
+
+  /* Ab wie vielen Tagen vor dem Termin gilt "bald fällig"?
+     Die früheste aktive Erinnerung, sonst der Wert aus den Einstellungen. */
+  vorwarnTage(e, fallback){
+    const aktive = (e.erinnerungen || []).filter(r => r.an).map(r => r.tage);
+    if (e.erinnerungenAn !== false && aktive.length) return Math.max.apply(null, aktive);
+    return fallback == null ? this.VORWARN_FALLBACK : fallback;
+  },
+  status(e, heuteIso, fallback){
+    if (!e) return null;
+    if (e.archiviert) return "archiviert";
+    const tage = this.tageBis(e.datum, heuteIso || this.heute());
+    if (tage < 0) return "abgelaufen";
+    if (tage <= this.vorwarnTage(e, fallback)) return "bald";
+    return "aktiv";
+  },
+
+  /* ---------------- Wiederholung ----------------------------------------
+     Ein wiederkehrender Termin rollt NICHT von selbst weiter: Wer den
+     jährlichen Nachweis nicht erbracht hat, soll ihn als "abgelaufen"
+     sehen. Erst "Erledigt" setzt den nächsten Zyklus.                     */
+  naechstesDatum(e, abIso){
+    const w = this.WIEDERHOLUNGEN[e.wiederholung] || this.WIEDERHOLUNGEN.keine;
+    if (!w.monate) return null;
+    const ab = abIso || this.heute();
+    let d = e.datum, schutz = 0;
+    /* Vom bisherigen Termin aus weiterrollen, damit der Kalendertag erhalten
+       bleibt – auch wenn mehrere Zyklen versäumt wurden. */
+    do { d = this.addMonate(d, w.monate); } while (this.tageBis(d, ab) <= 0 && ++schutz < 400);
+    return d;
+  },
+
+  /* ---------------- Erinnerungen ----------------------------------------
+     Liefert alle Erinnerungszeitpunkte eines Eintrags. "kuenftig" filtert
+     auf das, was noch bevorsteht – nur das wird eingeplant.               */
+  erinnerungLabel(tage){
+    const map = { 1: "1 Tag", 2: "2 Tage", 3: "3 Tage", 7: "1 Woche", 14: "2 Wochen",
+      21: "3 Wochen", 30: "1 Monat", 60: "2 Monate", 90: "3 Monate", 180: "6 Monate", 365: "1 Jahr" };
+    return (map[tage] || tage + " Tage") + " vorher";
+  },
+  termine(e, jetzt){
+    if (!e || e.archiviert || e.erinnerungenAn === false || !this.istIso(e.datum)) return [];
+    const now = jetzt instanceof Date ? jetzt : new Date();
+    return (e.erinnerungen || []).filter(r => r.an).map(r => {
+      const tag = this.addTage(e.datum, -r.tage).split("-").map(Number);
+      const at = new Date(tag[0], tag[1] - 1, tag[2], this.ERINNERUNG_STUNDE, 0, 0, 0);
+      return { tage: r.tage, at, kuenftig: at.getTime() > now.getTime() };
+    }).sort((a, b) => a.at - b.at);
+  },
+  /* Text der Benachrichtigung – sachlich und knapp, wie besprochen. */
+  meldung(e, tage){
+    const t = this.datumstyp(e.datumstyp);
+    const wann = tage === 0 ? "heute" : tage === 1 ? "morgen" : "in " + tage + " Tagen";
+    return {
+      titel: e.titel + " " + t.vor + " " + wann + " " + t.nach,
+      text: this.katLabels(e) + " · " + t.kurz + " " + this.fmtDatum(e.datum)
+    };
+  },
+  /* Stabile, positive 32-Bit-Kennung je Eintrag und Erinnerung. Gleiche
+     Eingabe ergibt immer dieselbe Nummer – dadurch bleibt das Neuplanen
+     nach einem App-Neustart eindeutig. */
+  notifId(eintragId, tage){
+    const s = eintragId + "#" + tage;
+    let h = 5381;
+    for (let i = 0; i < s.length; i++) h = ((h * 33) ^ s.charCodeAt(i)) >>> 0;
+    return (h % 2000000000) + 1;
+  },
+
+  /* ---------------- Sortierung & Formatierung ---------------- */
+  /* Standard: das Dringendste zuerst. Abgelaufenes vor bald Fälligem,
+     danach nach Datum; Archiviertes ganz nach hinten. */
+  sortieren(liste, heuteIso, fallback){
+    const h = heuteIso || this.heute();
+    return liste.slice().sort((a, b) => {
+      const sa = this.status(a, h, fallback), sb = this.status(b, h, fallback);
+      const ra = this.STATUS[sa].rang, rb = this.STATUS[sb].rang;
+      if (ra !== rb) return ra - rb;
+      const d = this._ms(a.datum) - this._ms(b.datum);
+      if (d) return sa === "abgelaufen" ? -d : d;   /* zuletzt Abgelaufenes zuerst */
+      return a.titel.localeCompare(b.titel, "de");
+    });
+  },
+  fmtDatum(iso){
+    if (!this.istIso(iso)) return "–";
+    const t = iso.split("-");
+    return t[2] + "." + t[1] + "." + t[0];
+  },
+  /* "in 12 Tagen", "morgen", "heute", "seit 3 Tagen" */
+  fmtRest(iso, heuteIso){
+    const n = this.tageBis(iso, heuteIso);
+    if (n === 0) return "heute";
+    if (n === 1) return "morgen";
+    if (n === -1) return "seit gestern";
+    if (n < 0){
+      const v = -n;
+      return v < 45 ? "seit " + v + " Tagen"
+        : v < 365 ? "seit " + Math.round(v / 30) + " Monaten"
+        : "seit " + (Math.round(v / 36.5) / 10).toString().replace(".", ",") + " Jahren";
+    }
+    return n < 45 ? "in " + n + " Tagen"
+      : n < 365 ? "in " + Math.round(n / 30) + " Monaten"
+      : "in " + (Math.round(n / 36.5) / 10).toString().replace(".", ",") + " Jahren";
+  },
+
+  /* ---------------- Normalisierung --------------------------------------
+     Jeder Eintrag durchläuft diese Funktion, bevor er gespeichert wird.
+     So bleibt das Schema auch bei importierten oder älteren Daten sauber. */
+  neueId(){
+    return "e" + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+  },
+  normalisieren(roh){
+    const e = roh && typeof roh === "object" ? roh : {};
+    const jetzt = new Date().toISOString();
+    /* Kategorien: Array ab Schema 2, davor ein einzelnes Feld `kategorie`.
+       Beide Formen werden hier auf das Array normalisiert, unbekannte IDs
+       fallen weg, und ohne Rest bleibt "Sonstiges" übrig. */
+    let kats = Array.isArray(e.kategorien) ? e.kategorien.slice()
+      : typeof e.kategorie === "string" ? [e.kategorie] : [];
+    kats = kats.filter((id, i) => kats.indexOf(id) === i && !!this.kategorie(id));
+    if (!kats.length) kats = ["sonstiges"];
+    const typOk = !!this.DATUMSTYPEN[e.datumstyp];
+    let wdh = this.WIEDERHOLUNGEN[e.wiederholung] ? e.wiederholung : "keine";
+    const typ = typOk ? e.datumstyp : "ablauf";
+    /* Ein wiederkehrender Eintrag braucht zwingend einen Zyklus, ein
+       einmaliger darf keinen haben – sonst laufen Anzeige und Berechnung
+       auseinander. */
+    if (typ === "wiederkehrend" && wdh === "keine") wdh = "jaehrlich";
+    if (typ !== "wiederkehrend") wdh = "keine";
+    const rem = Array.isArray(e.erinnerungen) ? e.erinnerungen : this.STANDARD_ERINNERUNGEN.map(t => ({ tage: t, an: true }));
+    const remClean = [];
+    rem.forEach(r => {
+      const tage = Math.max(0, Math.min(3650, Math.round(Number(r && r.tage))));
+      if (!Number.isFinite(tage)) return;
+      if (remClean.some(x => x.tage === tage)) return;
+      remClean.push({ tage, an: r.an !== false });
+    });
+    remClean.sort((a, b) => b.tage - a.tage);
+    return {
+      id: typeof e.id === "string" && e.id ? e.id : this.neueId(),
+      titel: String(e.titel == null ? "" : e.titel).trim().slice(0, 80),
+      kategorien: kats,
+      datumstyp: typ,
+      datum: this.istIso(e.datum) ? e.datum : this.heute(),
+      wiederholung: wdh,
+      erinnerungen: remClean,
+      erinnerungenAn: e.erinnerungenAn !== false,
+      referenz: String(e.referenz == null ? "" : e.referenz).trim().slice(0, 60),
+      notiz: String(e.notiz == null ? "" : e.notiz).trim().slice(0, 600),
+      archiviert: e.archiviert === true,
+      erledigtAm: typeof e.erledigtAm === "string" ? e.erledigtAm : null,
+      /* Für eine spätere Historienansicht bereits mitgeführt, in V1 nur intern. */
+      historie: Array.isArray(e.historie) ? e.historie.slice(-20) : [],
+      kalenderExportAm: typeof e.kalenderExportAm === "string" ? e.kalenderExportAm : null,
+      erstelltAm: typeof e.erstelltAm === "string" ? e.erstelltAm : jetzt,
+      geaendertAm: jetzt
+    };
+  }
+};
+
+/* =========================================================================
+   2. DATEN – Speicherung im localStorage
+   Alle Schlüssel tragen das Präfix "n2l_", weil sich die Web-Versionen
+   aller MERCwerk-Apps unter marqewi.github.io dieselbe Origin teilen.
+   ========================================================================= */
+function store(key, val){ try { localStorage.setItem(key, JSON.stringify(val)); } catch(e){ /* Speicher voll/geblockt */ } }
+function load(key, fallback){
+  try { const v = localStorage.getItem(key); return v == null ? fallback : JSON.parse(v); }
+  catch(e){ return fallback; }
+}
+
+/* ---------- Eigene Kategorien ------------------------------------------
+   Die acht mitgelieferten Kategorien stehen im Core und lassen sich nicht
+   löschen. Alles Weitere legt die Nutzerin selbst an; gespeichert werden
+   nur die eigenen. Die IDs bekommen das Präfix "eigen-", damit sie nie mit
+   einer festen kollidieren – auch dann nicht, wenn später eine feste
+   Kategorie dazukommt.                                                    */
+const Kategorien = {
+  KEY: "n2l_kategorien",
+  MAX: 40,
+
+  laden(){
+    const roh = load(this.KEY, []);
+    Core.eigene = (Array.isArray(roh) ? roh : [])
+      .map(k => this.normalisieren(k)).filter(Boolean).slice(0, this.MAX);
+    return Core.eigene;
+  },
+  speichern(){ store(this.KEY, Core.eigene); },
+
+  normalisieren(k){
+    if (!k || typeof k !== "object") return null;
+    const id = String(k.id || "");
+    const label = String(k.label == null ? "" : k.label).trim().slice(0, 24);
+    if (!/^eigen-[a-z0-9-]+$/.test(id) || !label) return null;
+    return { id, label, emoji: this.emojiPruefen(k.emoji), eigen: true };
+  },
+  /* Genau ein Symbol übernehmen. Ein Emoji ist oft mehr als ein Zeichen:
+     Hautton-Modifikator, Variantenselektor, ZWJ-Folgen (👨‍👩‍👧‍👦, 🐦‍🔥),
+     Flaggen aus zwei Regional-Indikatoren (🇩🇪) oder Tag-Folgen (🏴󠁧󠁢󠁥󠁮󠁧󠁿).
+     Deshalb wird nicht auf Länge 1 geprüft, sondern zusammengehalten, was
+     zusammengehört – und aus einer Kette mehrerer Emoji bleibt das erste. */
+  emojiPruefen(v){
+    const s = String(v == null ? "" : v).trim();
+    if (!s) return "📌";
+    const z = Array.from(s);
+    if (!z.length) return "📌";
+    const ZWJ = "‍";
+    const regional = c => c >= "\u{1F1E6}" && c <= "\u{1F1FF}";
+    const anhang = c => c === ZWJ || c === "️"
+      || (c >= "\u{1F3FB}" && c <= "\u{1F3FF}")     /* Hautton */
+      || (c >= "\u{E0020}" && c <= "\u{E007F}");    /* Tag-Zeichen */
+    let ende = 1;
+    if (regional(z[0]) && z.length > 1 && regional(z[1])){
+      ende = 2;                                     /* Länderflagge */
+    } else {
+      /* Weiterlaufen über Anhängsel – und über alles, was direkt hinter
+         einem Verbinder steht. */
+      while (ende < z.length && (anhang(z[ende]) || z[ende - 1] === ZWJ)) ende++;
+    }
+    return z.slice(0, Math.min(ende, 10)).join("");
+  },
+
+  neueId(label){
+    const basis = "eigen-" + (label.toLowerCase()
+      .replace(/ä/g, "ae").replace(/ö/g, "oe").replace(/ü/g, "ue").replace(/ß/g, "ss")
+      .replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 24) || "kategorie");
+    let id = basis, n = 1;
+    while (Core.kategorie(id)) id = basis + "-" + (++n);
+    return id;
+  },
+
+  /* Legt eine Kategorie an und gibt sie zurück; wirft bei ungültiger Eingabe. */
+  hinzufuegen(label, emoji){
+    const name = String(label == null ? "" : label).trim().slice(0, 24);
+    if (!name) throw new Error("Bitte einen Namen eingeben.");
+    if (Core.kategorien().some(k => k.label.toLowerCase() === name.toLowerCase()))
+      throw new Error("Es gibt schon eine Kategorie mit diesem Namen.");
+    if (Core.eigene.length >= this.MAX)
+      throw new Error("Mehr als " + this.MAX + " eigene Kategorien sind nicht vorgesehen.");
+    const k = { id: this.neueId(name), label: name, emoji: this.emojiPruefen(emoji), eigen: true };
+    Core.eigene.push(k);
+    this.speichern();
+    return k;
+  },
+
+  umbenennen(id, label, emoji){
+    const k = Core.eigene.find(x => x.id === id);
+    if (!k) return null;
+    const name = String(label == null ? "" : label).trim().slice(0, 24);
+    if (!name) throw new Error("Bitte einen Namen eingeben.");
+    if (Core.kategorien().some(x => x.id !== id && x.label.toLowerCase() === name.toLowerCase()))
+      throw new Error("Es gibt schon eine Kategorie mit diesem Namen.");
+    k.label = name;
+    k.emoji = this.emojiPruefen(emoji);
+    this.speichern();
+    return k;
+  },
+
+  /* Löschen zieht die Einträge mit: Die Kategorie fliegt überall raus, und
+     wer dadurch ohne Kategorie dastünde, bekommt "Sonstiges". Sonst
+     verwiese ein Eintrag auf eine ID, die es nicht mehr gibt. */
+  entfernen(id){
+    if (!Core.eigene.some(k => k.id === id)) return 0;
+    Core.eigene = Core.eigene.filter(k => k.id !== id);
+    this.speichern();
+    let betroffen = 0;
+    Daten.alle().forEach(e => {
+      if (e.kategorien.indexOf(id) < 0) return;
+      betroffen++;
+      e.kategorien = e.kategorien.filter(x => x !== id);
+      if (!e.kategorien.length) e.kategorien = ["sonstiges"];
+      e.geaendertAm = new Date().toISOString();
+    });
+    if (betroffen) Daten.speichern();
+    return betroffen;
+  },
+
+  /* Wie viele Einträge hängen an dieser Kategorie? (für die Rückfrage) */
+  anzahl(id){ return Daten.alle().filter(e => e.kategorien.indexOf(id) >= 0).length; },
+
+  alleLoeschen(){ Core.eigene = []; this.speichern(); }
+};
+
+const Daten = {
+  KEY: "n2l_daten",
+  /* 1 = eine Kategorie je Eintrag (Feld `kategorie`)
+     2 = mehrere Kategorien je Eintrag (Feld `kategorien`) */
+  SCHEMA: 2,
+  liste: [],
+
+  laden(){
+    const roh = load(this.KEY, null);
+    const arr = roh && Array.isArray(roh.eintraege) ? roh.eintraege : [];
+    this.liste = arr.map(e => Core.normalisieren(e));
+    return this.liste;
+  },
+  speichern(){
+    store(this.KEY, { v: this.SCHEMA, gespeichertAm: new Date().toISOString(), eintraege: this.liste });
+    Erinnerungen.neuPlanen();
+  },
+  alle(){ return this.liste; },
+  aktive(){ return this.liste.filter(e => !e.archiviert); },
+  get(id){ return this.liste.find(e => e.id === id) || null; },
+
+  upsert(eintrag){
+    const e = Core.normalisieren(eintrag);
+    const i = this.liste.findIndex(x => x.id === e.id);
+    if (i >= 0){
+      e.erstelltAm = this.liste[i].erstelltAm;
+      e.historie = this.liste[i].historie;
+      this.liste[i] = e;
+    } else {
+      this.liste.push(e);
+    }
+    this.speichern();
+    return e;
+  },
+  entfernen(id){
+    this.liste = this.liste.filter(e => e.id !== id);
+    this.speichern();
+  },
+  archivieren(id, an){
+    const e = this.get(id); if (!e) return null;
+    e.archiviert = an !== false;
+    e.geaendertAm = new Date().toISOString();
+    this.speichern();
+    return e;
+  },
+  /* Erneuert/erledigt: neues Datum setzen, alten Stand in die Historie. */
+  erneuern(id, neuesDatum){
+    const e = this.get(id); if (!e || !Core.istIso(neuesDatum)) return null;
+    e.historie = (e.historie || []).concat([{ datum: e.datum, erledigtAm: new Date().toISOString() }]).slice(-20);
+    e.datum = neuesDatum;
+    e.erledigtAm = new Date().toISOString();
+    e.archiviert = false;
+    e.geaendertAm = e.erledigtAm;
+    this.speichern();
+    return e;
+  },
+  alleLoeschen(){ this.liste = []; this.speichern(); },
+
+  /* ---- Sicherung (Datei) ---- */
+  exportObjekt(){
+    /* Die eigenen Kategorien gehören mit in die Sicherung – ohne sie
+       zeigten die wiederhergestellten Einträge auf IDs, die es nicht gibt. */
+    return { app: "Never2Late", v: this.SCHEMA, exportiertAm: new Date().toISOString(),
+             kategorien: Core.eigene, eintraege: this.liste };
+  },
+  importObjekt(obj){
+    const arr = obj && Array.isArray(obj.eintraege) ? obj.eintraege : null;
+    if (!arr) throw new Error("Die Datei enthält keine Never2Late-Einträge.");
+    /* Erst die eigenen Kategorien wiederherstellen, dann die Einträge:
+       sonst kennt die Normalisierung deren IDs nicht und ersetzt sie
+       durch "Sonstiges". */
+    if (Array.isArray(obj.kategorien)){
+      Core.eigene = obj.kategorien.map(k => Kategorien.normalisieren(k))
+        .filter(Boolean).slice(0, Kategorien.MAX);
+      Kategorien.speichern();
+    }
+    this.liste = arr.map(e => Core.normalisieren(e));
+    this.speichern();
+    return this.liste.length;
+  },
+
+  /* ---- Beispieldaten: zum Ausprobieren und für die Tests. Die Daten sind
+     relativ zum heutigen Tag gesetzt, damit alle Status vorkommen. ---- */
+  beispieleLaden(){
+    const h = Core.heute();
+    const b = [
+      { titel: "Personalausweis", kategorien: ["ausweise"], datumstyp: "ablauf", datum: Core.addTage(h, 47),
+        referenz: "L01X00T47", notiz: "Bürgerbüro, Termin vorher online buchen" },
+      { titel: "Reisepass", kategorien: ["ausweise", "reisen"], datumstyp: "ablauf", datum: Core.addTage(h, 890) },
+      { titel: "EC-Karte Girokonto", kategorien: ["karten"], datumstyp: "ablauf", datum: Core.addTage(h, 5),
+        notiz: "Neue Karte kommt automatisch per Post" },
+      { titel: "Kompetenzerhalt Theorie", kategorien: ["beruflich"], datumstyp: "wiederkehrend",
+        datum: Core.addTage(h, -12), wiederholung: "jaehrlich", notiz: "Jährlicher Nachweis" },
+      { titel: "Erste-Hilfe-Schein", kategorien: ["beruflich", "gesundheit"], datumstyp: "ablauf",
+        datum: Core.addTage(h, 210) },
+      { titel: "TÜV / Hauptuntersuchung", kategorien: ["fahrzeug"], datumstyp: "faellig", datum: Core.addTage(h, 63),
+        referenz: "M-XY 1234" },
+      { titel: "Führerschein", kategorien: ["fahrzeug", "ausweise"], datumstyp: "ablauf", datum: Core.addTage(h, 1500) },
+      { titel: "Zahnvorsorge", kategorien: ["gesundheit"], datumstyp: "wiederkehrend", datum: Core.addTage(h, 120),
+        wiederholung: "halbjaehrlich" },
+      { titel: "Visum USA (ESTA)", kategorien: ["reisen"], datumstyp: "ablauf", datum: Core.addTage(h, -30) },
+      { titel: "Hausratversicherung kündbar bis", kategorien: ["vertraege"], datumstyp: "faellig",
+        datum: Core.addTage(h, 25), referenz: "HR-889221" },
+      { titel: "Garantie Waschmaschine", kategorien: ["vertraege"], datumstyp: "ablauf", datum: Core.addTage(h, 380) }
+    ];
+    b.forEach(x => this.liste.push(Core.normalisieren(x)));
+    this.speichern();
+    return b.length;
+  }
+};
+
+/* =========================================================================
+   3. EINSTELLUNGEN
+   ========================================================================= */
+const Einst = {
+  KEY: "n2l_einstellungen",
+  werte: { theme: "auto", vorwarnTage: 30, erinnerungenAn: true },
+  laden(){
+    const v = load(this.KEY, null);
+    if (v && typeof v === "object"){
+      if (["auto", "light", "dark"].indexOf(v.theme) >= 0) this.werte.theme = v.theme;
+      const vt = Number(v.vorwarnTage);
+      if ([7, 14, 30, 60, 90].indexOf(vt) >= 0) this.werte.vorwarnTage = vt;
+      this.werte.erinnerungenAn = v.erinnerungenAn !== false;
+    }
+    return this.werte;
+  },
+  set(k, v){ this.werte[k] = v; store(this.KEY, this.werte); }
+};
+
+/* =========================================================================
+   4. BRIDGE – native Brücke (Capacitor)
+   In der Android-WebView funktionieren weder Blob-Downloads über a.download
+   noch window.print(). Dateien werden deshalb über das Filesystem-Plugin in
+   den Cache geschrieben und über das Share-Plugin ausgegeben.
+   Plugins ausschließlich über window.Capacitor.Plugins.<Name> (kein Bundler,
+   also kein Capacitor.registerPlugin).
+   ========================================================================= */
+const Bridge = {
+  statusLog: [],
+  log(msg, isErr){
+    (isErr ? console.error : console.log)("[Export] " + msg);
+    this.statusLog.push(msg);
+    if (this.statusLog.length > 6) this.statusLog.shift();
+    const el = $("export-status");
+    if (el) el.textContent = "Export-Status: " + this.statusLog.join(" → ");
+  },
+  isNative(){
+    try { return !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()); }
+    catch(e){ return false; }
+  },
+  plugin(name){
+    try { return (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins[name]) || null; }
+    catch(e){ return null; }
+  },
+  blobToBase64(blob){
+    return new Promise((res, rej) => {
+      const fr = new FileReader();
+      fr.onload = () => res(String(fr.result).split(",")[1] || "");
+      fr.onerror = () => rej(new Error("Datei konnte nicht gelesen werden"));
+      fr.readAsDataURL(blob);
+    });
+  },
+  async saveText(filename, text, mime, titel){
+    return await this.saveBlob(filename, new Blob([text], { type: (mime || "text/plain") + ";charset=utf-8" }), titel);
+  },
+  async saveBlob(filename, blob, titel){
+    if (this.isNative()) return await this.saveNative(filename, blob, titel);
+    try {
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+      this.log("Datei im Browser gespeichert");
+      return true;
+    } catch(e){
+      this.log("Fehler im Browser: " + (e && e.message ? e.message : e), true);
+      alert("Die Datei konnte nicht gespeichert werden.");
+      return false;
+    }
+  },
+  /* Android: in den App-Cache schreiben und das Teilen-Menü öffnen.
+     "CACHE" bewusst als String – ohne Bundler gibt es kein Directory-Enum. */
+  async saveNative(filename, blob, titel){
+    const Fs = this.plugin("Filesystem"), Sh = this.plugin("Share");
+    if (!Fs || !Sh){
+      this.log("Plugin fehlt: " + (!Fs ? "Filesystem" : "Share"), true);
+      alert("Diese Funktion ist auf dem Gerät nicht verfügbar (Modul fehlt).");
+      return false;
+    }
+    try {
+      const data = await this.blobToBase64(blob);
+      await Fs.writeFile({ path: filename, data, directory: "CACHE", recursive: true });
+      const res = await Fs.getUri({ path: filename, directory: "CACHE" });
+      this.log("Datei erstellt");
+      await Sh.share({ title: titel || filename, files: [res && res.uri] });
+      this.log("Teilen-Menü geöffnet");
+      return true;
+    } catch(e){
+      const msg = e && e.message ? e.message : String(e);
+      if (/cancel|abort/i.test(msg)){ this.log("Teilen abgebrochen"); return true; }
+      this.log("Fehler: " + msg, true);
+      alert("Die Datei konnte nicht erstellt werden.\n\n" + msg);
+      return false;
+    }
+  }
+};
+
+/* =========================================================================
+   5. ERINNERUNGEN – lokale Benachrichtigungen
+   Grundsatz: Der localStorage ist die einzige Wahrheit. Nach jeder Änderung
+   und bei jedem App-Start werden alle geplanten Benachrichtigungen verworfen
+   und aus den Einträgen neu berechnet. Dadurch bleibt der Stand auch nach
+   einem Neustart, einem Import oder einer Datumsänderung konsistent.
+   ========================================================================= */
+const Erinnerungen = {
+  MAX_GEPLANT: 200,      /* Android begrenzt die Zahl gleichzeitiger Alarme */
+  TEST_ID: 999000001,    /* eigene Kennung, damit die Probe nicht mit echten kollidiert */
+  statusLog: [], erlaubt: null, planLaeuft: false, planErneut: false,
+  geplant: null,         /* zuletzt vom System gemeldete Zahl offener Erinnerungen */
+  log(msg, isErr){
+    (isErr ? console.error : console.log)("[Erinnerung] " + msg);
+    this.statusLog.push(msg);
+    if (this.statusLog.length > 6) this.statusLog.shift();
+    const el = $("notif-status");
+    if (el) el.textContent = "Erinnerungs-Status: " + this.statusLog.join(" → ");
+  },
+  plugin(){ return Bridge.isNative() ? Bridge.plugin("LocalNotifications") : null; },
+  verfuegbar(){ return !!this.plugin(); },
+
+  /* Ab Android 13 muss POST_NOTIFICATIONS zur Laufzeit angefragt werden. */
+  async berechtigungPruefen(){
+    const p = this.plugin();
+    if (!p){ this.erlaubt = false; return false; }
+    try {
+      const r = await p.checkPermissions();
+      this.erlaubt = r && r.display === "granted";
+      this.log("Berechtigung: " + (r && r.display));
+      return this.erlaubt;
+    } catch(e){ this.log("Prüfung fehlgeschlagen: " + (e && e.message ? e.message : e), true); return false; }
+  },
+  async berechtigungAnfragen(){
+    const p = this.plugin();
+    if (!p){ this.log("nur in der App verfügbar"); return false; }
+    try {
+      let r = await p.checkPermissions();
+      if (!r || r.display !== "granted") r = await p.requestPermissions();
+      this.erlaubt = r && r.display === "granted";
+      this.log(this.erlaubt ? "Berechtigung erteilt" : "Berechtigung abgelehnt");
+      return this.erlaubt;
+    } catch(e){ this.log("Anfrage fehlgeschlagen: " + (e && e.message ? e.message : e), true); return false; }
+  },
+
+  /* Alles verwerfen und komplett neu planen (idempotent). */
+  async neuPlanen(){
+    if (!this.verfuegbar()) return 0;
+    /* Läuft schon eine Planung, wird sie danach einmal wiederholt – so
+       gewinnt immer der zuletzt gespeicherte Stand. */
+    if (this.planLaeuft){ this.planErneut = true; return 0; }
+    this.planLaeuft = true;
+    try {
+      const p = this.plugin();
+      if (this.erlaubt === null) await this.berechtigungPruefen();
+      try {
+        const offen = await p.getPending();
+        /* Die Probe-Benachrichtigung ausnehmen – sie soll noch kommen. */
+        const weg = ((offen && offen.notifications) || [])
+          .filter(n => n.id !== this.TEST_ID).map(n => ({ id: n.id }));
+        if (weg.length) await p.cancel({ notifications: weg });
+      } catch(e){ this.log("Aufräumen fehlgeschlagen: " + (e && e.message ? e.message : e), true); }
+
+      if (!Einst.werte.erinnerungenAn){ this.log("Erinnerungen ausgeschaltet"); return 0; }
+      if (!this.erlaubt){ this.log("keine Berechtigung – nichts geplant"); return 0; }
+
+      const jetzt = new Date();
+      const geplant = [];
+      Daten.alle().forEach(e => {
+        Core.termine(e, jetzt).forEach(t => {
+          if (!t.kuenftig) return;
+          const m = Core.meldung(e, t.tage);
+          geplant.push({
+            id: Core.notifId(e.id, t.tage),
+            title: m.titel,
+            body: m.text,
+            schedule: { at: t.at, allowWhileIdle: true },
+            extra: { eintragId: e.id }
+          });
+        });
+      });
+      geplant.sort((a, b) => a.schedule.at - b.schedule.at);
+      const zuviel = geplant.length - this.MAX_GEPLANT;
+      const senden = geplant.slice(0, this.MAX_GEPLANT);
+      if (senden.length) await p.schedule({ notifications: senden });
+      this.log(senden.length + " Erinnerungen geplant" + (zuviel > 0 ? " (" + zuviel + " weitere folgen später)" : ""));
+      /* Beim System nachfragen, was dort wirklich liegt. Nur diese Zahl
+         beweist, dass die Planung angekommen ist – unsere eigene sagt bloß,
+         was wir abgeschickt haben. */
+      await this.standAbfragen();
+      return senden.length;
+    } catch(e){
+      this.log("Planen fehlgeschlagen: " + (e && e.message ? e.message : e), true);
+      return 0;
+    } finally {
+      this.planLaeuft = false;
+      if (this.planErneut){ this.planErneut = false; this.neuPlanen(); }
+    }
+  },
+
+  /* Fragt das System, wie viele Erinnerungen dort tatsächlich vorgemerkt
+     sind. Weicht das von unserer Zahl ab, liegt der Fehler nicht bei uns. */
+  async standAbfragen(){
+    const p = this.plugin();
+    if (!p){ this.geplant = null; return null; }
+    try {
+      const offen = await p.getPending();
+      const liste = ((offen && offen.notifications) || []).filter(n => n.id !== this.TEST_ID);
+      this.geplant = liste.length;
+      this.log("System meldet " + this.geplant + " vorgemerkt");
+    } catch(e){
+      this.geplant = null;
+      this.log("Abfrage fehlgeschlagen: " + (e && e.message ? e.message : e), true);
+    }
+    if (typeof renderSettings === "function") renderSettings();
+    return this.geplant;
+  },
+
+  /* Nächster fälliger Erinnerungszeitpunkt aus unseren eigenen Daten. */
+  naechster(){
+    const jetzt = new Date();
+    let fruehester = null;
+    Daten.alle().forEach(e => Core.termine(e, jetzt).forEach(t => {
+      if (t.kuenftig && (!fruehester || t.at < fruehester)) fruehester = t.at;
+    }));
+    return fruehester;
+  },
+
+  /* Probe: eine Benachrichtigung in zehn Sekunden. Damit lässt sich in
+     Sekunden klären, ob Erinnerungen überhaupt ankommen – statt bis zum
+     nächsten Morgen zu warten. */
+  async probe(){
+    const p = this.plugin();
+    if (!p){ toast("Nur in der Android-App verfügbar"); return false; }
+    const ok = await this.berechtigungAnfragen();
+    if (!ok){
+      toast("Keine Berechtigung für Benachrichtigungen");
+      renderSettings();
+      return false;
+    }
+    try {
+      const at = new Date(Date.now() + 10000);
+      await p.schedule({ notifications: [{
+        id: this.TEST_ID,
+        title: "Testbenachrichtigung",
+        body: "Wenn du das liest, funktionieren Erinnerungen auf diesem Gerät.",
+        schedule: { at, allowWhileIdle: true }
+      }] });
+      this.log("Probe geplant für " + at.toLocaleTimeString("de-DE"));
+      toast("Die Testbenachrichtigung kommt in etwa 10 Sekunden", 4000);
+      return true;
+    } catch(e){
+      const msg = e && e.message ? e.message : String(e);
+      this.log("Probe fehlgeschlagen: " + msg, true);
+      alert("Die Testbenachrichtigung konnte nicht geplant werden.\n\n" + msg);
+      return false;
+    }
+  },
+
+  async einschalten(an){
+    if (an){
+      const ok = await this.berechtigungAnfragen();
+      Einst.set("erinnerungenAn", ok);
+      if (!ok && this.verfuegbar()){
+        alert("Ohne die Berechtigung für Benachrichtigungen kann Never2Late dich nicht erinnern. "
+          + "Du kannst sie jederzeit in den Android-Einstellungen unter „Apps → Never2Late → Benachrichtigungen“ erlauben.");
+      }
+    } else {
+      Einst.set("erinnerungenAn", false);
+    }
+    await this.neuPlanen();
+    renderSettings();
+  }
+};
+
+/* =========================================================================
+   6. KALENDER – .ics-Export (bewusst einfach, optional)
+   Kein Zwei-Wege-Sync und kein Kalenderzugriff: Die App erzeugt eine
+   Kalenderdatei, die Übergabe übernimmt das Teilen-Menü bzw. der Browser.
+   ========================================================================= */
+const Kalender = {
+  _esc(s){ return String(s == null ? "" : s).replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\r?\n/g, "\\n"); },
+  _falten(zeile){
+    /* RFC 5545: Zeilen über 75 Oktett werden umgebrochen. */
+    if (zeile.length <= 72) return zeile;
+    let out = zeile.slice(0, 72), rest = zeile.slice(72);
+    while (rest.length > 71){ out += "\r\n " + rest.slice(0, 71); rest = rest.slice(71); }
+    return out + "\r\n " + rest;
+  },
+  _stamp(){ return new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, ""); },
+  RRULE: { monatlich: "FREQ=MONTHLY", halbjaehrlich: "FREQ=MONTHLY;INTERVAL=6", jaehrlich: "FREQ=YEARLY" },
+
+  ics(e){
+    const kompakt = iso => iso.replace(/-/g, "");
+    const titel = e.titel + " – " + (e.datumstyp === "ablauf" ? "läuft ab" : "fällig");
+    const beschreibung = [
+      Core.katLabels(e),
+      e.referenz ? "Nummer: " + e.referenz : "",
+      e.notiz || "",
+      "Erstellt mit Never2Late"
+    ].filter(Boolean).join("\n");
+    const zeilen = [
+      "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//MERCwerk//Never2Late//DE",
+      "CALSCALE:GREGORIAN", "METHOD:PUBLISH", "BEGIN:VEVENT",
+      "UID:" + e.id + "@never2late.mercwerk.de",
+      "DTSTAMP:" + this._stamp(),
+      "DTSTART;VALUE=DATE:" + kompakt(e.datum),
+      "DTEND;VALUE=DATE:" + kompakt(Core.addTage(e.datum, 1)),
+      "SUMMARY:" + this._esc(titel),
+      "DESCRIPTION:" + this._esc(beschreibung),
+      "TRANSP:TRANSPARENT"
+    ];
+    const rr = this.RRULE[e.wiederholung];
+    if (rr) zeilen.push("RRULE:" + rr);
+    /* Die aktiven Erinnerungen wandern als Alarme mit in den Termin. */
+    (e.erinnerungenAn === false ? [] : (e.erinnerungen || []).filter(r => r.an)).forEach(r => {
+      zeilen.push("BEGIN:VALARM", "ACTION:DISPLAY",
+        "DESCRIPTION:" + this._esc(Core.meldung(e, r.tage).titel),
+        "TRIGGER:-P" + r.tage + "D", "END:VALARM");
+    });
+    zeilen.push("END:VEVENT", "END:VCALENDAR");
+    return zeilen.map(z => this._falten(z)).join("\r\n") + "\r\n";
+  },
+
+  dateiname(e){
+    const s = e.titel.toLowerCase()
+      .replace(/ä/g, "ae").replace(/ö/g, "oe").replace(/ü/g, "ue").replace(/ß/g, "ss")
+      .replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40);
+    return "never2late-" + (s || "termin") + ".ics";
+  },
+
+  async exportieren(e){
+    const ok = await Bridge.saveText(this.dateiname(e), this.ics(e), "text/calendar", "In Kalender übernehmen");
+    if (ok){
+      e.kalenderExportAm = new Date().toISOString();
+      Daten.speichern();
+      toast(Bridge.isNative() ? "Kalenderdatei erstellt – jetzt an die Kalender-App übergeben"
+                              : "Kalenderdatei gespeichert");
+    }
+    return ok;
+  }
+};
+
+/* =========================================================================
+   7. RUHENDE MODULE – Edition, Werbung, Kauf
+   V1 ist bewusst ohne Werbung, ohne Premium und ohne Limits. Die Module
+   bleiben als Infrastruktur erhalten, sind aber über je einen Schalter
+   vollständig abgeschaltet und erzeugen weder Oberfläche noch Netzverkehr.
+   Zum Aktivieren später genügt ENABLED: true plus die echten IDs.
+   ========================================================================= */
+const Edition = {
+  KEY: "n2l_edition",
+  PREMIUM_VERFUEGBAR: false,       /* V1: keine Premium-Funktionen */
+  get(){ return load(this.KEY, "free") === "premium" ? "premium" : "free"; },
+  isPremium(){ return this.PREMIUM_VERFUEGBAR && this.get() === "premium"; },
+  set(v){ store(this.KEY, v === "premium" ? "premium" : "free"); this.apply(); },
+  apply(){
+    document.body.classList.toggle("edition-free", !this.isPremium());
+    document.body.classList.toggle("edition-premium", this.isPremium());
+    if (Ads.ENABLED) Ads.sync();
+  }
+};
+
+const ADS_CONF = {
+  ENABLED: false,                  /* V1: keine Werbung */
+  TESTING: true,
+  BANNER_ID: ""                    /* später: echter Banner-Block der Never2Late-AdMob-App */
+};
+
+const Ads = {
+  ENABLED: ADS_CONF.ENABLED,
+  plugin: null, showing: false, statusLog: [], consentOk: false, privacyRequired: false,
+  log(msg, isErr){
+    (isErr ? console.error : console.log)("[Ads] " + msg);
+    this.statusLog.push(msg);
+    if (this.statusLog.length > 6) this.statusLog.shift();
+    const el = $("ads-status");
+    if (el) el.textContent = "Werbestatus: " + this.statusLog.join(" → ");
+  },
+  available(){
+    if (!this.ENABLED) return false;
+    try { return !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()); }
+    catch(e){ return false; }
+  },
+  async ensureInit(){
+    if (this.plugin) return true;
+    if (!this.available()){ this.log("in dieser Version abgeschaltet"); return false; }
+    try {
+      const p = window.Capacitor.Plugins && window.Capacitor.Plugins.AdMob;
+      if (!p){ this.log("AdMob-Plugin nicht gefunden", true); return false; }
+      await p.initialize({ initializeForTesting: ADS_CONF.TESTING });
+      p.addListener("bannerAdSizeChanged", info => {
+        const h = info && info.height ? Math.max(0, Math.round(info.height)) : 0;
+        document.documentElement.style.setProperty("--adbar-h", h + "px");
+      });
+      this.plugin = p;
+      return true;
+    } catch(e){ this.log("Init-Fehler: " + (e && e.message ? e.message : e), true); return false; }
+  },
+  async ensureConsent(){
+    if (this.consentOk) return true;
+    try {
+      let info = await this.plugin.requestConsentInfo();
+      if (info && info.isConsentFormAvailable && info.status === "REQUIRED") info = await this.plugin.showConsentForm();
+      this.privacyRequired = !!(info && info.privacyOptionsRequirementStatus === "REQUIRED");
+      if (info && info.canRequestAds === false){ this.log("keine Einwilligung"); return false; }
+      this.consentOk = true; return true;
+    } catch(e){ this.log("Einwilligung nicht verfügbar – fahre fort"); this.consentOk = true; return true; }
+  },
+  async sync(){
+    if (!this.available()) return;
+    try {
+      if (Edition.isPremium()){
+        if (this.showing){ await this.plugin.removeBanner(); this.showing = false; }
+        document.documentElement.style.setProperty("--adbar-h", "0px");
+        return;
+      }
+      if (!(await this.ensureInit()) || this.showing) return;
+      if (!(await this.ensureConsent())) return;
+      await this.plugin.showBanner({ adId: ADS_CONF.BANNER_ID, adSize: "ADAPTIVE_BANNER",
+        position: "BOTTOM_CENTER", margin: 0, isTesting: ADS_CONF.TESTING });
+      this.showing = true;
+    } catch(e){ this.log("Banner fehlgeschlagen: " + (e && e.message ? e.message : e), true); }
+  }
+};
+
+const Billing = {
+  ENABLED: false,                  /* V1: keine Käufe */
+  PRODUCT: "premium_unlock",
+  inited: false, product: null, statusLog: [],
+  log(msg){
+    console.log("[Billing] " + msg);
+    this.statusLog.push(msg);
+    if (this.statusLog.length > 8) this.statusLog.shift();
+    const el = $("buy-status");
+    if (el) el.textContent = "Kauf-Status: " + this.statusLog.join(" → ");
+  },
+  available(){
+    if (!this.ENABLED) return false;
+    try { return !!(Bridge.isNative() && window.CdvPurchase && window.CdvPurchase.store); }
+    catch(e){ return false; }
+  },
+  init(){
+    if (this.inited || !this.available()){ if (!this.ENABLED) this.log("in dieser Version abgeschaltet"); return; }
+    this.inited = true;
+    try {
+      const { store: s, ProductType, Platform } = window.CdvPurchase;
+      s.register([{ id: this.PRODUCT, type: ProductType.NON_CONSUMABLE, platform: Platform.GOOGLE_PLAY }]);
+      s.when()
+        .productUpdated(() => { this.product = s.get(this.PRODUCT); })
+        .approved(tr => { Edition.set("premium"); try { tr.finish(); } catch(e){} })
+        .receiptUpdated(() => { try { if (s.owned(this.PRODUCT)) Edition.set("premium"); } catch(e){} });
+      s.initialize([Platform.GOOGLE_PLAY]);
+    } catch(e){ this.log("Init-Fehler: " + (e && e.message ? e.message : e)); }
+  }
+};
+
+/* =========================================================================
+   8. OBERFLÄCHE
+   ========================================================================= */
+function esc(s){ const d = document.createElement("div"); d.textContent = s == null ? "" : s; return d.innerHTML; }
+
+let toastTimer = null;
+function toast(msg, ms){
+  const el = $("toast");
+  if (!el) return;
+  el.textContent = msg;
+  el.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove("show"), ms || 2600);
+}
+
+/* ---------- Navigation -------------------------------------------------
+   Ein einfacher Stapel: Start → Liste → Detail → Formular. Die Zurück-Taste
+   geht darüber genau einen Schritt zurück.                              */
+const VIEWS = ["home", "liste", "detail", "form"];
+let viewStack = ["home"];
+function aktuelleView(){ return viewStack[viewStack.length - 1]; }
+
+function zeige(view, ersetzen){
+  if (ersetzen) viewStack[viewStack.length - 1] = view;
+  else if (aktuelleView() !== view) viewStack.push(view);
+  VIEWS.forEach(v => $("view-" + v).classList.toggle("active", v === view));
+  document.body.classList.toggle("no-tabs", view === "form");
+  const tief = viewStack.length > 1;
+  $("btn-back").style.display = tief ? "" : "none";
+  document.querySelector("header.app .logo").style.display = tief ? "none" : "";
+  document.querySelectorAll("nav.tabs button[data-tab]").forEach(b =>
+    b.classList.toggle("active", b.dataset.tab === view));
+  const titel = { home: "Never2Late", liste: "Einträge", detail: "Eintrag", form: "Eintrag" };
+  const sub = { home: "Ablaufdaten im Blick", liste: "Suchen, filtern, sortieren",
+    detail: "Details und Aktionen", form: "Erfassen und bearbeiten" };
+  $("head-title").textContent = titel[view];
+  $("head-sub").textContent = sub[view];
+  window.scrollTo(0, 0);
+}
+function zurueck(){
+  if (viewStack.length > 1){ viewStack.pop(); zeige(aktuelleView(), true); return true; }
+  return false;
+}
+function tabWechsel(tab){
+  viewStack = tab === "home" ? ["home"] : ["home", tab];
+  zeige(tab, true);
+  render();
+}
+
+/* Nur die echten Reiter – der "Neu"-Knopf sitzt zwar in derselben Leiste,
+   wechselt aber keine Ansicht. */
+document.querySelectorAll("nav.tabs button[data-tab]").forEach(b =>
+  b.addEventListener("click", () => tabWechsel(b.dataset.tab)));
+$("btn-back").addEventListener("click", () => { zurueck(); render(); });
+
+/* ---------- Dialoge ---------- */
+const modalStack = [];
+function openModal(id){
+  $(id).classList.add("open");
+  const i = modalStack.indexOf(id); if (i >= 0) modalStack.splice(i, 1);
+  modalStack.push(id);
+}
+function closeModal(id){
+  $(id).classList.remove("open");
+  const i = modalStack.indexOf(id); if (i >= 0) modalStack.splice(i, 1);
+}
+document.querySelectorAll("[data-close]").forEach(b => b.addEventListener("click", () => closeModal(b.dataset.close)));
+document.querySelectorAll(".modal-back").forEach(m => m.addEventListener("click", e => {
+  if (e.target === m && m.id !== "modal-onboarding") closeModal(m.id);
+}));
+
+/* ---------- Gemeinsame Bausteine ---------- */
+function statusPill(st){
+  return '<span class="pill s-' + st + '"><span class="dot"></span>' + Core.STATUS[st].label + "</span>";
+}
+function zeileHtml(e, heute){
+  const st = Core.status(e, heute, Einst.werte.vorwarnTage);
+  const kats = Core.kategorienVon(e);
+  const typ = Core.datumstyp(e.datumstyp);
+  const wdh = e.wiederholung !== "keine" ? " · " + Core.WIEDERHOLUNGEN[e.wiederholung].label : "";
+  /* In der Zeile ist wenig Platz: das Symbol der ersten Kategorie, und bei
+     mehreren ein kleiner Zähler statt einer Reihe von Emoji. */
+  const symbol = kats[0].emoji + (kats.length > 1 ? '<i class="mehr">+' + (kats.length - 1) + "</i>" : "");
+  /* Die Statusklasse trägt die schmale Farbleiste am linken Zeilenrand. */
+  return '<li><button class="row st-' + st + (e.archiviert ? " is-archiviert" : "") + '" data-detail="' + e.id + '">'
+    + '<span class="kat" aria-hidden="true">' + symbol + "</span>"
+    + '<span class="mid"><span class="tit">' + esc(e.titel) + "</span>"
+    + '<span class="sub">' + esc(Core.katLabels(e)) + " · " + typ.kurz + " " + Core.fmtDatum(e.datum) + wdh + "</span></span>"
+    + '<span class="right">' + statusPill(st)
+    + '<span class="rest">' + (e.archiviert ? "" : Core.fmtRest(e.datum, heute)) + "</span></span>"
+    + "</button></li>";
+}
+function listeHtml(arr, heute){
+  return '<div class="card flush"><ul class="liste">' + arr.map(e => zeileHtml(e, heute)).join("") + "</ul></div>";
+}
+
+/* ---------- Dashboard ---------- */
+function renderHome(){
+  const heute = Core.heute(), fb = Einst.werte.vorwarnTage;
+  const alle = Daten.alle();
+  const offen = alle.filter(e => !e.archiviert);
+  const el = $("home-inhalt");
+
+  if (!alle.length){
+    el.innerHTML = '<div class="card empty">'
+      + '<svg class="ic" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18"/><path d="M12 14v4M10 16h4"/></svg>'
+      + "<b>Noch nichts erfasst</b>"
+      + "<p>Trag ein, was ein Ablauf- oder Fälligkeitsdatum hat – Ausweis, Bankkarte, TÜV, Nachweis oder Vertrag. "
+      + "Never2Late erinnert dich rechtzeitig.</p>"
+      + '<button class="btn" id="empty-neu">Ersten Eintrag anlegen</button>'
+      + '<div class="btn-row" style="justify-content:center"><button class="btn ghost small" id="empty-beispiele">Beispiele ansehen</button></div>'
+      + "</div>";
+    $("empty-neu").addEventListener("click", () => formOeffnen(null));
+    $("empty-beispiele").addEventListener("click", () => {
+      Daten.beispieleLaden(); render(); toast("Beispieldaten geladen");
+    });
+    return;
+  }
+
+  const gruppen = { abgelaufen: [], bald: [], aktiv: [] };
+  offen.forEach(e => gruppen[Core.status(e, heute, fb)].push(e));
+  Object.keys(gruppen).forEach(k => gruppen[k] = Core.sortieren(gruppen[k], heute, fb));
+
+  /* Kopfkarte: der eine Termin, der als Nächstes zählt. */
+  const naechster = gruppen.abgelaufen[0] || gruppen.bald[0] || gruppen.aktiv[0] || null;
+  let html = "";
+  if (naechster){
+    const st = Core.status(naechster, heute, fb);
+    const lead = st === "abgelaufen" ? "Abgelaufen" : st === "bald" ? "Als Nächstes fällig" : "Nichts Dringendes – als Nächstes";
+    html += '<div class="hero"><p class="lead">' + lead + "</p>"
+      + '<p class="big">' + esc(naechster.titel) + "</p>"
+      + '<p class="meta">' + Core.datumstyp(naechster.datumstyp).kurz + " " + Core.fmtDatum(naechster.datum)
+      + " · " + Core.fmtRest(naechster.datum, heute) + "</p></div>";
+  }
+
+  html += '<div class="stats">'
+    + '<button class="stat s-abgelaufen" data-filter="abgelaufen"><b>' + gruppen.abgelaufen.length + "</b><span>Abgelaufen</span></button>"
+    + '<button class="stat s-bald" data-filter="bald"><b>' + gruppen.bald.length + "</b><span>Bald fällig</span></button>"
+    + '<button class="stat s-aktiv" data-filter="aktiv"><b>' + gruppen.aktiv.length + "</b><span>Aktiv</span></button>"
+    + "</div>";
+
+  const dringend = gruppen.abgelaufen.concat(gruppen.bald);
+  if (dringend.length){
+    html += '<div class="sec-head"><h3>Braucht Aufmerksamkeit</h3>'
+      + (dringend.length > 5 ? '<a data-filter="alle">Alle anzeigen</a>' : "") + "</div>"
+      + listeHtml(dringend.slice(0, 5), heute);
+  } else {
+    html += '<div class="card" style="display:flex;gap:12px;align-items:center">'
+      + '<svg class="ic" viewBox="0 0 24 24" style="width:26px;height:26px;color:var(--ok)"><circle cx="12" cy="12" r="9"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/></svg>'
+      + "<div><b>Alles im grünen Bereich</b><div class=\"muted\">Aktuell läuft nichts in den nächsten "
+      + Einst.werte.vorwarnTage + " Tagen ab.</div></div></div>";
+  }
+
+  if (gruppen.aktiv.length){
+    html += '<div class="sec-head"><h3>Kommt später</h3><a data-filter="alle">Alle anzeigen</a></div>'
+      + listeHtml(gruppen.aktiv.slice(0, 4), heute);
+  }
+
+  el.innerHTML = html;
+  el.querySelectorAll("[data-filter]").forEach(b => b.addEventListener("click", () => {
+    filter.status = b.dataset.filter; filter.suche = ""; filter.kategorie = "alle";
+    zeige("liste"); render();
+  }));
+  bindeDetailKlicks(el);
+}
+
+/* ---------- Liste ---------- */
+const filter = { status: "alle", kategorie: "alle", suche: "" };
+
+function renderFilterChips(){
+  const stFilter = [
+    { id: "alle", label: "Alle" }, { id: "aktiv", label: "Aktiv" },
+    { id: "bald", label: "Bald fällig" }, { id: "abgelaufen", label: "Abgelaufen" },
+    { id: "archiviert", label: "Archiviert" }
+  ];
+  $("filter-status").innerHTML = stFilter.map(s =>
+    '<button class="chip' + (filter.status === s.id ? " active" : "") + '" data-st="' + s.id + '">' + s.label + "</button>").join("");
+  $("filter-kategorie").innerHTML = '<button class="chip' + (filter.kategorie === "alle" ? " active" : "") + '" data-kat="alle">Alle Kategorien</button>'
+    + Core.kategorien().map(k => '<button class="chip' + (filter.kategorie === k.id ? " active" : "") + '" data-kat="' + k.id + '">'
+      + k.emoji + " " + esc(k.label) + "</button>").join("");
+  $("filter-status").querySelectorAll("[data-st]").forEach(b =>
+    b.addEventListener("click", () => { filter.status = b.dataset.st; render(); }));
+  $("filter-kategorie").querySelectorAll("[data-kat]").forEach(b =>
+    b.addEventListener("click", () => { filter.kategorie = b.dataset.kat; render(); }));
+}
+
+/* Zentrale Auswahl für die Liste – Suche, Status- und Kategoriefilter. */
+function gefiltert(){
+  const heute = Core.heute(), fb = Einst.werte.vorwarnTage;
+  const q = filter.suche.trim().toLowerCase();
+  let arr = Daten.alle().filter(e => {
+    const st = Core.status(e, heute, fb);
+    if (filter.status === "alle") { if (e.archiviert) return false; }
+    else if (st !== filter.status) return false;
+    /* Ein Eintrag passt, wenn er die gesuchte Kategorie unter mehreren hat. */
+    if (filter.kategorie !== "alle" && e.kategorien.indexOf(filter.kategorie) < 0) return false;
+    if (q && !(e.titel.toLowerCase().indexOf(q) >= 0 || (e.referenz || "").toLowerCase().indexOf(q) >= 0)) return false;
+    return true;
+  });
+  return Core.sortieren(arr, heute, fb);
+}
+
+function renderListe(){
+  renderFilterChips();
+  const heute = Core.heute();
+  const arr = gefiltert();
+  const el = $("liste-inhalt");
+  if (!arr.length){
+    const leerSuche = !!filter.suche.trim();
+    el.innerHTML = '<div class="card empty">'
+      + '<svg class="ic" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>'
+      + "<b>" + (leerSuche ? "Nichts gefunden" : "Keine Einträge in dieser Auswahl") + "</b>"
+      + "<p>" + (leerSuche ? "Probier einen anderen Suchbegriff oder setz die Filter zurück."
+                           : "Ändere den Filter oder leg einen neuen Eintrag an.") + "</p>"
+      + '<button class="btn secondary" id="liste-reset">Filter zurücksetzen</button></div>';
+    $("liste-reset").addEventListener("click", () => {
+      filter.status = "alle"; filter.kategorie = "alle"; filter.suche = "";
+      $("such-feld").value = ""; $("such-clear").style.display = "none"; render();
+    });
+    return;
+  }
+  el.innerHTML = '<p class="muted" style="margin:2px 0 6px">' + arr.length
+    + (arr.length === 1 ? " Eintrag" : " Einträge") + "</p>" + listeHtml(arr, heute);
+  bindeDetailKlicks(el);
+}
+
+$("such-feld").addEventListener("input", e => {
+  filter.suche = e.target.value;
+  $("such-clear").style.display = e.target.value ? "" : "none";
+  renderListe();
+});
+$("such-clear").addEventListener("click", () => {
+  filter.suche = ""; $("such-feld").value = ""; $("such-clear").style.display = "none"; renderListe();
+});
+
+function bindeDetailKlicks(root){
+  root.querySelectorAll("[data-detail]").forEach(b =>
+    b.addEventListener("click", () => detailOeffnen(b.dataset.detail)));
+}
+
+/* ---------- Detail ---------- */
+let detailId = null;
+function detailOeffnen(id){
+  detailId = id;
+  zeige("detail");
+  renderDetail();
+}
+function renderDetail(){
+  const e = Daten.get(detailId);
+  const el = $("detail-inhalt");
+  if (!e){ el.innerHTML = '<div class="card empty"><b>Eintrag nicht gefunden</b></div>'; return; }
+  const heute = Core.heute();
+  const st = Core.status(e, heute, Einst.werte.vorwarnTage);
+  const kats = Core.kategorienVon(e), typ = Core.datumstyp(e.datumstyp);
+  const wdh = Core.WIEDERHOLUNGEN[e.wiederholung];
+  const aktiveRem = (e.erinnerungen || []).filter(r => r.an);
+
+  let html = '<div class="detail-head"><span class="kat" aria-hidden="true">' + kats[0].emoji + "</span>"
+    + "<div><h2>" + esc(e.titel) + "</h2>"
+    + '<div class="katchips" style="margin-top:5px">'
+    + kats.map(k => '<span class="katchip">' + k.emoji + " " + esc(k.label) + "</span>").join("")
+    + "</div></div></div>"
+    + '<div class="card"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">'
+    + '<div><div class="muted">' + typ.label + '</div><div class="bigdate">' + Core.fmtDatum(e.datum)
+    + '<span class="rest">' + (e.archiviert ? "archiviert" : Core.fmtRest(e.datum, heute)) + "</span></div></div>"
+    + statusPill(st) + "</div>";
+
+  if (wdh.monate){
+    const naechst = Core.naechstesDatum(e, heute);
+    html += '<p class="hint">Wiederkehrend (' + wdh.label + "). Nach „Erledigt“ ist der nächste Termin am <b>"
+      + Core.fmtDatum(naechst) + "</b>.</p>";
+  }
+  html += "</div>";
+
+  html += '<div class="card"><dl class="dl">';
+  html += "<dt>Erinnerungen</dt><dd>" + (e.erinnerungenAn === false || !aktiveRem.length
+    ? "aus" : aktiveRem.map(r => Core.erinnerungLabel(r.tage)).join(", ")) + "</dd>";
+  html += "<dt>Wiederholung</dt><dd>" + wdh.label + "</dd>";
+  if (e.referenz) html += "<dt>Nummer</dt><dd>" + esc(e.referenz) + "</dd>";
+  if (e.notiz) html += "<dt>Notiz</dt><dd>" + esc(e.notiz).replace(/\n/g, "<br>") + "</dd>";
+  if (e.erledigtAm) html += "<dt>Zuletzt erneuert</dt><dd>" + esc(new Date(e.erledigtAm).toLocaleDateString("de-DE")) + "</dd>";
+  html += "</dl></div>";
+
+  html += '<div class="actions">'
+    + '<button class="btn" id="d-erneuern"><svg class="ic" viewBox="0 0 24 24"><path d="M20 12a8 8 0 11-2.3-5.7"/><path d="M20 4v5h-5"/></svg>'
+    + (wdh.monate ? "Erledigt" : "Erneuert") + "</button>"
+    + '<button class="btn secondary" id="d-bearbeiten"><svg class="ic" viewBox="0 0 24 24"><path d="M4 20h4L19 9a2.8 2.8 0 10-4-4L4 16z"/></svg>Bearbeiten</button>'
+    + '<button class="btn secondary" id="d-kalender"><svg class="ic" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18"/></svg>In Kalender</button>'
+    + '<button class="btn secondary" id="d-archiv"><svg class="ic" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="4" rx="1"/><path d="M5 8v12h14V8M10 12h4"/></svg>'
+    + (e.archiviert ? "Aus Archiv" : "Archivieren") + "</button></div>";
+
+  el.innerHTML = html;
+  $("d-bearbeiten").addEventListener("click", () => formOeffnen(e.id));
+  $("d-kalender").addEventListener("click", () => Kalender.exportieren(e));
+  $("d-archiv").addEventListener("click", () => {
+    Daten.archivieren(e.id, !e.archiviert);
+    toast(e.archiviert ? "Eintrag archiviert" : "Eintrag zurückgeholt");
+    render();
+  });
+  $("d-erneuern").addEventListener("click", () => erneuernOeffnen(e));
+}
+
+/* ---------- Eigene Kategorien anlegen und bearbeiten --------------------
+   Der Dialog dient beidem: Anlegen (aus dem Formular oder den
+   Einstellungen) und Umbenennen. `katFertig` nimmt auf, was danach
+   passieren soll – im Formular wird die neue Kategorie gleich ausgewählt. */
+const EMOJI_AUSWAHL = (
+  "📌📁🗂️📅⏰⏳🔔✅🔖📎🧾🏛️⚖️🛡️🔒🪪💳💼🚗🩺✈️📄🏠🔑🏦💰💡🔧🛠️🧰🚲🛵🚚⛵🎫🎟️🎬🎵🎓📚" +
+  "🏋️⚽🏕️🧳🌍📱💻🖨️📷⌚🔌🔋🧯🚨⚠️🩹💊🦷👓🧴🍼👶❤️⭐🌱🐕🐈🐾🍽️☕🎂🎁🧹🪴🖼️🎨🧑‍💻🧑‍🔧" +
+  /* Neuere Zeichen (Unicode 13–15). Was das Gerät nicht darstellen kann,
+     wird beim Öffnen des Dialogs automatisch ausgeblendet. */
+  "🛟🛞🪫🪬🫙🫧🛜🪟🪑🪜🪝🪞🪣🪥🪦🪧🩵🩷🩶🪽🪿🫎🪼🫛🪻🧭🗝️🩻🫀🧾"
+).match(/\p{Extended_Pictographic}(?:️|‍\p{Extended_Pictographic}|[\u{1F3FB}-\u{1F3FF}])*/gu) || [];
+
+/* Nicht jedes Gerät kennt jedes Emoji – was der Schrift fehlt, erscheint als
+   leeres Kästchen. Deshalb wird die Auswahl einmal vermessen: Ein
+   darstellbares Emoji ist so breit wie ein sicher vorhandenes, und eine
+   Verbundfolge muss zu einem Zeichen verschmelzen, statt in ihre Einzelteile
+   zu zerfallen. Lässt sich nicht sinnvoll messen, wird lieber alles gezeigt
+   als fälschlich alles ausgeblendet. */
+const EmojiPruefung = {
+  ctx: null, referenz: 0, messbar: false,
+  vorbereiten(){
+    if (this.ctx) return this.messbar;
+    try {
+      this.ctx = document.createElement("canvas").getContext("2d");
+      this.ctx.font = "24px sans-serif";
+      this.referenz = this.ctx.measureText("📌").width;
+      const tofu = this.ctx.measureText("\u{10FFFD}").width;   /* unbelegt */
+      this.messbar = this.referenz > 0 && Math.abs(this.referenz - tofu) > 1;
+    } catch(e){ this.messbar = false; }
+    return this.messbar;
+  },
+  darstellbar(e){
+    if (!e || !this.vorbereiten()) return true;
+    const breite = this.ctx.measureText(e).width;
+    if (Math.abs(breite - this.referenz) > 1) return false;
+    if (e.indexOf("‍") < 0) return true;
+    const einzeln = this.ctx.measureText(e.split("‍").join("")).width;
+    return breite < einzeln - 1;
+  }
+};
+
+let katBearbeitet = null;      /* null = neue Kategorie */
+let katFertig = null;          /* Rückruf nach dem Speichern */
+
+function katEmojiSetzen(v){
+  const e = Kategorien.emojiPruefen(v);
+  $("kat-emoji").value = e;
+  $("kat-emoji-gross").textContent = e;
+  $("kat-emojis").querySelectorAll("button").forEach(b =>
+    b.classList.toggle("active", b.dataset.e === e));
+  /* Eingefügtes Zeichen, das dieses Gerät nicht kennt: freundlich hinweisen,
+     statt es kommentarlos als Kästchen anzuzeigen. */
+  $("kat-emoji-warn").style.display = EmojiPruefung.darstellbar(e) ? "none" : "";
+}
+function katDialog(id, fertig){
+  katBearbeitet = id ? Core.eigene.find(k => k.id === id) || null : null;
+  katFertig = fertig || null;
+  $("kat-dlg-titel").textContent = katBearbeitet ? "Kategorie bearbeiten" : "Neue Kategorie";
+  $("kat-name").value = katBearbeitet ? katBearbeitet.label : "";
+  $("kat-err").classList.remove("show");
+  $("kat-emojis").innerHTML = EMOJI_AUSWAHL.filter(e => EmojiPruefung.darstellbar(e))
+    .map(e => '<button type="button" data-e="' + e + '">' + e + "</button>").join("");
+  $("kat-emojis").querySelectorAll("button").forEach(b =>
+    b.addEventListener("click", () => katEmojiSetzen(b.dataset.e)));
+  katEmojiSetzen(katBearbeitet ? katBearbeitet.emoji : "📌");
+  openModal("modal-kategorie");
+  setTimeout(() => $("kat-name").focus(), 60);
+}
+$("kat-emoji").addEventListener("change", e => katEmojiSetzen(e.target.value));
+$("kat-emoji").addEventListener("blur", e => katEmojiSetzen(e.target.value));
+$("kat-ok").addEventListener("click", () => {
+  const fehler = $("kat-err");
+  try {
+    const k = katBearbeitet
+      ? Kategorien.umbenennen(katBearbeitet.id, $("kat-name").value, $("kat-emoji").value)
+      : Kategorien.hinzufuegen($("kat-name").value, $("kat-emoji").value);
+    closeModal("modal-kategorie");
+    if (katFertig) katFertig(k);
+    renderKatVerwaltung();
+    render();
+    toast(katBearbeitet ? "Kategorie geändert" : "Kategorie „" + k.label + "“ angelegt");
+  } catch(err){
+    fehler.textContent = err && err.message ? err.message : String(err);
+    fehler.classList.add("show");
+  }
+});
+
+/* Verwaltung in den Einstellungen */
+function renderKatVerwaltung(){
+  const ul = $("s-kategorien");
+  if (!ul) return;
+  if (!Core.eigene.length){
+    ul.innerHTML = '<li><span class="n muted">Noch keine eigenen Kategorien. '
+      + "Die acht mitgelieferten stehen immer zur Verfügung.</span></li>";
+    return;
+  }
+  ul.innerHTML = Core.eigene.map(k => {
+    const n = Kategorien.anzahl(k.id);
+    return '<li><span class="e" aria-hidden="true">' + k.emoji + "</span>"
+      + '<span class="n">' + esc(k.label)
+      + '<span class="anz"> · ' + (n === 1 ? "1 Eintrag" : n + " Einträge") + "</span></span>"
+      + '<button data-bearbeiten="' + k.id + '" aria-label="Bearbeiten">'
+      + '<svg class="ic" viewBox="0 0 24 24"><path d="M4 20h4L19 9a2.8 2.8 0 10-4-4L4 16z"/></svg></button>'
+      + '<button class="loesch" data-loeschen="' + k.id + '" aria-label="Löschen">'
+      + '<svg class="ic" viewBox="0 0 24 24"><path d="M4 7h16"/><path d="M9 7V5h6v2"/><path d="M6 7l1 13h10l1-13"/></svg></button>'
+      + "</li>";
+  }).join("");
+  ul.querySelectorAll("[data-bearbeiten]").forEach(b =>
+    b.addEventListener("click", () => katDialog(b.dataset.bearbeiten)));
+  ul.querySelectorAll("[data-loeschen]").forEach(b => b.addEventListener("click", () => {
+    const k = Core.eigene.find(x => x.id === b.dataset.loeschen);
+    if (!k) return;
+    const n = Kategorien.anzahl(k.id);
+    const frage = n
+      ? "„" + k.label + "“ löschen?\n\n" + (n === 1 ? "1 Eintrag verliert" : n + " Einträge verlieren")
+        + " diese Kategorie. Die Einträge selbst bleiben erhalten; wer danach ohne Kategorie dasteht, "
+        + "bekommt „Sonstiges“."
+      : "„" + k.label + "“ löschen?";
+    if (!confirm(frage)) return;
+    Kategorien.entfernen(k.id);
+    if (filter.kategorie === k.id) filter.kategorie = "alle";
+    renderKatVerwaltung();
+    render();
+    toast("Kategorie gelöscht");
+  }));
+}
+$("s-kat-neu").addEventListener("click", () => katDialog(null));
+
+/* ---------- Erneuern / Erledigt ----------------------------------------
+   Wiederkehrende Einträge springen direkt in den nächsten Zyklus.
+   Einmalige Einträge fragen nach dem neuen Datum, mit Schnellwahl.      */
+function erneuernOeffnen(e){
+  const wdh = Core.WIEDERHOLUNGEN[e.wiederholung];
+  if (wdh.monate){
+    const neu = Core.naechstesDatum(e, Core.heute());
+    Daten.erneuern(e.id, neu);
+    toast("Erledigt – nächster Termin am " + Core.fmtDatum(neu));
+    render();
+    return;
+  }
+  ernId = e.id;
+  $("ern-text").textContent = "Bis wann gilt „" + e.titel + "“ jetzt?";
+  $("ern-datum").value = Core.addMonate(Core.heute(), 12);
+  $("ern-quick").innerHTML = [
+    { m: 12, l: "+1 Jahr" }, { m: 24, l: "+2 Jahre" }, { m: 60, l: "+5 Jahre" }, { m: 120, l: "+10 Jahre" }
+  ].map(q => '<button class="btn secondary small" data-m="' + q.m + '">' + q.l + "</button>").join("");
+  $("ern-quick").querySelectorAll("[data-m]").forEach(b => b.addEventListener("click", () => {
+    $("ern-datum").value = Core.addMonate(Core.heute(), Number(b.dataset.m));
+  }));
+  openModal("modal-erneuern");
+}
+let ernId = null;
+$("ern-ok").addEventListener("click", () => {
+  const d = $("ern-datum").value;
+  if (!Core.istIso(d)){ toast("Bitte ein gültiges Datum wählen"); return; }
+  Daten.erneuern(ernId, d);
+  closeModal("modal-erneuern");
+  toast("Erneuert bis " + Core.fmtDatum(d));
+  render();
+});
+
+/* ---------- Formular ---------- */
+let formId = null;               /* null = neuer Eintrag */
+let formRem = [];                /* Erinnerungen im Bearbeitungszustand */
+let formKats = [], formTyp = "ablauf";
+
+function renderKatGrid(){
+  $("f-kategorie").innerHTML = Core.kategorien().map(k =>
+    '<button type="button" data-k="' + k.id + '"' + (formKats.indexOf(k.id) >= 0 ? ' class="active"' : "") + ">"
+    + '<span class="e" aria-hidden="true">' + k.emoji + "</span>" + esc(k.label) + "</button>").join("")
+    + '<button type="button" class="neu" id="f-kat-neu">'
+    + '<span class="e" aria-hidden="true">＋</span>Neu</button>';
+  $("f-kategorie").querySelectorAll("[data-k]").forEach(b => b.addEventListener("click", () => {
+    const id = b.dataset.k, i = formKats.indexOf(id);
+    if (i >= 0) formKats.splice(i, 1); else formKats.push(id);
+    renderKatGrid();
+  }));
+  /* Eine hier angelegte Kategorie wird gleich mit ausgewählt. */
+  $("f-kat-neu").addEventListener("click", () => katDialog(null, k => {
+    if (formKats.indexOf(k.id) < 0) formKats.push(k.id);
+    renderKatGrid();
+  }));
+}
+function renderRemListe(){
+  const ul = $("f-remlist");
+  if (!formRem.length){
+    ul.innerHTML = '<li><span class="lbl muted">Keine Erinnerung – der Eintrag wird nur in der Liste angezeigt.</span></li>';
+    return;
+  }
+  ul.innerHTML = formRem.map((r, i) =>
+    '<li class="' + (r.an ? "" : "off") + '"><input type="checkbox" data-i="' + i + '"' + (r.an ? " checked" : "") + '>'
+    + '<span class="lbl">' + Core.erinnerungLabel(r.tage) + "</span>"
+    + '<button type="button" class="del" data-del="' + i + '" aria-label="Entfernen">'
+    + '<svg class="ic" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button></li>').join("");
+  ul.querySelectorAll("[data-i]").forEach(c => c.addEventListener("change", () => {
+    formRem[Number(c.dataset.i)].an = c.checked; renderRemListe();
+  }));
+  ul.querySelectorAll("[data-del]").forEach(b => b.addEventListener("click", () => {
+    formRem.splice(Number(b.dataset.del), 1); renderRemListe();
+  }));
+}
+function formTypSetzen(v){
+  formTyp = v;
+  $("f-datumstyp").querySelectorAll("button").forEach(b => b.classList.toggle("active", b.dataset.v === v));
+  $("f-datum-label").textContent = Core.datumstyp(v).label;
+  $("f-wdh-block").style.display = v === "wiederkehrend" ? "" : "none";
+  formWdhHint();
+}
+function formWdhHint(){
+  if (formTyp !== "wiederkehrend") return;
+  const d = $("f-datum").value;
+  const w = Core.WIEDERHOLUNGEN[$("f-wiederholung").value];
+  $("f-wdh-hint").textContent = Core.istIso(d)
+    ? "Nach „Erledigt“ steht der nächste Termin automatisch auf dem " + Core.fmtDatum(Core.addMonate(d, w.monate)) + "."
+    : "Nach „Erledigt“ wird der nächste Termin automatisch berechnet.";
+}
+function renderQuickdates(){
+  $("f-quickdates").innerHTML = [
+    { t: 30, l: "+1 Monat" }, { m: 6, l: "+6 Monate" }, { m: 12, l: "+1 Jahr" }, { m: 120, l: "+10 Jahre" }
+  ].map(q => '<button type="button" class="btn secondary small" data-t="' + (q.t || "") + '" data-m="' + (q.m || "") + '">'
+    + q.l + "</button>").join("");
+  $("f-quickdates").querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
+    const basis = Core.istIso($("f-datum").value) && Core.tageBis($("f-datum").value) > 0 ? $("f-datum").value : Core.heute();
+    $("f-datum").value = b.dataset.m ? Core.addMonate(basis, Number(b.dataset.m)) : Core.addTage(basis, Number(b.dataset.t));
+    formWdhHint();
+  }));
+}
+
+function formOeffnen(id){
+  formId = id;
+  const e = id ? Daten.get(id) : null;
+  $("form-titel").textContent = e ? "Eintrag bearbeiten" : "Neuer Eintrag";
+  $("f-titel").value = e ? e.titel : "";
+  formKats = e ? e.kategorien.slice() : [];
+  formTypSetzen(e ? e.datumstyp : "ablauf");
+  $("f-datum").value = e ? e.datum : "";
+  $("f-wiederholung").value = e && e.wiederholung !== "keine" ? e.wiederholung : "jaehrlich";
+  $("f-referenz").value = e ? e.referenz : "";
+  $("f-notiz").value = e ? e.notiz : "";
+  $("f-rem-an").checked = e ? e.erinnerungenAn !== false : true;
+  formRem = e ? e.erinnerungen.map(r => ({ tage: r.tage, an: r.an }))
+              : Core.STANDARD_ERINNERUNGEN.map(t => ({ tage: t, an: true }));
+  $("f-rem-block").style.opacity = $("f-rem-an").checked ? "1" : ".45";
+  $("f-loeschen-row").style.display = e ? "" : "none";
+  $("f-titel-err").classList.remove("show");
+  $("f-datum-err").classList.remove("show");
+  renderKatGrid(); renderRemListe(); renderQuickdates(); formWdhHint();
+  zeige("form");
+  setTimeout(() => { if (!e) $("f-titel").focus(); }, 60);
+}
+
+$("f-datumstyp").querySelectorAll("button").forEach(b =>
+  b.addEventListener("click", () => formTypSetzen(b.dataset.v)));
+$("f-wiederholung").addEventListener("change", formWdhHint);
+$("f-datum").addEventListener("change", formWdhHint);
+$("f-rem-an").addEventListener("change", () => {
+  $("f-rem-block").style.opacity = $("f-rem-an").checked ? "1" : ".45";
+});
+$("f-rem-add").addEventListener("click", () => {
+  const n = Math.round(Number($("f-rem-zahl").value));
+  const faktor = Number($("f-rem-einheit").value);
+  if (!Number.isFinite(n) || n < 1){ toast("Bitte eine Zahl ab 1 eingeben"); return; }
+  const tage = Math.min(3650, n * faktor);
+  if (formRem.some(r => r.tage === tage)){ toast("Diese Erinnerung gibt es schon"); return; }
+  formRem.push({ tage, an: true });
+  formRem.sort((a, b) => b.tage - a.tage);
+  renderRemListe();
+});
+$("f-abbrechen").addEventListener("click", () => { zurueck(); render(); });
+$("f-loeschen").addEventListener("click", () => {
+  if (!formId) return;
+  if (!confirm("Diesen Eintrag endgültig löschen?")) return;
+  Daten.entfernen(formId);
+  viewStack = viewStack.filter(v => v !== "form" && v !== "detail");
+  if (!viewStack.length) viewStack = ["home"];
+  zeige(aktuelleView(), true);
+  toast("Eintrag gelöscht");
+  render();
+});
+$("f-speichern").addEventListener("click", () => {
+  const titel = $("f-titel").value.trim();
+  const datum = $("f-datum").value;
+  let ok = true;
+  $("f-titel-err").classList.toggle("show", !titel); if (!titel) ok = false;
+  $("f-datum-err").classList.toggle("show", !Core.istIso(datum)); if (!Core.istIso(datum)) ok = false;
+  if (!formKats.length){ toast("Bitte mindestens eine Kategorie wählen"); ok = false; }
+  if (!ok) return;
+  const alt = formId ? Daten.get(formId) : null;
+  const e = Daten.upsert({
+    id: formId || undefined,
+    titel, kategorien: formKats.slice(), datumstyp: formTyp, datum,
+    wiederholung: formTyp === "wiederkehrend" ? $("f-wiederholung").value : "keine",
+    erinnerungen: formRem, erinnerungenAn: $("f-rem-an").checked,
+    referenz: $("f-referenz").value, notiz: $("f-notiz").value,
+    archiviert: alt ? alt.archiviert : false,
+    erledigtAm: alt ? alt.erledigtAm : null,
+    kalenderExportAm: alt ? alt.kalenderExportAm : null,
+    erstelltAm: alt ? alt.erstelltAm : undefined
+  });
+  detailId = e.id;
+  /* Nach dem Speichern landet man auf der Detailansicht des Eintrags. */
+  viewStack = viewStack.filter(v => v !== "form");
+  if (aktuelleView() !== "detail") viewStack.push("detail");
+  zeige("detail", true);
+  toast(alt ? "Änderungen gespeichert" : "Eintrag angelegt");
+  render();
+});
+$("btn-neu").addEventListener("click", () => formOeffnen(null));
+
+/* ---------- Einstellungen ---------- */
+function applyTheme(){
+  document.documentElement.dataset.theme = Einst.werte.theme;
+  $("s-theme").querySelectorAll("button").forEach(b =>
+    b.classList.toggle("active", b.dataset.v === Einst.werte.theme));
+}
+$("s-theme").querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
+  Einst.set("theme", b.dataset.v); applyTheme();
+}));
+$("s-vorwarn").addEventListener("change", e => {
+  Einst.set("vorwarnTage", Number(e.target.value)); render();
+});
+$("s-notif").addEventListener("change", e => Erinnerungen.einschalten(e.target.checked));
+$("s-notif-test").addEventListener("click", () => Erinnerungen.probe());
+
+function renderSettings(){
+  $("s-version").textContent = "v" + APP_VERSION;
+  $("s-vorwarn").value = String(Einst.werte.vorwarnTage);
+  $("s-notif").checked = Einst.werte.erinnerungenAn && Erinnerungen.erlaubt !== false;
+  $("s-notif-sub").textContent = Erinnerungen.verfuegbar()
+    ? (Einst.werte.erinnerungenAn ? "Benachrichtigungen auf diesem Gerät" : "Zurzeit ausgeschaltet")
+    : "Nur in der Android-App verfügbar";
+  $("s-notif").disabled = !Erinnerungen.verfuegbar();
+  /* Sichtbar machen, was tatsächlich geplant ist. Steht hier 0, obwohl
+     Einträge mit Erinnerungen vorhanden sind, weiß man sofort Bescheid –
+     statt vergeblich auf eine Meldung zu warten. */
+  const stand = $("s-notif-stand");
+  const testKnopf = $("s-notif-test");
+  if (!Erinnerungen.verfuegbar()){
+    stand.textContent = "In der Web-Version plant der Browser keine Erinnerungen. "
+      + "In der Android-App funktioniert das.";
+    testKnopf.style.display = "none";
+  } else {
+    testKnopf.style.display = "";
+    const n = Erinnerungen.geplant;
+    const naechst = Erinnerungen.naechster();
+    if (!Einst.werte.erinnerungenAn){
+      stand.textContent = "Erinnerungen sind ausgeschaltet.";
+    } else if (n === 0){
+      stand.textContent = Daten.aktive().length
+        ? "Zurzeit ist keine Erinnerung vorgemerkt. Prüfe die Benachrichtigungs-"
+          + "Berechtigung in den Android-Einstellungen und schick eine Testbenachrichtigung."
+        : "Noch keine Einträge – daher auch nichts zu erinnern.";
+    } else if (n > 0){
+      stand.textContent = n + (n === 1 ? " Erinnerung vorgemerkt" : " Erinnerungen vorgemerkt")
+        + (naechst ? ", nächste am " + naechst.toLocaleDateString("de-DE")
+            + " um " + naechst.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" }) : "");
+    } else {
+      stand.textContent = "Planungsstand noch nicht abgefragt.";
+    }
+  }
+  renderKatVerwaltung();
+  applyTheme();
+}
+$("btn-settings").addEventListener("click", () => {
+  renderSettings();
+  openModal("modal-settings");
+  /* Beim Öffnen frisch beim System nachfragen – der Stand kann sich seit
+     dem letzten Planen geändert haben (Neustart, Berechtigung entzogen). */
+  Erinnerungen.standAbfragen();
+});
+
+$("s-export").addEventListener("click", async () => {
+  const d = new Date();
+  const stamp = d.getFullYear() + String(d.getMonth() + 1).padStart(2, "0") + String(d.getDate()).padStart(2, "0");
+  await Bridge.saveText("never2late-sicherung-" + stamp + ".json",
+    JSON.stringify(Daten.exportObjekt(), null, 2), "application/json", "Never2Late-Sicherung");
+});
+$("s-import").addEventListener("click", () => $("s-import-file").click());
+$("s-import-file").addEventListener("change", e => {
+  const f = e.target.files && e.target.files[0];
+  if (!f) return;
+  const fr = new FileReader();
+  fr.onload = () => {
+    try {
+      const n = Daten.importObjekt(JSON.parse(String(fr.result)));
+      closeModal("modal-settings"); render();
+      toast(n + " Einträge wiederhergestellt");
+    } catch(err){ alert("Die Datei konnte nicht gelesen werden.\n\n" + (err && err.message ? err.message : err)); }
+  };
+  fr.onerror = () => alert("Die Datei konnte nicht gelesen werden.");
+  fr.readAsText(f);
+  e.target.value = "";
+});
+$("s-beispiele").addEventListener("click", () => {
+  const n = Daten.beispieleLaden();
+  closeModal("modal-settings"); render();
+  toast(n + " Beispieleinträge geladen");
+});
+$("s-reset").addEventListener("click", () => {
+  if (!confirm("Wirklich alle Einträge und eigenen Kategorien löschen? "
+    + "Das lässt sich nicht rückgängig machen.")) return;
+  Daten.alleLoeschen();
+  Kategorien.alleLoeschen();
+  filter.status = "alle"; filter.kategorie = "alle";
+  closeModal("modal-settings"); render();
+  toast("Alle Daten gelöscht");
+});
+
+/* Versteckte Diagnose: 5× auf die Versionsnummer tippen. Auf einem fremden
+   Gerät ist das oft der einzige Weg, "geht nicht" konkret zu machen. */
+let dbgTaps = 0;
+$("s-version").addEventListener("click", () => {
+  if (++dbgTaps >= 5){
+    ["notif-status", "export-status", "ads-status", "buy-status"].forEach(id => $(id).style.display = "block");
+    Erinnerungen.log("Diagnose aktiv");
+    Bridge.log("Diagnose aktiv");
+    Ads.log("Diagnose aktiv");
+    Billing.log("Diagnose aktiv");
+  }
+});
+
+/* ---------- Onboarding ---------- */
+const OB_KEY = "n2l_onboarding_done";
+let obStep = 0;
+function obShow(step){
+  obStep = Math.max(0, Math.min(2, step));
+  document.querySelectorAll(".ob-step").forEach(s => s.classList.toggle("active", Number(s.dataset.step) === obStep));
+  document.querySelectorAll("#ob-dots i").forEach((d, i) => d.classList.toggle("on", i === obStep));
+  $("ob-next").textContent = obStep === 2 ? "Los geht’s" : "Weiter";
+}
+function obFinish(){
+  store(OB_KEY, true);
+  closeModal("modal-onboarding");
+  /* Direkt nach der Einführung um die Benachrichtigungen bitten – dort ist
+     der Grund dafür gerade erklärt worden. */
+  if (Erinnerungen.verfuegbar() && Einst.werte.erinnerungenAn) Erinnerungen.einschalten(true);
+}
+$("ob-next").addEventListener("click", () => { if (obStep === 2) obFinish(); else obShow(obStep + 1); });
+$("ob-skip").addEventListener("click", obFinish);
+$("s-onboarding").addEventListener("click", () => { closeModal("modal-settings"); obShow(0); openModal("modal-onboarding"); });
+
+/* ---------- Zurück-Taste ------------------------------------------------
+   Gleiches Verhalten in der App und im Browser: erst das oberste Fenster
+   schließen, dann eine Ebene zurück, dann ein Hinweis; erst ein zweites
+   Drücken innerhalb von 2,5 s verlässt die App.
+
+   In der Android-App liefert @capacitor/app das Ereignis "backButton".
+   Im Browser gibt es das nicht – dort würde die Zurück-Taste die Seite
+   sofort verlassen, mit offenem Dialog und allem. Deshalb legt die
+   Web-Variante über die History-API einen Puffereintrag an, den jede
+   Zurück-Geste zuerst verbraucht (siehe unten).                         */
+const EXIT_FENSTER_MS = 2500;
+let exitHinweisBis = 0;
+function handleBack(){
+  for (let i = modalStack.length - 1; i >= 0; i--){
+    const id = modalStack[i], el = document.getElementById(id);
+    if (el && el.classList.contains("open")){
+      if (id === "modal-onboarding") obFinish(); else closeModal(id);
+      return true;
+    }
+    modalStack.splice(i, 1);
+  }
+  if (zurueck()){ render(); return true; }
+  return false;
+}
+function onBackButton(){
+  if (handleBack()){ exitHinweisBis = 0; return; }
+  if (Date.now() < exitHinweisBis){
+    const app = Bridge.plugin("App");
+    if (app && app.exitApp) app.exitApp();
+    return;
+  }
+  exitHinweisBis = Date.now() + EXIT_FENSTER_MS;
+  toast("Zum Verlassen der App erneut „Zurück“ drücken");
+}
+if (Bridge.isNative()){
+  const app = Bridge.plugin("App");
+  if (app && app.addListener) app.addListener("backButton", onBackButton);
+  else console.warn("[Back] App-Plugin nicht gefunden – Zurück-Taste unbehandelt");
+} else {
+  /* Web: Ein zusätzlicher History-Eintrag dient als Puffer. Jede
+     Zurück-Geste verbraucht ihn, wir fangen sie in popstate ab und legen
+     den Puffer danach neu an. Erst wenn nichts mehr zu schließen ist und
+     der Hinweis schon stand, lassen wir die Seite wirklich los. */
+  const historyPuffer = () => { try { history.pushState({ n2l: 1 }, ""); } catch(e){} };
+  historyPuffer();
+  window.addEventListener("popstate", () => {
+    if (handleBack()){ exitHinweisBis = 0; historyPuffer(); return; }
+    if (Date.now() < exitHinweisBis){
+      exitHinweisBis = 0;
+      history.back();   /* eine Ebene weiter zurück – verlässt die Seite */
+      return;
+    }
+    exitHinweisBis = Date.now() + EXIT_FENSTER_MS;
+    toast("Zum Verlassen der App erneut „Zurück“ drücken");
+    historyPuffer();
+  });
+}
+
+/* ---------- Kopfleiste beim Scrollen absetzen ----------
+   Die Leiste ist durchscheinend; erst beim Scrollen bekommt sie eine feine
+   Trennlinie, damit sie sich vom Inhalt darunter abhebt. */
+window.addEventListener("scroll", () => {
+  document.querySelector("header.app").classList.toggle("gescrollt", window.scrollY > 4);
+}, { passive: true });
+
+/* ---------- Service Worker: nur im Web, nie in der App ---------- */
+if ("serviceWorker" in navigator && (location.hostname.endsWith("github.io") || location.hostname.endsWith("mercwerk.de"))){
+  window.addEventListener("load", () => { navigator.serviceWorker.register("sw.js").catch(() => {}); });
+}
+
+/* ---------- Zentrales Rendern ---------- */
+function render(){
+  renderHome();
+  renderListe();
+  if (aktuelleView() === "detail") renderDetail();
+}
+
+/* ---------- Start ---------- */
+Einst.laden();
+/* Reihenfolge beachten: Ohne die eigenen Kategorien würde die
+   Normalisierung der Einträge deren IDs als unbekannt verwerfen. */
+Kategorien.laden();
+Daten.laden();
+applyTheme();
+Edition.apply();
+render();
+zeige("home", true);
+
+if (Bridge.isNative()){
+  /* Erinnerungen nach jedem Start neu planen: Termine können in der
+     Zwischenzeit verstrichen sein, und Android verwirft Alarme z. B. nach
+     einem Neustart des Geräts. */
+  Erinnerungen.berechtigungPruefen().then(() => Erinnerungen.neuPlanen());
+  const app = Bridge.plugin("App");
+  if (app && app.addListener){
+    app.addListener("appStateChange", s => { if (s && s.isActive){ render(); Erinnerungen.neuPlanen(); } });
+  }
+  if (Billing.ENABLED){
+    document.addEventListener("deviceready", () => Billing.init(), { once: true });
+    setTimeout(() => Billing.init(), 3000);
+  }
+}
+if (Ads.ENABLED) Ads.sync();
+
+if (!load(OB_KEY, false)){ obShow(0); openModal("modal-onboarding"); }
+
+/* Für die automatisierten Tests: die Fachlogik ist bewusst DOM-frei und
+   wird hier zum Prüfen freigelegt. Die Oberfläche greift nicht darauf zu. */
+window.N2L = { Core, Daten, Kategorien, Einst, Bridge, Erinnerungen, Kalender,
+               EmojiPruefung, Edition, Ads, Billing, APP_VERSION };
+</script>
+</body>
+</html>

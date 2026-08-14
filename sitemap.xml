@@ -45,12 +45,24 @@
     <priority>0.9</priority>
   </url>
   <url>
+    <loc>https://mercwerk.de/bft/</loc>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://mercwerk.de/cpr/</loc>
+    <priority>0.9</priority>
+  </url>
+  <url>
     <loc>https://mercwerk.de/datenschutz.html</loc>
     <priority>0.3</priority>
   </url>
   <url>
     <loc>https://mercwerk.de/fahrauftrag/</loc>
-    <priority>0.8</priority>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://mercwerk.de/impfbuch/</loc>
+    <priority>0.9</priority>
   </url>
   <url>
     <loc>https://mercwerk.de/impressum.html</loc>
@@ -63,6 +75,14 @@
   <url>
     <loc>https://mercwerk.de/kontakt.html</loc>
     <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://mercwerk.de/never2late/</loc>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://mercwerk.de/pft/</loc>
+    <priority>0.9</priority>
   </url>
   <url>
     <loc>https://mercwerk.de/ratgeber-bft.html</loc>
@@ -82,6 +102,18 @@
   </url>
   <url>
     <loc>https://mercwerk.de/ratgeber.html</loc>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://mercwerk.de/sgt/</loc>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://mercwerk.de/skilllog/</loc>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://mercwerk.de/sportabzeichen/</loc>
     <priority>0.9</priority>
   </url>
 </urlset>

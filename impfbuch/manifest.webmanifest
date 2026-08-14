@@ -1,0 +1,40 @@
+{
+  "id": "./",
+  "name": "Impfbuch-App — Digitaler Impfpass",
+  "short_name": "Impfbuch",
+  "description": "Digitaler Impfpass im Stil des deutschen Impfausweises — mit STIKO-Impfschema, Fälligkeitserinnerung und Reiseempfehlungen. Alle Daten bleiben lokal auf dem Gerät.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#efe7cf",
+  "theme_color": "#e9c94a",
+  "lang": "de",
+  "categories": ["health", "medical", "lifestyle"],
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
