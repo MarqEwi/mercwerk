@@ -288,6 +288,9 @@ h2.display {
    Schaltflächen wirklich gleich groß. */
 .btn-play { background: #000; color: #fff; border-color: var(--line-silver); }
 .btn-play:hover { background: var(--mw-ink-800); }
+/* Das Google-Play-Logo, freigestellt aus dem offiziellen Badge – unverzerrt,
+   nur in der Höhe an die Schaltfläche angepasst. */
+.btn-play img { height: 19px; width: auto; display: block; flex-shrink: 0; }
 
 /* In den Karten der Startseite stehen die Schaltflächen untereinander,
    alle in voller Kartenbreite. */
