@@ -74,7 +74,11 @@
   </url>
   <url>
     <loc>https://mercwerk.de/kontakt.html</loc>
-    <priority>0.5</priority>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://mercwerk.de/ueber-mich.html</loc>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://mercwerk.de/never2late/</loc>
